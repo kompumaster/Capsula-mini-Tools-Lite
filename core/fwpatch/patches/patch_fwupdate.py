@@ -8,7 +8,7 @@ from .common import kill_stub, present_sha, stub_hashes
 
 KEY = "fwu"
 TITLE = "Обновление FW"
-SUMMARY = "заменить FW обновление пустышкой"
+SUMMARY = "заменить FW обновление пустышкой, необратимо"
 PART = "system_b"
 KIND = "kill"
 FLAG = "fwupdate"

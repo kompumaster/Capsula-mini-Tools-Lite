@@ -8,7 +8,7 @@ from .common import kill_stub, present_sha, stub_hashes
 
 KEY = "tele"
 TITLE = "Телеметрияd"
-SUMMARY = "телеметрия → noop"
+SUMMARY = "заменить телеметрию пустышкой, необратимо"
 PART = "system_b"
 KIND = "kill"
 FLAG = "telemetry"
