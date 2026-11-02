@@ -286,7 +286,38 @@ class PatchItems(unittest.TestCase):
                          list(PATCHES) + list(KILLS))
 
 
+class PatchLine(unittest.TestCase):
+    def test_columns(self):
+        short = app.patch_line("1", "LAPI(:80)", "[on]",
+                               "локальный API, порт 80")
+        long = app.patch_line("10", "Удалить VK-Voice", "[kill]*",
+                              "заменить VK-Voice пустышкой, необратимо")
+        self.assertTrue(short.startswith(" 1) "))
+        self.assertTrue(long.startswith("10) "))
+        self.assertEqual(short.index("[on]"), 23)
+        self.assertEqual(long.index("[kill]*"), 23)
+        self.assertEqual(short.index("локальный"), 31)
+        self.assertEqual(long.index("заменить"), 31)
+
+    def test_unknown_state(self):
+        line = app.patch_line("7", "Телеметрияd", "[?]", "кратко")
+        self.assertIn("[?]     кратко", line)
+
+
 class PatchMenu(unittest.TestCase):
+    def test_summary_in_menu(self):
+        with mock.patch.object(actions, "has_patch_source",
+                               return_value=True), \
+             mock.patch.object(actions, "patch_status",
+                               return_value=(0, DATA, "")), \
+             mock.patch.object(app, "read_command",
+                               side_effect=["b"]), \
+             redirect_stdout(io.StringIO()) as out:
+            app.patch_menu(Screen())
+        text = out.getvalue()
+        self.assertIn("локальный API, порт 80", text)
+        self.assertIn("заменить SW обновление пустышкой, необратимо", text)
+
     def test_toggle_and_back(self):
         with mock.patch.object(actions, "has_patch_source",
                                return_value=True), \

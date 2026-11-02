@@ -42,6 +42,11 @@ WRITE_FOLDERS = (
     ("2", "backup/parts"),
 )
 
+# Ширины колонок меню патчей: название, затем статус. Статус длиннее
+# всего бывает `[kill]*` (7 символов), поэтому 7 — общая ширина.
+PATCH_TITLE_WIDTH = 16
+PATCH_STATUS_WIDTH = 7
+
 
 def read_command() -> str:
     """Строка команды для меню патчей: цифры/буквы + Enter."""
@@ -66,6 +71,17 @@ def patch_state_text(label: str) -> str:
         if state in ("off", "work"):
             return paint(label, RED)
     return label
+
+
+def patch_line(number: str, title: str, label: str, summary: str) -> str:
+    """Строка меню патча: номер, название, статус и краткое описание.
+
+    Статус сначала дополняется до фиксированной ширины и только потом
+    красится: иначе ANSI-коды сдвинут колонку описания.
+    """
+    indent = " " if len(number) == 1 else ""
+    status = patch_state_text(label.ljust(PATCH_STATUS_WIDTH))
+    return f"{indent}{number}) {title:<{PATCH_TITLE_WIDTH}}   {status} {summary}"
 
 
 def backup_menu(screen: Screen) -> None:
@@ -135,8 +151,8 @@ def patch_menu(screen: Screen) -> None:
                     and actions.current_patch_state(data, key) == "kill"):
                 mark = "x"
             label = actions.patch_label(data, overrides, key)
-            indent = " " if len(mark) == 1 else ""
-            screen.message(f"{indent}{mark}) {title:<16}   {patch_state_text(label)}")
+            module = PATCHES.get(key) or KILLS.get(key)
+            screen.message(patch_line(mark, title, label, module.SUMMARY))
         screen.message()
         screen.message(paint("P) Применить", GREEN))
         screen.message("R) Сбросить")
