@@ -10,7 +10,7 @@ from __future__ import annotations
 from fwpatch.errors import PatchError
 
 from . import (patch_adb, patch_fwupdate, patch_lapi, patch_mpython,
-               patch_ssh, patch_swupdate, patch_telemetryd,
+               patch_slfchk, patch_ssh, patch_swupdate, patch_telemetryd,
                patch_vkkill, patch_vkvoice)
 
 # Порядок применения разделов; не зависит от ORDER патчей.
@@ -74,7 +74,7 @@ def validate_registry(modules) -> None:
 
 
 MODULES = (patch_lapi, patch_mpython, patch_adb, patch_ssh,
-           patch_vkvoice, patch_telemetryd, patch_fwupdate,
+           patch_vkvoice, patch_slfchk, patch_telemetryd, patch_fwupdate,
            patch_swupdate, patch_vkkill)
 validate_registry(MODULES)
 REGISTRY = tuple(sorted(MODULES, key=lambda module: module.ORDER))
@@ -94,6 +94,6 @@ __all__ = [
     "PART_ORDER", "REGISTRY", "PATCHES", "KILLS", "BY_PART",
     "validate_registry",
     "patch_adb", "patch_fwupdate", "patch_lapi", "patch_mpython",
-    "patch_ssh", "patch_swupdate", "patch_telemetryd",
+    "patch_slfchk", "patch_ssh", "patch_swupdate", "patch_telemetryd",
     "patch_vkkill", "patch_vkvoice",
 ]

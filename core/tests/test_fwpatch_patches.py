@@ -17,6 +17,7 @@ from fwpatch import patches as patches_pkg  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import KILLS, PATCHES, patch_adb, patch_lapi  # noqa: E402
 from fwpatch.patches import patch_mpython  # noqa: E402
+from fwpatch.patches import patch_slfchk  # noqa: E402
 from fwpatch.patches import patch_ssh  # noqa: E402
 from fwpatch.patches import patch_telemetryd  # noqa: E402
 from fwpatch.patches import patch_vkkill  # noqa: E402
@@ -224,6 +225,47 @@ class VkVoice(Base):
         state, hashes = patch_vkvoice.detect(tree)
         self.assertEqual(state, "on")
         self.assertIn(patch_vkvoice.BACKUP_NAME, hashes)
+
+
+class Slfchk(Base):
+    def test_off_and_on(self):
+        tree = self.tree([(patch_slfchk.PATH, b"#!/bin/sh\n")])
+        self.assertEqual(patch_slfchk.detect(tree)[0], "off")
+        patch_slfchk.apply(tree)
+        self.assertFalse(tree.exists(patch_slfchk.PATH))
+        self.assertEqual(tree.read(patch_slfchk.BACKUP), b"#!/bin/sh\n")
+        self.assertEqual(tree.mode(patch_slfchk.BACKUP), 0o755)
+        self.assertEqual(patch_slfchk.detect(tree)[0], "on")
+        patch_slfchk.remove(tree)
+        self.assertTrue(tree.exists(patch_slfchk.PATH))
+        self.assertFalse(tree.exists(patch_slfchk.BACKUP))
+        self.assertEqual(patch_slfchk.detect(tree)[0], "off")
+
+    def test_apply_twice(self):
+        tree = self.tree([(patch_slfchk.PATH, b"script")])
+        patch_slfchk.apply(tree)
+        before = tree.snapshot()
+        patch_slfchk.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_apply_absent(self):
+        tree = self.tree()
+        before = tree.snapshot()
+        patch_slfchk.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+        self.assertEqual(patch_slfchk.detect(tree)[0], "off")
+
+    def test_remove_absent(self):
+        tree = self.tree()
+        patch_slfchk.remove(tree)
+        self.assertFalse(tree.exists(patch_slfchk.PATH))
+        self.assertFalse(tree.exists(patch_slfchk.BACKUP))
+
+    def test_backup_without_original(self):
+        tree = self.tree([(patch_slfchk.BACKUP, b"script")])
+        state, hashes = patch_slfchk.detect(tree)
+        self.assertEqual(state, "on")
+        self.assertIn(patch_slfchk.BACKUP_NAME, hashes)
 
 
 class VkKill(Base):

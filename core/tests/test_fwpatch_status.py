@@ -67,6 +67,7 @@ class DetectSystemB(Base):
         states, hashes = detect(tree, "system_b")
         self.assertEqual(states, {
             "adb": "off", "ssh": "off", "vkvoice": "off",
+            "slfchk": "off",
             "tele": "on", "fwu": "on", "swu": "on", "vkkill": "off",
         })
         self.assertNotIn("adb", hashes)
@@ -89,6 +90,7 @@ class DetectSystemB(Base):
         states, hashes = detect(tree, "system_b")
         self.assertEqual(states, {
             "adb": "on", "ssh": "on", "vkvoice": "off",
+            "slfchk": "off",
             "tele": "off", "fwu": "on", "swu": "off", "vkkill": "off",
         })
         self.assertEqual(set(hashes["adb"]), {"adbd-tcp", "S91adbd.sh"})

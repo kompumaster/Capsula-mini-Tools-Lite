@@ -9,8 +9,8 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 
 - Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
   исключая `tpl` и `bootloader` - через `store` недоступны.
-- Собрать образы с патчами: LAPI, ADB, SSH, VK-Voice, Micropython,
-  заглушки телеметрии и автообновлений.
+- Собрать образы с патчами: LAPI, ADB, SSH, VK-Voice, Selfcheck,
+  Micropython, заглушки телеметрии и автообновлений.
 - Записать образ в раздел: патченый или исходный, с обратной сверкой.
 - Преобразовать UBI-раздел в tar для просмотра/правки:
   «Сервис → Раздел → tar».
@@ -47,6 +47,7 @@ Capsula-Tools-Lite.bat
 | ADB | ADB, `:5555` | пересобранный `adbd-tcp`, без проверки ключа |
 | SSH | SSH, `:22` | патченный `dropbear`, `capsula` / `mini` |
 | VK-Voice (`vkvoice`) | отключает автозапуск, файл остаётся | `S97voice-agent.sh` → `x_S97voice-agent.sh.bak` |
+| Selfcheck (`slfchk`) | отключает автозапуск S98, файл остаётся | `S98selfcheck.sh` → `x_S98selfcheck.sh.bak` |
 | Удалить VK-Voice (`vkkill`) | заменяет бинарь заглушкой | `voice-agent` → `noop` |
 | Micropython (`mpython`) | кладёт бинарник в overlay `data` | `data/overlay/upper/usr/bin/micropython` |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
