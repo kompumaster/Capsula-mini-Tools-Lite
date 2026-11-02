@@ -1,0 +1,9 @@
+backup/*
+patched/*
+_tmp/
+
+__pycache__/
+*.pyc
+_venv/
+
+*.old

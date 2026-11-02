@@ -1,0 +1,29 @@
+# Источники и версии
+
+## Zadig
+
+- версия: 2.9
+- файл: `zadig-2.9.exe`
+- размер: 5 334 088 байт
+- SHA-256: `4ecaa95df3da3621486a043aef8b3050b8bafe7c901402871e816229ef82039b`
+- подпись Authenticode: действительна
+- подписант: `CN=Akeo Consulting, O=Akeo Consulting, S=Donegal, C=IE`
+- скачано: https://github.com/pbatard/libwdi/releases/download/v1.5.1/zadig-2.9.exe
+- страница релиза: https://github.com/pbatard/libwdi/releases/tag/v1.5.1
+
+## Исходники
+
+- проект: libwdi, тег v1.5.1
+- архив: `source/libwdi-1.5.1.tar.gz`
+- SHA-256 архива: `a695e93db0977dfdc5c6a99a4ea91b22f9027547d0177b2a0f3075078643c929`
+- источник: https://github.com/pbatard/libwdi/archive/refs/tags/v1.5.1.tar.gz
+- исходник Zadig: `examples/zadig.c` внутри архива
+
+## Лицензии
+
+- Zadig: GNU GPL v3, файл `licenses/COPYING`
+- libwdi: GNU LGPL v3, файл `licenses/COPYING-LGPL`
+
+Официальные тексты также доступны на сайте GNU:
+https://www.gnu.org/licenses/gpl-3.0.html
+https://www.gnu.org/licenses/lgpl-3.0.html
