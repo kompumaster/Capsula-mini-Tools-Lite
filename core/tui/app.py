@@ -135,7 +135,8 @@ def patch_menu(screen: Screen) -> None:
                     and actions.current_patch_state(data, key) == "kill"):
                 mark = "x"
             label = actions.patch_label(data, overrides, key)
-            screen.message(f"{mark}) {title:<16}   {patch_state_text(label)}")
+            indent = " " if len(mark) == 1 else ""
+            screen.message(f"{indent}{mark}) {title:<16}   {patch_state_text(label)}")
         screen.message()
         screen.message(paint("P) Применить", GREEN))
         screen.message("R) Сбросить")
