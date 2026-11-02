@@ -9,6 +9,7 @@ from .common import (Ask, asset_sha, drop_asset, present_sha,
 
 KEY = "adb"
 TITLE = "ADB(:5555)"
+SUMMARY = "ADB :5555 без ключа"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "adb"

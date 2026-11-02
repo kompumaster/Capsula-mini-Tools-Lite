@@ -448,6 +448,7 @@ class Meta(unittest.TestCase):
             self.assertIn(module.KIND, ("toggle", "kill"))
             self.assertIn(module.PART, ("system_b", "data"))
             self.assertTrue(module.TITLE)
+            self.assertTrue(module.SUMMARY)
             self.assertTrue(module.FLAG)
             self.assertIsInstance(module.ORDER, int)
             self.assertTrue(callable(module.detect))

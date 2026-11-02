@@ -13,6 +13,7 @@ from .common import kill_stub, present_sha, stub_hashes
 
 KEY = "vkkill"
 TITLE = "Удалить VK-Voice"
+SUMMARY = "VK-Voice → noop, необратимо"
 PART = "system_b"
 KIND = "kill"
 FLAG = "vk"

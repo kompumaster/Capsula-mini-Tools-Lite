@@ -9,6 +9,7 @@ from .common import (Ask, asset_sha, drop_asset, present_sha,
 
 KEY = "ssh"
 TITLE = "SSH(:22)"
+SUMMARY = "SSH :22, capsula/mini"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "ssh"

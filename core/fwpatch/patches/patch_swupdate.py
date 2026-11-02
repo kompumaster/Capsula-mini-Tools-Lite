@@ -8,6 +8,7 @@ from .common import kill_stub, present_sha, stub_hashes
 
 KEY = "swu"
 TITLE = "Обновление SW"
+SUMMARY = "обновление SW → noop"
 PART = "system_b"
 KIND = "kill"
 FLAG = "swupdate"

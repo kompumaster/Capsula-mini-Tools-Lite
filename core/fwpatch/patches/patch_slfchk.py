@@ -14,6 +14,7 @@ from .common import Ask, present_sha
 
 KEY = "slfchk"
 TITLE = "Откл. Selfcheck"
+SUMMARY = "отключить S98 self-check"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "slfchk"

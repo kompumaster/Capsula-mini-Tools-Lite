@@ -14,6 +14,7 @@ from .common import Ask, present_sha
 
 KEY = "vkvoice"
 TITLE = "Откл. VK-Voice"
+SUMMARY = "отключить автозапуск VK-Voice"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "vkvoice"

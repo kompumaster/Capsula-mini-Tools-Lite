@@ -9,6 +9,7 @@ CLI, `status.txt` и имя образа собираются из реестр�
 |---|---|
 | `KEY` | ключ в `status.txt` и имени образа; у существующих не менять |
 | `TITLE` | название в меню |
+| `SUMMARY` | короткое описание для строки меню |
 | `PART` | `system_b` или `data` |
 | `KIND` | `toggle` (вкл/выкл) или `kill` (только заглушка) |
 | `FLAG` | CLI: `--<FLAG>-on/off` для `toggle`, `--<FLAG>-kill` для `kill` |
@@ -43,6 +44,7 @@ from .common import Ask, drop, present_sha, put
 
 KEY = "mykey"
 TITLE = "Мой патч"
+SUMMARY = "краткое описание"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "mykey"

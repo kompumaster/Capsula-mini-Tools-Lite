@@ -13,6 +13,7 @@ from .common import (Ask, asset_sha, drop_asset, present_sha,
 
 KEY = "mpython"
 TITLE = "Micropython"
+SUMMARY = "MicroPython в overlay data"
 PART = "data"
 KIND = "toggle"
 FLAG = "mpython"
