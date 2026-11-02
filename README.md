@@ -5,6 +5,22 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 Работает на Linux и Windows 10; на Windows 11 чтение
 нестабильно, но возможно, на свой страх и риск.
 
+## Что умеет
+
+- Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
+  исключая `tpl` и `bootloader` - через `store` недоступны.
+- Собрать образы с патчами: LAPI, ADB, SSH, VK-Voice, Micropython,
+  заглушки телеметрии и автообновлений.
+- Записать образ в раздел: патченый или исходный, с обратной сверкой.
+- Преобразовать UBI-раздел в tar для просмотра/правки:
+  «Сервис → Раздел → tar».
+- Собрать раздел из tar обратно: «Сервис → tar → раздел».
+
+## Драйвер
+
+- Windows: WinUSB для загрузчика колонки — [driver/Install](driver/Install/README.md);
+  удаление старого или лишнего драйвера — [driver/Remove](driver/Remove/README.md).
+
 ## Запуск
 
 Linux:
@@ -18,17 +34,6 @@ Windows:
 ```bat
 Capsula-Tools-Lite.bat
 ```
-
-## Что умеет
-
-- Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
-  исключая `tpl` и `bootloader` - через `store` недоступны.
-- Собрать образы с патчами: LAPI, ADB, SSH, VK-Voice, Micropython,
-  заглушки телеметрии и автообновлений.
-- Записать образ в раздел: патченый или исходный, с обратной сверкой.
-- Преобразовать UBI-раздел в tar для просмотра/правки:
-  «Сервис → Раздел → tar».
-- Собрать раздел из tar обратно: «Сервис → tar → раздел».
 
 ## Ограничения
 
@@ -73,8 +78,6 @@ Capsula-Tools-Lite.bat
 
 - Python 3.9 или новее.
 - Linux: `libusb-1.0`; остальное ставится из `requirements.txt`.
-- Windows: WinUSB для загрузчика колонки — [driver/Install](driver/Install/README.md);
-  удаление старого или лишнего драйвера — [driver/Remove](driver/Remove/README.md).
 
 ## Зависимости
 
