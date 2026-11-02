@@ -9,7 +9,7 @@ from .common import Ask, drop, present_sha, put
 
 KEY = "lapi"
 TITLE = "LAPI(:80)"
-SUMMARY = "локальный API :80"
+SUMMARY = "локальный API, порт 80"
 PART = "data"
 KIND = "toggle"
 FLAG = "lapi"
