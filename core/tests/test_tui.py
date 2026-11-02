@@ -292,7 +292,7 @@ class PatchMenu(unittest.TestCase):
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
-             mock.patch.object(app, "read_key",
+             mock.patch.object(app, "read_command",
                                side_effect=["1", "b"]), \
              redirect_stdout(io.StringIO()) as out:
             app.patch_menu(Screen())
@@ -304,7 +304,7 @@ class PatchMenu(unittest.TestCase):
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
-             mock.patch.object(app, "read_key",
+             mock.patch.object(app, "read_command",
                                side_effect=["1", "p"]), \
              mock.patch.object(actions, "run_patch",
                                return_value=0) as run, \
@@ -317,7 +317,7 @@ class PatchMenu(unittest.TestCase):
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
-             mock.patch.object(app, "read_key",
+             mock.patch.object(app, "read_command",
                                side_effect=["1", "r", "b"]), \
              mock.patch.object(actions, "run_patch") as run, \
              redirect_stdout(io.StringIO()):
@@ -329,10 +329,12 @@ class PatchMenu(unittest.TestCase):
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
-             mock.patch.object(app, "read_key", side_effect=["b"]), \
+             mock.patch.object(app, "read_command",
+                               side_effect=["10", "b"]), \
              redirect_stdout(io.StringIO()) as out:
             app.patch_menu(Screen())
         self.assertIn("x) Обновление SW", out.getvalue())
+        self.assertIn("[kill]*", out.getvalue())
 
     def test_no_files(self):
         with mock.patch.object(actions, "has_patch_source",

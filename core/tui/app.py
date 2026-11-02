@@ -43,6 +43,14 @@ WRITE_FOLDERS = (
 )
 
 
+def read_command() -> str:
+    """Строка команды для меню патчей: цифры/буквы + Enter."""
+    try:
+        return input().strip()
+    except (EOFError, KeyboardInterrupt):
+        return "q"
+
+
 def result_text(code: int) -> str:
     """Итог операции: зелёный при успехе, красный при ошибке."""
     text = f"код: {code}"
@@ -135,7 +143,7 @@ def patch_menu(screen: Screen) -> None:
         screen.message()
         screen.prompt()
 
-        key = read_key()
+        key = read_command()
         if key in ("b", "B", "и", "И", "q", "Q", "й", "Й"):
             return
         if key in ("r", "R", "к", "К"):
