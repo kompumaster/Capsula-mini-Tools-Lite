@@ -9,12 +9,15 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 
 - Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
   исключая `tpl` и `bootloader` - через `store` недоступны.
-- Собрать образы с патчами: LAPI, ADB, SSH, VK-Voice, Selfcheck,
-  Micropython, заглушки телеметрии и автообновлений.
+- Собрать образы с патчами: `/home`, LAPI, ADB, SSH, VK-Voice,
+  VK-Call, Selfcheck, MicroPython, Micro HAL, Hostapd, Dnsmasq,
+  заглушки телеметрии и автообновлений.
 - Записать образ в раздел: патченый или исходный, с обратной сверкой.
 - Преобразовать UBI-раздел в tar для просмотра/правки:
   «Сервис → Раздел → tar».
 - Собрать раздел из tar обратно: «Сервис → tar → раздел».
+- Перезагрузить колонку: «Сервис → Перезагрузить колонку»
+  (`core/common/reboot.py`) — сначала SSH, при неудаче ADB.
 
 ## Драйвер
 
@@ -39,17 +42,34 @@ Capsula-Tools-Lite.bat
 
 `tpl` и `bootloader` через `store` не читаются и не пишутся.
 
+## Перезагрузка колонки
+
+```sh
+_venv/bin/python core/common/reboot.py
+_venv/bin/python core/common/reboot.py --ip АДРЕС
+```
+
+IP по умолчанию ищется через `core/common/find_ip.py`. Сначала
+пробуется SSH (`capsula`, пароль `mini` или `CAPSULA_SSH_PASSWORD`):
+`sshpass`, иначе `SSH_ASKPASS`, иначе ключ. Затем ADB: клиент `adb`
+или напрямую протокол ADB на `IP:5555`.
+
 ## Патчи
 
 | Патч | Что делает | Реализация |
 |---|---|---|
 | LAPI | локальный API, `:80` | `permanent/lapi` = `on` |
 | ADB | ADB, `:5555` | пересобранный `adbd-tcp`, без проверки ключа |
-| SSH | SSH, `:22` | патченный `dropbear`, `capsula` / `mini` |
+| SSH | SSH, `:22` | `dropbearmulti` (dropbear + scp + dbclient), `capsula` / `mini` |
 | VK-Voice (`vkvoice`) | отключает автозапуск, файл остаётся | `S97voice-agent.sh` → `x_S97voice-agent.sh.bak` |
+| VK-Call (`vkcall`) | отключает автозапуск, файл остаётся | `S97okcall.sh` → `x_S97okcall.sh.bak` |
 | Selfcheck (`slfchk`) | отключает автозапуск S98, файл остаётся | `S98selfcheck.sh` → `x_S98selfcheck.sh.bak` |
 | Удалить VK-Voice (`vkkill`) | заменяет бинарь заглушкой | `voice-agent` → `noop` |
 | Micropython (`mpython`) | кладёт бинарник в overlay `data` | `data/overlay/upper/usr/bin/micropython` |
+| Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
+| Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
+| Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
+| Micro HAL (`mhal`) | пакет целиком в `/home/microp` | `permanent/home/microp/micro_hal/` (включая `bins/`) |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -60,6 +80,16 @@ Enter; пункт `10` доступен. В строке каждого патч
 
 Патчи применяются к образам из `backup/parts`, результат — в
 `patched/parts`; оригиналы не меняются.
+
+## MicroPython HAL
+
+`micro_hal/` переехал в `../micro_p_libs/micro_hal/` — доступ к
+оборудованию из MicroPython: `hal_*` только железо, `lib_*` — логика.
+Готовы дисплей (sysfs + C-транспорт `libc_display.so`, анимация),
+кольцо (15 эффектов), кнопки (клики, удержание, сочетания), датчик
+света, NTP, громкость, микрофоны (C-захват и поток), ODAS, динамик,
+Bluetooth (A2DP) и Wi-Fi (скан и подключение с откатом). Установка и
+API — `../micro_p_libs/micro_hal/README.md`.
 
 ## Свои патчи
 
@@ -74,8 +104,8 @@ Enter; пункт `10` доступен. В строке каждого патч
   [kompumaster/UbiTar](https://github.com/kompumaster/UbiTar).
 - `adbd` пересобран статически (AArch64) — компактнее и без
   зависимости от стоковой glibc.
-- `dropbear` пересобран со статичными именем и паролем (`capsula` /
-  `mini`) — вход без настройки учётной записи.
+- `dropbearmulti` — `dropbear` + `dropbearkey` + `scp` + `dbclient`
+  в одном файле, вход `capsula` / `mini` без настройки учётной записи.
 - `system` и `data` пересобираются с zlib вместо стокового lzo —
   образы меньше.
 
