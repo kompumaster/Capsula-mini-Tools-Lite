@@ -17,7 +17,7 @@ SUMMARY = "MicroPython в overlay data"
 PART = "data"
 KIND = "toggle"
 FLAG = "mpython"
-ORDER = 15
+ORDER = 17
 
 ASSET = "micropython/micropython"
 PATH = "overlay/upper/usr/bin/micropython"

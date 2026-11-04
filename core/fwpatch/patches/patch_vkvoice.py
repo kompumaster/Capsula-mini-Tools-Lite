@@ -18,7 +18,7 @@ SUMMARY = "отключить автозапуск VK-Voice"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "vkvoice"
-ORDER = 35
+ORDER = 13
 
 PATH = "etc/init.d/S97voice-agent.sh"
 BACKUP = "etc/init.d/x_S97voice-agent.sh.bak"

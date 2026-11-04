@@ -16,10 +16,13 @@ from fwpatch import assets  # noqa: E402
 from fwpatch import patches as patches_pkg  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import KILLS, PATCHES, patch_adb, patch_lapi  # noqa: E402
+from fwpatch.patches import patch_dnsmasq, patch_home  # noqa: E402
+from fwpatch.patches import patch_hostapd, patch_mhal  # noqa: E402
 from fwpatch.patches import patch_mpython  # noqa: E402
 from fwpatch.patches import patch_slfchk  # noqa: E402
 from fwpatch.patches import patch_ssh  # noqa: E402
 from fwpatch.patches import patch_telemetryd  # noqa: E402
+from fwpatch.patches import patch_vkcall  # noqa: E402
 from fwpatch.patches import patch_vkkill  # noqa: E402
 from fwpatch.patches import patch_vkvoice  # noqa: E402
 from fwpatch.patches.common import asset_bytes, sha  # noqa: E402
@@ -149,9 +152,14 @@ class Ssh(Base):
         patch_ssh.apply(tree)
         for path, asset, _mode in patch_ssh.FILES:
             self.assertEqual(tree.sha256(path), sha(asset_bytes(asset)))
+        for path, target in patch_ssh.LINKS:
+            self.assertEqual(tree.kind(path), "link")
+            self.assertEqual(tree.link_target(path), target)
         self.assertEqual(detect(tree, "system_b")[0]["ssh"], "on")
         patch_ssh.remove(tree)
         for path, _asset, _mode in patch_ssh.FILES:
+            self.assertFalse(tree.exists(path))
+        for path, _target in patch_ssh.LINKS:
             self.assertFalse(tree.exists(path))
 
     def test_conflict_declined(self):
@@ -184,6 +192,102 @@ class MPython(Base):
         tree = self.tree()
         patch_mpython.remove(tree)
         self.assertFalse(tree.exists(patch_mpython.PATH))
+
+
+class Home(Base):
+    def test_on_off(self):
+        tree = self.tree()
+        self.assertEqual(patch_home.detect(tree)[0], "off")
+        patch_home.apply(tree)
+        self.assertEqual(tree.read(patch_home.PATH),
+                         asset_bytes(patch_home.ASSET))
+        self.assertEqual(tree.mode(patch_home.PATH), 0o755)
+        self.assertEqual(patch_home.detect(tree)[0], "on")
+        patch_home.remove(tree)
+        self.assertFalse(tree.exists(patch_home.PATH))
+        self.assertEqual(patch_home.detect(tree)[0], "off")
+
+    def test_on_twice(self):
+        tree = self.tree()
+        patch_home.apply(tree)
+        before = tree.snapshot()
+        patch_home.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+
+class MHal(Base):
+    def test_on_off(self):
+        tree = self.tree()
+        self.assertEqual(patch_mhal.detect(tree)[0], "off")
+        patch_mhal.apply(tree)
+        base = patch_mhal.TARGET
+        self.assertEqual(
+            tree.read(base + "/__init__.py"),
+            asset_bytes("micro_p_libs/micro_hal/__init__.py"))
+        self.assertEqual(tree.mode(base + "/__init__.py"), 0o644)
+        lib = base + "/bins/libc_mic.so"
+        self.assertEqual(
+            tree.read(lib),
+            asset_bytes("micro_p_libs/micro_hal/bins/libc_mic.so"))
+        self.assertEqual(tree.mode(lib), 0o755)
+        self.assertTrue(tree.exists(
+            base + "/tests/test_micro_hal_common.py"))
+        states, hashes = patch_mhal.detect(tree)
+        self.assertEqual(states, "on")
+        self.assertIn("bins/libc_mic.so", hashes)
+        self.assertEqual(patch_mhal.detect(tree)[0], "on")
+        patch_mhal.remove(tree)
+        self.assertFalse(tree.exists(base + "/__init__.py"))
+        self.assertFalse(tree.exists(lib))
+        self.assertEqual(patch_mhal.detect(tree)[0], "off")
+
+    def test_on_twice(self):
+        tree = self.tree()
+        patch_mhal.apply(tree)
+        before = tree.snapshot()
+        patch_mhal.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_partial_is_off(self):
+        tree = self.tree()
+        patch_mhal.apply(tree)
+        tree.remove(patch_mhal.TARGET + "/__init__.py")
+        self.assertEqual(patch_mhal.detect(tree)[0], "off")
+
+
+class _BinaryInData:
+    """Общие проверки бинарника, положенного в overlay data."""
+
+    MODULE = None
+
+    def test_on_off(self):
+        module = self.MODULE
+        tree = self.tree()
+        self.assertEqual(module.detect(tree)[0], "off")
+        module.apply(tree)
+        self.assertEqual(tree.read(module.PATH),
+                         asset_bytes(module.ASSET))
+        self.assertEqual(tree.mode(module.PATH), 0o755)
+        self.assertEqual(module.detect(tree)[0], "on")
+        module.remove(tree)
+        self.assertFalse(tree.exists(module.PATH))
+        self.assertEqual(module.detect(tree)[0], "off")
+
+    def test_on_twice(self):
+        module = self.MODULE
+        tree = self.tree()
+        module.apply(tree)
+        before = tree.snapshot()
+        module.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+
+class Hostapd(Base, _BinaryInData):
+    MODULE = patch_hostapd
+
+
+class Dnsmasq(Base, _BinaryInData):
+    MODULE = patch_dnsmasq
 
 
 class VkVoice(Base):
@@ -225,6 +329,47 @@ class VkVoice(Base):
         state, hashes = patch_vkvoice.detect(tree)
         self.assertEqual(state, "on")
         self.assertIn(patch_vkvoice.BACKUP_NAME, hashes)
+
+
+class VkCall(Base):
+    def test_off_and_on(self):
+        tree = self.tree([(patch_vkcall.PATH, b"#!/bin/sh\n")])
+        self.assertEqual(patch_vkcall.detect(tree)[0], "off")
+        patch_vkcall.apply(tree)
+        self.assertFalse(tree.exists(patch_vkcall.PATH))
+        self.assertEqual(tree.read(patch_vkcall.BACKUP), b"#!/bin/sh\n")
+        self.assertEqual(tree.mode(patch_vkcall.BACKUP), 0o755)
+        self.assertEqual(patch_vkcall.detect(tree)[0], "on")
+        patch_vkcall.remove(tree)
+        self.assertTrue(tree.exists(patch_vkcall.PATH))
+        self.assertFalse(tree.exists(patch_vkcall.BACKUP))
+        self.assertEqual(patch_vkcall.detect(tree)[0], "off")
+
+    def test_apply_twice(self):
+        tree = self.tree([(patch_vkcall.PATH, b"script")])
+        patch_vkcall.apply(tree)
+        before = tree.snapshot()
+        patch_vkcall.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_apply_absent(self):
+        tree = self.tree()
+        before = tree.snapshot()
+        patch_vkcall.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+        self.assertEqual(patch_vkcall.detect(tree)[0], "off")
+
+    def test_remove_absent(self):
+        tree = self.tree()
+        patch_vkcall.remove(tree)
+        self.assertFalse(tree.exists(patch_vkcall.PATH))
+        self.assertFalse(tree.exists(patch_vkcall.BACKUP))
+
+    def test_backup_without_original(self):
+        tree = self.tree([(patch_vkcall.BACKUP, b"script")])
+        state, hashes = patch_vkcall.detect(tree)
+        self.assertEqual(state, "on")
+        self.assertIn(patch_vkcall.BACKUP_NAME, hashes)
 
 
 class Slfchk(Base):
@@ -479,9 +624,9 @@ class Detect(Base):
         self.assertEqual(set(hashes), set(patch_adb.LOGICAL.values()))
 
     def test_ssh(self):
-        entries = [(path, asset_bytes(asset))
-                   for path, asset, _mode in patch_ssh.FILES]
-        state, hashes = patch_ssh.detect(self.tree(entries))
+        tree = self.tree()
+        patch_ssh.apply(tree)
+        state, hashes = patch_ssh.detect(tree)
         self.assertEqual(state, "on")
         self.assertEqual(set(hashes), set(patch_ssh.LOGICAL.values()))
 

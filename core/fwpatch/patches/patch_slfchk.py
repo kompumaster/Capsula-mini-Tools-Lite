@@ -18,7 +18,7 @@ SUMMARY = "отключить проверку обновления, Wi-Fi и VK
 PART = "system_b"
 KIND = "toggle"
 FLAG = "slfchk"
-ORDER = 36
+ORDER = 15
 
 PATH = "etc/init.d/S98selfcheck.sh"
 BACKUP = "etc/init.d/x_S98selfcheck.sh.bak"

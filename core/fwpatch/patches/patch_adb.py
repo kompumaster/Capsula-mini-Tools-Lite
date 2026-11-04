@@ -13,7 +13,7 @@ SUMMARY = "ADB, порт 5555 без ключа"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "adb"
-ORDER = 20
+ORDER = 11
 
 FILES = (
     ("usr/bin/adbd-tcp", "adbd", 0o755),

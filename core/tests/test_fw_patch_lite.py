@@ -17,7 +17,7 @@ from fwpatch import status  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import (  # noqa: E402
     patch_adb, patch_mpython, patch_ssh, patch_telemetryd,
-    patch_vkkill, patch_vkvoice,
+    patch_vkcall, patch_vkkill, patch_vkvoice,
 )
 from fwpatch.tar_tree import TarTree  # noqa: E402
 
@@ -78,6 +78,12 @@ class Names(Base):
         patch_vkvoice.apply(tree)
         self.assertEqual(cli.output_name("system_b", tree),
                          "system_b.vkvoice.bin")
+
+    def test_vkcall(self):
+        tree = self.tree([(patch_vkcall.PATH, b"script")])
+        patch_vkcall.apply(tree)
+        self.assertEqual(cli.output_name("system_b", tree),
+                         "system_b.vkcall.bin")
 
     def test_vkkill(self):
         tree = self.tree([(patch_vkkill.PATH, b"orig")])

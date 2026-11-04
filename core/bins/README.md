@@ -2,9 +2,13 @@
 
 | Файл | Что | Размер | SHA-256 |
 |---|---|---:|---|
-| `dropbear` | SSH-сервер, вход `capsula/mini` → root, порт 22 | 331 216 | `a8e96d35…1c91` |
+| `dropbearmulti` | SSH: `dropbear`, `dropbearkey`, `scp`, `dbclient` в одном файле | 331 264 | `c4cbdd18…` |
 | `adbd` | ADB, порт 5555, glibc 2.33 + libstdc++ 10 | 1 709 704 | `2afe9c0a…ad23` |
 | `micropython/micropython` | MicroPython, AArch64/glibc 2.33 | 921 072 | `f32d74de…1f85e` |
+| `net/hostapd` | hostapd 2.9 для AP, nl80211 | 595 424 | `f32ec902…` |
+| `net/dnsmasq` | dnsmasq 2.90 с DHCP | 338 176 | `4a4286a5…` |
+| `S05home.sh` | подключить `/data/permanent/home` как `/home` | 979 | `aac7e2b1…` |
+| `micro_p_libs/micro_hal/` | комплект HAL (py + tests + examples + `bins/` с `.so`) | 864K | см. `SHA256SUMS` |
 
 ## Ссылки
 

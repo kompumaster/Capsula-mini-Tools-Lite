@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fwpatch import assets  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
-from fwpatch.patches import patch_lapi  # noqa: E402
+from fwpatch.patches import patch_lapi, patch_ssh  # noqa: E402
 from fwpatch.status import (  # noqa: E402
     Status, compr_name, detect, file_map, make_status,
     parse_status, read_status, render, sha256_file, write_status,
@@ -25,9 +25,7 @@ TMP.mkdir(parents=True, exist_ok=True)
 
 ADBD = (assets.BINS / "adbd").read_bytes()
 S91 = (assets.BINS / "S91adbd.sh").read_bytes()
-DROPBEAR = (assets.BINS / "dropbear").read_bytes()
-DROPBEARKEY = (assets.BINS / "dropbearkey").read_bytes()
-S90 = (assets.BINS / "S90dropbear").read_bytes()
+S90 = (assets.BINS / "S90dropbear.sh").read_bytes()
 NOOP = (assets.STUBS / "noop").read_bytes()
 
 
@@ -66,8 +64,8 @@ class DetectSystemB(Base):
         ])
         states, hashes = detect(tree, "system_b")
         self.assertEqual(states, {
-            "adb": "off", "ssh": "off", "vkvoice": "off",
-            "slfchk": "off",
+            "adb": "off", "home": "off", "ssh": "off",
+            "vkvoice": "off", "vkcall": "off", "slfchk": "off",
             "tele": "on", "fwu": "on", "swu": "on", "vkkill": "off",
         })
         self.assertNotIn("adb", hashes)
@@ -81,21 +79,19 @@ class DetectSystemB(Base):
         ])
         tree.add("usr/bin/adbd-tcp", ADBD, 0o755)
         tree.add("etc/init.d/S91adbd.sh", S91, 0o755)
-        tree.add("usr/bin/dropbear", DROPBEAR, 0o755)
-        tree.add("usr/bin/dropbearkey", DROPBEARKEY, 0o755)
-        tree.add("etc/init.d/S90dropbear", S90, 0o755)
+        patch_ssh.apply(tree)
         tree.replace("usr/bin/telemetryd", NOOP, 0o755)
         tree.replace("usr/bin/swupdate", NOOP, 0o755)
 
         states, hashes = detect(tree, "system_b")
         self.assertEqual(states, {
-            "adb": "on", "ssh": "on", "vkvoice": "off",
-            "slfchk": "off",
+            "adb": "on", "home": "off", "ssh": "on",
+            "vkvoice": "off", "vkcall": "off", "slfchk": "off",
             "tele": "off", "fwu": "on", "swu": "off", "vkkill": "off",
         })
         self.assertEqual(set(hashes["adb"]), {"adbd-tcp", "S91adbd.sh"})
         self.assertEqual(set(hashes["ssh"]),
-                         {"dropbear", "dropbearkey", "S90dropbear"})
+                         {"dropbearmulti", "S90dropbear"})
         self.assertEqual(set(hashes["tele"]), {"telemetryd"})
 
     def test_missing_stub_is_off(self):
@@ -111,19 +107,22 @@ class DetectSystemB(Base):
 class DetectData(Base):
     def test_absent(self):
         states, hashes = detect(self.tar([]), "data")
-        self.assertEqual(states, {"lapi": "off", "mpython": "off"})
+        self.assertEqual(states, {"lapi": "off", "mpython": "off", "mhal": "off",
+                                "hostapd": "off", "dnsmasq": "off"})
         self.assertEqual(hashes, {})
 
     def test_on(self):
         tree = self.tar([(patch_lapi.PATH, b"on", 0o644)])
         states, hashes = detect(tree, "data")
-        self.assertEqual(states, {"lapi": "on", "mpython": "off"})
+        self.assertEqual(states, {"lapi": "on", "mpython": "off", "mhal": "off",
+                                "hostapd": "off", "dnsmasq": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_other(self):
         tree = self.tar([(patch_lapi.PATH, b"off", 0o644)])
         states, hashes = detect(tree, "data")
-        self.assertEqual(states, {"lapi": "off", "mpython": "off"})
+        self.assertEqual(states, {"lapi": "off", "mpython": "off", "mhal": "off",
+                                "hostapd": "off", "dnsmasq": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_unknown_part(self):

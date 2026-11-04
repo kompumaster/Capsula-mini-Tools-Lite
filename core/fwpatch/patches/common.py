@@ -83,6 +83,43 @@ def drop(tree: TarTree, path: str, expected: bytes | None = None,
     tree.remove(path)
 
 
+def asset_files(asset_dir: str, base: Path = BINS):
+    """Файлы каталога ассетов: `(путь от каталога, ассет, mode)`.
+
+    `.so` получают 0755, остальные — 0644; `__pycache__` и `.pyc`
+    пропускаются.
+    """
+    root = base / asset_dir
+    if not root.is_dir():
+        raise PatchError(f"нет каталога ассетов {root}")
+    files = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file():
+            continue
+        if "__pycache__" in path.parts or path.suffix == ".pyc":
+            continue
+        rel = path.relative_to(root).as_posix()
+        mode = 0o755 if path.suffix == ".so" else 0o644
+        files.append((rel, (Path(asset_dir) / rel).as_posix(), mode))
+    if not files:
+        raise PatchError(f"пустой каталог ассетов {root}")
+    return tuple(files)
+
+
+def put_asset_dir(tree: TarTree, target: str, asset_dir: str,
+                  ask: Ask | None = None) -> None:
+    """Положить весь каталог ассетов в `target/<относительный путь>`."""
+    for rel, asset, mode in asset_files(asset_dir):
+        put_asset(tree, f"{target}/{rel}", asset, mode, ask)
+
+
+def drop_asset_dir(tree: TarTree, target: str, asset_dir: str,
+                   ask: Ask | None = None) -> None:
+    """Удалить весь каталог ассетов из `target/...`."""
+    for rel, asset, _mode in asset_files(asset_dir):
+        drop_asset(tree, f"{target}/{rel}", asset, ask)
+
+
 def put_asset(tree: TarTree, path: str, asset: str, mode: int,
               ask: Ask | None = None) -> None:
     put(tree, path, asset_bytes(asset), mode, ask)
