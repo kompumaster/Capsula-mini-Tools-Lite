@@ -4,8 +4,9 @@
 
 1. mDNS: сервисы `_spotify-connect._tcp` и `_http._tcp`, отбираем
    instance/SRV-хост с префиксом `Capsula-mini`;
-2. скан локальных IPv4-подсетей: `GET /info`, у колонки в `device_id`
-   есть `capsula_mini`.
+2. скан локальных IPv4-подсетей: `GET /info`; у колонки либо
+   JSON с `device_id`, содержащим `capsula_mini` (LAPI), либо
+   HTML-заголовок `<title>Capsula Mini</title>` (портал).
 
 `find_capsula()` вызывается без параметров и возвращает IPv4-адрес
 или `None`. Сеть опрашивается только чтением.
@@ -16,6 +17,7 @@ from __future__ import annotations
 import http.client
 import ipaddress
 import json
+import re
 import socket
 import sys
 import threading
@@ -24,6 +26,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 NAME_PREFIX = "capsula-mini"
 MARKER = "capsula_mini"
+HTML_TITLE = re.compile(r"<title>\s*Capsula\s+Mini\s*</title>", re.IGNORECASE)
 
 MDNS_TIMEOUT = 2.0       # окно ожидания mDNS
 SCAN_TIMEOUT = 0.45      # таймаут одного /info
@@ -37,7 +40,8 @@ SERVICES = (
 
 # Куда «подключаемся» UDP-сокетом, чтобы узнать свой адрес.
 # Пакеты не отправляются, нужен только маршрут по умолчанию.
-ROUTE_TARGETS = ("192.168.1.1", "8.8.8.8", "1.1.1.1")
+ROUTE_TARGETS = ("192.168.1.1", "192.168.0.1", "8.8.8.8", "1.1.1.1",
+                 "192.0.0.1", "77.88.8.8", "77.88.8.1")
 
 
 def _log(log, message: str) -> None:
@@ -55,6 +59,11 @@ def _is_capsula_info(data) -> bool:
     if not isinstance(data, dict):
         return False
     return MARKER in str(data.get("device_id", "")).lower()
+
+
+def _is_capsula_html(text: str) -> bool:
+    """HTML-портал колонки: `<title>Capsula Mini</title>`."""
+    return HTML_TITLE.search(text) is not None
 
 
 def _ipv4_from_addresses(info) -> str | None:
@@ -221,7 +230,11 @@ def _probe(host: str) -> str | None:
         if response.status != 200:
             return None
         body = response.read(65536)
-        data = json.loads(body.decode("utf-8", "replace"))
+        text = body.decode("utf-8", "replace")
+        try:
+            data = json.loads(text)
+        except ValueError:
+            return host if _is_capsula_html(text) else None
         return host if _is_capsula_info(data) else None
     except (OSError, ValueError, http.client.HTTPException):
         return None

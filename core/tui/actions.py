@@ -13,6 +13,7 @@ from pathlib import Path
 import backup_lite
 import fw_patch_lite
 import write_lite
+from common import reboot as reboot_tool
 from common.find_ip import find_capsula
 from common.tar_ubi import TarFile, TarImage, list_images, list_tars
 from common.tar_ubi import pack as pack_tar
@@ -273,3 +274,10 @@ def write_image(image: ImageInfo) -> int:
 
 def find_column_ip() -> str | None:
     return find_capsula()
+
+
+def reboot_column() -> tuple[int, list[str]]:
+    """Перезагрузить колонку; возвращает код и строки вывода."""
+    lines: list[str] = []
+    code = reboot_tool.reboot(log=lines.append)
+    return code, lines

@@ -449,6 +449,8 @@ def service_menu(screen: Screen) -> None:
         screen.message("1) Найти IP колонки")
         screen.message("2) Раздел → tar")
         screen.message("3) tar → раздел")
+        screen.message("4) Перезагрузить колонку")
+        screen.message()
         screen.message("B) Назад")
         screen.message()
         screen.prompt()
@@ -474,6 +476,19 @@ def service_menu(screen: Screen) -> None:
             tar_menu(screen)
         elif key == "3":
             image_menu(screen)
+        elif key == "4":
+            screen.clear()
+            screen.title("Сервис: перезагрузка")
+            screen.message("Перезагрузка колонки...")
+            try:
+                code, lines = actions.reboot_column()
+            except Exception as exc:  # сеть не должна ломать меню
+                code, lines = 1, [f"ошибка: {exc}"]
+            for line in lines:
+                screen.message(line)
+            screen.message()
+            screen.message(result_text(code))
+            screen.pause()
 
 
 def main() -> int:

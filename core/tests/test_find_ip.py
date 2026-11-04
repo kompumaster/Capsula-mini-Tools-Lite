@@ -40,6 +40,43 @@ class Info(unittest.TestCase):
         self.assertFalse(find_ip._is_capsula_info(None))
 
 
+class Html(unittest.TestCase):
+    def test_title(self):
+        self.assertTrue(find_ip._is_capsula_html(
+            "<html><head><title>Capsula Mini</title></head></html>"))
+        self.assertTrue(find_ip._is_capsula_html(
+            "<TITLE>\n Capsula  Mini \n</TITLE>"))
+
+    def test_other(self):
+        self.assertFalse(find_ip._is_capsula_html(
+            "<title>Other device</title>"))
+        self.assertFalse(find_ip._is_capsula_html(""))
+
+
+class Probe(unittest.TestCase):
+    def probe(self, body: bytes):
+        response = mock.Mock(status=200)
+        response.read.return_value = body
+        connection = mock.Mock()
+        connection.getresponse.return_value = response
+        with mock.patch.object(find_ip.http.client, "HTTPConnection",
+                               return_value=connection):
+            return find_ip._probe("192.0.2.1")
+
+    def test_json(self):
+        self.assertEqual(self.probe(
+            b'{"device_id": ":c:d:capsula_mini:0123456789abcdef"}'),
+            "192.0.2.1")
+
+    def test_html(self):
+        self.assertEqual(self.probe(
+            b"<html><title>Capsula Mini</title></html>"), "192.0.2.1")
+
+    def test_other(self):
+        self.assertIsNone(self.probe(b'{"device_id": "other"}'))
+        self.assertIsNone(self.probe(b"<html><title>Other</title></html>"))
+
+
 class Addresses(unittest.TestCase):
     class Info:
         def __init__(self, addresses, raw=None):

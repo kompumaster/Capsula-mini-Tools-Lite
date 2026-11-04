@@ -319,24 +319,28 @@ class PatchMenu(unittest.TestCase):
         self.assertIn("заменить SW обновление пустышкой, необратимо", text)
 
     def test_toggle_and_back(self):
+        lapi = next(number for number, _title, key in app.PATCH_ITEMS
+                    if key == "lapi")
         with mock.patch.object(actions, "has_patch_source",
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
              mock.patch.object(app, "read_command",
-                               side_effect=["1", "b"]), \
+                               side_effect=[lapi, "b"]), \
              redirect_stdout(io.StringIO()) as out:
             app.patch_menu(Screen())
         self.assertIn("LAPI", out.getvalue())
         self.assertIn("[off]*", out.getvalue())
 
     def test_build_overrides(self):
+        lapi = next(number for number, _title, key in app.PATCH_ITEMS
+                    if key == "lapi")
         with mock.patch.object(actions, "has_patch_source",
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
              mock.patch.object(app, "read_command",
-                               side_effect=["1", "p"]), \
+                               side_effect=[lapi, "p"]), \
              mock.patch.object(actions, "run_patch",
                                return_value=0) as run, \
              redirect_stdout(io.StringIO()):
@@ -344,24 +348,28 @@ class PatchMenu(unittest.TestCase):
         run.assert_called_once_with({"lapi": "off"})
 
     def test_reset_clears_selection(self):
+        lapi = next(number for number, _title, key in app.PATCH_ITEMS
+                    if key == "lapi")
         with mock.patch.object(actions, "has_patch_source",
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
              mock.patch.object(app, "read_command",
-                               side_effect=["1", "r", "b"]), \
+                               side_effect=[lapi, "r", "b"]), \
              mock.patch.object(actions, "run_patch") as run, \
              redirect_stdout(io.StringIO()):
             app.patch_menu(Screen())
         run.assert_not_called()
 
     def test_killed_marked_x(self):
+        number = next(number for number, _title, key in app.PATCH_ITEMS
+                      if key == "tele")
         with mock.patch.object(actions, "has_patch_source",
                                return_value=True), \
              mock.patch.object(actions, "patch_status",
                                return_value=(0, DATA, "")), \
              mock.patch.object(app, "read_command",
-                               side_effect=["10", "b"]), \
+                               side_effect=[number, "b"]), \
              redirect_stdout(io.StringIO()) as out:
             app.patch_menu(Screen())
         self.assertIn("x) Обновление SW", out.getvalue())
@@ -501,6 +509,18 @@ class ServiceActions(unittest.TestCase):
                                return_value="192.0.2.10"):
             self.assertEqual(actions.find_column_ip(), "192.0.2.10")
 
+    def test_reboot(self):
+        def fake(log):
+            log("перезагрузка отправлена по SSH")
+            return 0
+
+        with mock.patch.object(actions.reboot_tool, "reboot",
+                               side_effect=fake) as call:
+            code, lines = actions.reboot_column()
+        self.assertEqual(code, 0)
+        self.assertIn("SSH", lines[-1])
+        call.assert_called_once()
+
 
 class ServiceMenu(unittest.TestCase):
     def test_ip(self):
@@ -522,6 +542,20 @@ class ServiceMenu(unittest.TestCase):
              mock.patch.object(app, "image_menu") as menu:
             app.service_menu(Screen())
         menu.assert_called_once()
+
+    def test_reboot_item(self):
+        with mock.patch.object(app, "read_key", side_effect=["4", "b"]), \
+             mock.patch.object(actions, "reboot_column",
+                               return_value=(0, ["ok"])) as reboot, \
+             redirect_stdout(io.StringIO()):
+            app.service_menu(Screen())
+        reboot.assert_called_once()
+
+    def test_blank_before_back(self):
+        with mock.patch.object(app, "read_key", side_effect=["b"]), \
+             redirect_stdout(io.StringIO()) as out:
+            app.service_menu(Screen())
+        self.assertIn("4) Перезагрузить колонку\n\nB) Назад", out.getvalue())
 
 
 class TarActions(unittest.TestCase):
