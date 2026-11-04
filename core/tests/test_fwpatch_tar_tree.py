@@ -73,6 +73,12 @@ class Read(Base):
     def test_meta(self):
         self.assertEqual(TarTree(self.src).meta(), {"volume": "rootfs"})
 
+    def test_link_target(self):
+        tree = TarTree(self.src)
+        self.assertEqual(tree.link_target("etc/link"), "a.txt")
+        self.assertIsNone(tree.link_target("etc/a.txt"))
+        self.assertIsNone(tree.link_target("nope"))
+
     def test_read_dir_fails(self):
         with self.assertRaises(PatchError):
             TarTree(self.src).read("etc")
@@ -116,6 +122,26 @@ class Edit(Base):
         self.assertEqual(added_info.mode, 0o755)
         self.assertEqual((added_info.uid, added_info.gid), (0, 0))
         self.assertEqual(new._by_path["etc/hard"].linkname, "etc/a.txt")
+
+    def test_symlink_add_and_write(self):
+        tree = TarTree(self.src)
+        tree.remove("etc/a.txt")
+        tree.symlink("etc/a.txt", "b.txt")
+        tree.symlink("opt/scp", "../dropbear")
+
+        self.assertEqual(tree.kind("etc/a.txt"), "link")
+        self.assertEqual(tree.link_target("etc/a.txt"), "b.txt")
+        self.assertEqual(tree.link_target("opt/scp"), "../dropbear")
+
+        out = self.dir / "links.tar"
+        tree.write(out)
+        new = TarTree(out)
+        self.assertEqual(new.kind("etc/a.txt"), "link")
+        self.assertEqual(new.link_target("etc/a.txt"), "b.txt")
+        self.assertEqual(new.link_target("opt/scp"), "../dropbear")
+        info = new._by_path["opt/scp"]
+        self.assertTrue(info.issym())
+        self.assertEqual(info.linkname, "../dropbear")
 
     def test_add_existing_fails(self):
         with self.assertRaises(PatchError):

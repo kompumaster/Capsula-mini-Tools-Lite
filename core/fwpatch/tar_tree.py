@@ -66,6 +66,7 @@ class TarTree:
 
         self._replace: dict[str, tuple[bytes, int | None]] = {}
         self._add: dict[str, tuple[bytes, int]] = {}
+        self._links: dict[str, tuple[str, int]] = {}
         self._remove: set[str] = set()
         self._dirs: dict[str, int] = {}
 
@@ -85,11 +86,10 @@ class TarTree:
 
     def exists(self, path: str) -> bool:
         key = _norm(path)
-        if key in self._remove:
-            return False
-        if key in self._add or key in self._replace or key in self._dirs:
+        if (key in self._add or key in self._replace or key in self._links
+                or key in self._dirs):
             return True
-        return key in self._by_path
+        return key in self._by_path and key not in self._remove
 
     def kind(self, path: str) -> str | None:
         key = _norm(path)
@@ -97,6 +97,8 @@ class TarTree:
             return None
         if key in self._dirs:
             return "dir"
+        if key in self._links:
+            return "link"
         if key in self._add or key in self._replace:
             return "file"
         return self._kind(self._by_path[key])
@@ -110,10 +112,24 @@ class TarTree:
             return self._dirs[key]
         if key in self._add:
             return self._add[key][1]
+        if key in self._links:
+            return self._links[key][1]
         if key in self._replace:
             mode = self._replace[key][1]
             return self._by_path[key].mode if mode is None else mode
         return self._by_path[key].mode
+
+    def link_target(self, path: str) -> str | None:
+        """Куда указывает симлинк; `None`, если это не симлинк."""
+        key = _norm(path)
+        if not self.exists(key):
+            return None
+        if key in self._links:
+            return self._links[key][0]
+        info = self._by_path.get(key)
+        if info is not None and info.issym():
+            return info.linkname
+        return None
 
     def read(self, path: str) -> bytes:
         return self._read(_norm(path), 0)
@@ -121,12 +137,12 @@ class TarTree:
     def _read(self, key: str, depth: int) -> bytes:
         if depth > LINK_LIMIT:
             raise PatchError(f"{key}: цепочка hardlink слишком длинная")
-        if key in self._remove:
-            raise PatchError(f"{key}: удалён")
         if key in self._add:
             if key in self._dirs:
                 raise PatchError(f"{key}: это каталог")
             return self._add[key][0]
+        if key in self._remove:
+            raise PatchError(f"{key}: удалён")
         if key in self._replace:
             return self._replace[key][0]
 
@@ -175,8 +191,19 @@ class TarTree:
             raise PatchError(f"{path}: уже существует")
         if "/" in key:
             self.ensure_dir(key.rsplit("/", 1)[0])
-        self._remove.discard(key)
         self._add[key] = (bytes(data), mode)
+
+    def symlink(self, path: str, target: str,
+                mode: int = 0o777) -> None:
+        """Добавить симлинк; родительские каталоги создаются."""
+        key = _check_path(path)
+        if self.exists(key):
+            raise PatchError(f"{path}: уже существует")
+        if not target:
+            raise PatchError(f"{path}: пустая цель симлинка")
+        if "/" in key:
+            self.ensure_dir(key.rsplit("/", 1)[0])
+        self._links[key] = (target, mode)
 
     def replace(self, path: str, data: bytes,
                 mode: int | None = None) -> None:
@@ -200,6 +227,9 @@ class TarTree:
             del self._add[key]
             self._dirs.pop(key, None)
             return
+        if key in self._links:
+            del self._links[key]
+            return
         self._replace.pop(key, None)
         self._remove.add(key)
 
@@ -213,6 +243,10 @@ class TarTree:
         """
         result: dict[str, tuple] = {}
         for key, info in self._by_path.items():
+            if key in self._add:
+                data, mode = self._add[key]
+                result[key] = ("file", mode, hashlib.sha256(data).hexdigest())
+                continue
             if key in self._remove:
                 continue
             if key in self._replace:
@@ -220,10 +254,6 @@ class TarTree:
                 result[key] = ("file",
                                info.mode if mode is None else mode,
                                hashlib.sha256(data).hexdigest())
-                continue
-            if key in self._add:
-                data, mode = self._add[key]
-                result[key] = ("file", mode, hashlib.sha256(data).hexdigest())
                 continue
             kind = self._kind(info)
             if kind == "file":
@@ -240,6 +270,8 @@ class TarTree:
                 continue
             result.setdefault(key, ("file", mode,
                                     hashlib.sha256(data).hexdigest()))
+        for key, (target, mode) in self._links.items():
+            result.setdefault(key, ("link", mode, target))
         return result
 
     # ------------------------------------------------------------ запись
@@ -279,6 +311,12 @@ class TarTree:
                     continue
                 dst.addfile(self._new_dir(key))
 
+            for key in sorted(self._links, key=lambda p: (p.count("/"), p)):
+                if key in written or key in self._dirs:
+                    continue
+                target, mode = self._links[key]
+                dst.addfile(self._new_link(key, target, mode))
+
             for key in sorted(self._add, key=lambda p: (p.count("/"), p)):
                 if key in written or key in self._dirs:
                     continue
@@ -305,6 +343,18 @@ class TarTree:
         info.gid = 0
         info.mtime = 0
         info.size = len(data)
+        return info
+
+    @staticmethod
+    def _new_link(key: str, target: str, mode: int) -> tarfile.TarInfo:
+        info = tarfile.TarInfo(key)
+        info.type = tarfile.SYMTYPE
+        info.mode = mode
+        info.uid = 0
+        info.gid = 0
+        info.mtime = 0
+        info.linkname = target
+        info.size = 0
         return info
 
     @staticmethod
