@@ -134,11 +134,6 @@ API и примеры — в самом пакете `micro_hal` (`hal_*`/`lib_*
 - Python 3.9 или новее.
 - Linux: `libusb-1.0`; остальное ставится из `requirements.txt`.
 
-## Зависимости
-
-`core/bins`, `core/stubs` и `core/ubitar` входят в репозиторий;
-внешние симлинки не нужны.
-
 ## Лицензия
 
 GPL-2.0, см. `LICENSE`.
