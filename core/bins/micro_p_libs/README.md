@@ -18,25 +18,26 @@ micro_tts/                  пакет MicroPython + bins
 micro_tts/bins/             edge_token, libc_edge.so, libc_mp3.so
 ```
 
-Патч `mtts` кладёт пакет целиком в `/home/microp/micro_tts`; путь
-`bins/edge_token` внутри пакета сохраняется.
+## micro_asr — распознавание речи (0.2.0)
 
-Структура повторяет исходный `micro_p_libs/micro_hal/`: `.so` лежат
-в `bins/`, а не в корне пакета.
+```text
+micro_asr/                  пакет MicroPython + bins
+micro_asr/bins/             libc_mp3.so
+```
 
 ## Куда класть на плате
 
 `/home` на колонке — симлинк на `/data/permanent/home`.
-Патч `mhal` кладёт пакет целиком:
+Патч `mplibs` кладёт весь комплект в `/home/microp`:
 
 ```text
 /home/microp/micro_hal/          <- пакет (py + examples)
-/home/microp/micro_hal/bins/     <- libc_*.so
+/home/microp/micro_tts/          <- пакет + bins
+/home/microp/micro_asr/          <- пакет + bins
 ```
 
-`hal_*` и `lib_speaker` ищут библиотеки по путям
-`/home/microp/micro_hal/bins/libc_*.so`, поэтому структура `bins/`
-сохраняется. `/home/microp` уже входит в `MICROPYPATH`:
+У `micro_hal` библиотеки лежат в `bins/`, у `micro_tts`/`micro_asr` —
+тоже в `bins/`; структура сохраняется. `/home/microp` уже входит в `MICROPYPATH`:
 переменная задаётся в `/etc/init.d/S90dropbear` и
 `/etc/init.d/S91adbd.sh` и в `/etc/profile.d/10-micropython.sh`.
 Отдельный `/home/micro_p_libs` не нужен, обёртка `mp` не требуется.
@@ -53,7 +54,7 @@ micro_tts/bins/             edge_token, libc_edge.so, libc_mp3.so
 С хоста, из этой папки (`IP` — адрес колонки):
 
 ```sh
-tar -cf - micro_hal micro_tts SHA256SUMS \
+tar -cf - micro_hal micro_tts micro_asr SHA256SUMS \
     | ssh capsula@IP 'cd /home/microp && tar -xf - --overwrite'
 ```
 
@@ -61,7 +62,7 @@ tar -cf - micro_hal micro_tts SHA256SUMS \
 
 ```sh
 ssh capsula@IP \
-    'chown -R root:root /home/microp/micro_hal /home/microp/micro_tts'
+    'chown -R root:root /home/microp/micro_hal /home/microp/micro_tts /home/microp/micro_asr'
 ```
 
 Проверка:

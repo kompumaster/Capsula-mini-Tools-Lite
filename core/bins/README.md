@@ -9,8 +9,9 @@
 | `net/dnsmasq` | dnsmasq 2.90 с DHCP | 338 176 | `4a4286a5…` |
 | `S05home.sh` | подключить `/data/permanent/home` как `/home` | 979 | `aac7e2b1…` |
 | `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
-| `micro_p_libs/micro_hal/` | комплект HAL (py + examples + `bins/` с `.so`) | 604K | см. `SHA256SUMS` |
-| `micro_p_libs/micro_tts/` | TTS: пакет и `bins/edge_token`, `bins/libc_*.so` | 424K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_hal/` | HAL: py + examples + `bins/` с `.so` | 636K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_tts/` | TTS: пакет и `bins/edge_token`, `bins/libc_*.so` | 432K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_asr/` | ASR: пакет и `bins/libc_mp3.so` | 220K | см. `SHA256SUMS` |
 
 Дефолтная куча GC у `micropython` — 8 МБ: в исходнике правится
 `ports/unix/main.c` (`long heap_size = 8 * 1024 * 1024;`), запуск с

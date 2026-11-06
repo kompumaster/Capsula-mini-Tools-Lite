@@ -10,8 +10,7 @@ from __future__ import annotations
 from fwpatch.errors import PatchError
 
 from . import (patch_adb, patch_dnsmasq, patch_fwupdate, patch_home,
-               patch_hostapd, patch_lapi, patch_mhal, patch_mpython,
-               patch_mtts,
+               patch_hostapd, patch_lapi, patch_mpython, patch_mp_libs,
                patch_slfchk, patch_ssh, patch_swupdate, patch_telemetryd,
                patch_vkcall, patch_vkkill, patch_vkvoice)
 
@@ -75,11 +74,10 @@ def validate_registry(modules) -> None:
             seen.add(value)
 
 
-MODULES = (patch_lapi, patch_mpython, patch_mhal, patch_mtts,
+MODULES = (patch_lapi, patch_mpython, patch_mp_libs,
            patch_hostapd, patch_dnsmasq, patch_adb, patch_home, patch_ssh,
-           patch_vkvoice,
-           patch_vkcall, patch_slfchk, patch_telemetryd, patch_fwupdate,
-           patch_swupdate, patch_vkkill)
+           patch_vkvoice, patch_vkcall, patch_slfchk, patch_telemetryd,
+           patch_fwupdate, patch_swupdate, patch_vkkill)
 validate_registry(MODULES)
 REGISTRY = tuple(sorted(MODULES, key=lambda module: module.ORDER))
 
@@ -98,8 +96,7 @@ __all__ = [
     "PART_ORDER", "REGISTRY", "PATCHES", "KILLS", "BY_PART",
     "validate_registry",
     "patch_adb", "patch_dnsmasq", "patch_fwupdate", "patch_home",
-    "patch_hostapd", "patch_lapi", "patch_mhal", "patch_mpython",
-    "patch_mtts",
+    "patch_hostapd", "patch_lapi", "patch_mpython", "patch_mp_libs",
     "patch_slfchk",
     "patch_ssh",
     "patch_swupdate", "patch_telemetryd", "patch_vkcall", "patch_vkkill",

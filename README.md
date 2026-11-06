@@ -10,8 +10,8 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 - Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
   исключая `tpl` и `bootloader` - через `store` недоступны.
 - Собрать образы с патчами: `/home`, LAPI, ADB, SSH, VK-Voice,
-  VK-Call, Selfcheck, MicroPython, Micro HAL, Micro TTS, Hostapd,
-  Dnsmasq, заглушки телеметрии и автообновлений.
+  VK-Call, Selfcheck, MicroPython, MP Libs, Hostapd, Dnsmasq,
+  заглушки телеметрии и автообновлений.
 - Записать образ в раздел: патченый или исходный, с обратной сверкой.
 - Преобразовать UBI-раздел в tar для просмотра/правки:
   «Сервис → Раздел → tar».
@@ -69,8 +69,7 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 | Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
 | Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
-| Micro HAL (`mhal`) | пакет целиком в `/home/microp` | `permanent/home/microp/micro_hal/` (включая `bins/`) |
-| Micro TTS (`mtts`) | пакет TTS в `/home/microp` | `permanent/home/microp/micro_tts/` (включая `bins/`) |
+| MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`) |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -82,7 +81,7 @@ Enter; пункт `10` доступен. В строке каждого патч
 Патчи применяются к образам из `backup/parts`, результат — в
 `patched/parts`; оригиналы не меняются.
 
-## MicroPython: HAL и TTS
+## MicroPython: библиотеки
 
 `micro_hal` даёт доступ к оборудованию из MicroPython: `hal_*` — только
 железо, `lib_*` — логика. Готовы:
@@ -108,10 +107,17 @@ API и примеры — в пакете [micro_hal](core/bins/micro_p_libs/mic
 
 [micro_tts](core/bins/micro_p_libs/micro_tts/) — синтез речи (Edge TTS):
 пакет, `bins/edge_token`, `bins/libc_edge.so` и `bins/libc_mp3.so`.
-Патч `mtts` кладёт его в `/home/microp/micro_tts`; профиль
+Описание — [README](core/bins/micro_p_libs/micro_tts/README.md).
+
+[micro_asr](core/bins/micro_p_libs/micro_asr/) — распознавание речи:
+Yandex SpeechKit v1, VAD (остановка по тишине), MP3-кодирование;
+источники — файл, микрофон, память (PCM/WAV/MP3). Ключ Yandex — в
+`/home/.env` (`ASR_YANDEX_KEY`). Описание —
+[README](core/bins/micro_p_libs/micro_asr/README.md).
+
+Патч `mplibs` кладёт все три пакета в `/home/microp`; профиль
 `10-micropython.sh` (патч `mpython`) добавляет `.frozen` в
-`MICROPYPATH`, без чего нет `ssl` и Edge TTS не работает. Описание —
-[README](core/bins/micro_p_libs/micro_tts/README.md).
+`MICROPYPATH`, без чего нет `ssl` и Edge TTS не работает.
 
 ## Свои патчи
 

@@ -17,8 +17,7 @@ from fwpatch import patches as patches_pkg  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import KILLS, PATCHES, patch_adb, patch_lapi  # noqa: E402
 from fwpatch.patches import patch_dnsmasq, patch_home  # noqa: E402
-from fwpatch.patches import patch_hostapd, patch_mhal  # noqa: E402
-from fwpatch.patches import patch_mtts  # noqa: E402
+from fwpatch.patches import patch_hostapd, patch_mp_libs  # noqa: E402
 from fwpatch.patches import patch_mpython  # noqa: E402
 from fwpatch.patches import patch_slfchk  # noqa: E402
 from fwpatch.patches import patch_ssh  # noqa: E402
@@ -221,77 +220,46 @@ class Home(Base):
         self.assertEqual(tree.snapshot(), before)
 
 
-class MHal(Base):
+class MPLibs(Base):
     def test_on_off(self):
         tree = self.tree()
-        self.assertEqual(patch_mhal.detect(tree)[0], "off")
-        patch_mhal.apply(tree)
-        base = patch_mhal.TARGET
-        self.assertEqual(
-            tree.read(base + "/__init__.py"),
-            asset_bytes("micro_p_libs/micro_hal/__init__.py"))
-        self.assertEqual(tree.mode(base + "/__init__.py"), 0o644)
-        lib = base + "/bins/libc_mic.so"
+        self.assertEqual(patch_mp_libs.detect(tree)[0], "off")
+        patch_mp_libs.apply(tree)
+        base = patch_mp_libs.TARGET
+        for package in ("micro_hal", "micro_tts", "micro_asr"):
+            self.assertEqual(
+                tree.read(base + "/" + package + "/__init__.py"),
+                asset_bytes("micro_p_libs/" + package + "/__init__.py"))
+            self.assertEqual(tree.mode(base + "/" + package + "/__init__.py"),
+                             0o644)
+        lib = base + "/micro_hal/bins/libc_mic.so"
         self.assertEqual(
             tree.read(lib),
             asset_bytes("micro_p_libs/micro_hal/bins/libc_mic.so"))
         self.assertEqual(tree.mode(lib), 0o755)
-        self.assertFalse(tree.exists(base + "/tests"))
-        states, hashes = patch_mhal.detect(tree)
-        self.assertEqual(states, "on")
-        self.assertIn("bins/libc_mic.so", hashes)
-        self.assertEqual(patch_mhal.detect(tree)[0], "on")
-        patch_mhal.remove(tree)
-        self.assertFalse(tree.exists(base + "/__init__.py"))
-        self.assertFalse(tree.exists(lib))
-        self.assertEqual(patch_mhal.detect(tree)[0], "off")
-
-    def test_on_twice(self):
-        tree = self.tree()
-        patch_mhal.apply(tree)
-        before = tree.snapshot()
-        patch_mhal.apply(tree)
-        self.assertEqual(tree.snapshot(), before)
-
-    def test_partial_is_off(self):
-        tree = self.tree()
-        patch_mhal.apply(tree)
-        tree.remove(patch_mhal.TARGET + "/__init__.py")
-        self.assertEqual(patch_mhal.detect(tree)[0], "off")
-
-
-class Mtts(Base):
-    def test_on_off(self):
-        tree = self.tree()
-        self.assertEqual(patch_mtts.detect(tree)[0], "off")
-        patch_mtts.apply(tree)
-        base = patch_mtts.TARGET
-        self.assertEqual(
-            tree.read(base + "/__init__.py"),
-            asset_bytes("micro_p_libs/micro_tts/__init__.py"))
-        self.assertEqual(tree.mode(base + "/__init__.py"), 0o644)
-        token = base + "/bins/edge_token"
-        self.assertEqual(
-            tree.read(token),
-            asset_bytes("micro_p_libs/micro_tts/bins/edge_token"))
+        token = base + "/micro_tts/bins/edge_token"
         self.assertEqual(tree.mode(token), 0o755)
-        self.assertEqual(patch_mtts.detect(tree)[0], "on")
-        patch_mtts.remove(tree)
-        self.assertFalse(tree.exists(base + "/__init__.py"))
-        self.assertEqual(patch_mtts.detect(tree)[0], "off")
+        self.assertTrue(tree.exists(base + "/README.md"))
+        state, hashes = patch_mp_libs.detect(tree)
+        self.assertEqual(state, "on")
+        self.assertIn("micro_hal/bins/libc_mic.so", hashes)
+        self.assertIn("micro_tts/bins/edge_token", hashes)
+        patch_mp_libs.remove(tree)
+        self.assertFalse(tree.exists(base + "/micro_hal/__init__.py"))
+        self.assertEqual(patch_mp_libs.detect(tree)[0], "off")
 
     def test_on_twice(self):
         tree = self.tree()
-        patch_mtts.apply(tree)
+        patch_mp_libs.apply(tree)
         before = tree.snapshot()
-        patch_mtts.apply(tree)
+        patch_mp_libs.apply(tree)
         self.assertEqual(tree.snapshot(), before)
 
     def test_partial_is_off(self):
         tree = self.tree()
-        patch_mtts.apply(tree)
-        tree.remove(patch_mtts.TARGET + "/__init__.py")
-        self.assertEqual(patch_mtts.detect(tree)[0], "off")
+        patch_mp_libs.apply(tree)
+        tree.remove(patch_mp_libs.TARGET + "/micro_hal/__init__.py")
+        self.assertEqual(patch_mp_libs.detect(tree)[0], "off")
 
 
 class _BinaryInData:
