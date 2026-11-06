@@ -2,6 +2,12 @@
 #
 # SSH-сервер dropbear: пользователь capsula/mini -> root (зашито в бинарь).
 #
+# MICROPYPATH и ENV: интерактивные shell-сессии читают профиль и
+# /etc/profile.d, а неинтерактивные наследуют MICROPYPATH напрямую.
+# Dropbear запускается с `-e`, иначе окружение не передаётся детям.
+export MICROPYPATH=/home/microp:/usr/lib/micropython:.frozen
+export ENV=/etc/profile
+
 KEYDIR=/data/dropbear_keys
 BIN=/usr/bin/dropbear
 KEYGEN=/usr/bin/dropbearkey
@@ -15,7 +21,7 @@ start() {
         "$KEYGEN" -t rsa -s 2048 -f "$KEYDIR/rsa" >/dev/null 2>&1
     fi
     echo "Starting dropbear..."
-    "$BIN" -r "$KEYDIR/ed25519" -r "$KEYDIR/rsa" -p 22 >>/data/dropbear.log 2>&1 &
+    "$BIN" -e -r "$KEYDIR/ed25519" -r "$KEYDIR/rsa" -p 22 >>/data/dropbear.log 2>&1 &
 }
 
 stop() {

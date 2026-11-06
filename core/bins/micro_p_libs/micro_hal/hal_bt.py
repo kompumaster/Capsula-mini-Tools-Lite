@@ -10,7 +10,7 @@
 объявляется, потому что `bluetoothd` запущен с `--plugin=a2dp,avrc`.
 """
 
-from micro_hal import hal_common, hal_volume
+from micro_hal import hal_common, hal_pulse, hal_volume
 from micro_hal.hal_common import HalError
 
 __all__ = [
@@ -40,11 +40,12 @@ def _quote(text):
     return "'{}'".format(text)
 
 
-def _capture(command):
+def _capture(command, label=None):
     code, text = hal_common.capture(command)
     if code != 0:
+        name = label or command.split()[0]
         raise HalError("{}: код {}: {}".format(
-            command.split()[0], code, text.strip()[:120]))
+            name, code, text.strip()[:120]))
     return text
 
 
@@ -260,7 +261,8 @@ def forget(address):
 
 
 def _pactl(args):
-    return _capture("{} {}".format(PACTL, args))
+    return _capture(hal_pulse.prefix() + "{} {}".format(PACTL, args),
+                    "pactl")
 
 
 def sources():

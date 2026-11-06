@@ -9,16 +9,21 @@ import math
 import os
 import struct
 
-from micro_hal import hal_common, hal_speaker
+from micro_hal import hal_common, hal_speaker, lib_volume, lib_wav
 from micro_hal.hal_common import HalError
 
 __all__ = [
     "RATE", "CHANNELS", "WIDTH", "AMPLITUDE", "FADE_MS", "RAW", "LIB",
+    "PCM_RATE",
     "tone_pcm", "melody_pcm", "helper",
     "tone", "silence", "melody", "play_wav", "stop", "playing",
+    "play_pcm", "play_raw", "stream", "write_wav",
+    "get_volume", "set_volume", "mute", "toggle_mute",
+    "pause", "resume", "paused", "wait",
 ]
 
 RATE = 16000
+PCM_RATE = 24000
 CHANNELS = 1
 WIDTH = 2
 AMPLITUDE = 0.3
@@ -183,7 +188,8 @@ def _remove(path):
         pass
 
 
-def _play_raw(data, path, sink, wait_seconds, wait):
+def _play_raw(data, path, sink, wait_seconds, wait, rate=RATE,
+              channels=CHANNELS):
     """Записать raw, проиграть и убрать временный файл.
 
     При ошибке `play`/`wait` временный raw тоже удаляется, чтобы не
@@ -191,8 +197,8 @@ def _play_raw(data, path, sink, wait_seconds, wait):
     """
     _write(path, data)
     try:
-        hal_speaker.play(path, sink=sink, raw=True, rate=RATE,
-                         channels=CHANNELS)
+        hal_speaker.play(path, sink=sink, raw=True, rate=rate,
+                         channels=channels)
         if wait:
             hal_speaker.wait(wait_seconds)
     except Exception:
@@ -240,10 +246,119 @@ def play_wav(path, sink=hal_speaker.SINK, wait=False):
 
 
 def stop():
-    """Остановить воспроизведение; True, если что-то играло."""
-    return hal_speaker.stop()
+    """Остановить воспроизведение; True, если что-то играло.
+
+    Заодно убирает временный raw процесса (`tone(wait=False)` и
+    `play_pcm(wait=False)` его оставляют).
+    """
+    result = hal_speaker.stop()
+    _remove(RAW)
+    return result
 
 
 def playing():
     """PID текущего воспроизведения или None."""
     return hal_speaker.running()
+
+
+def wait(timeout=10.0):
+    """Дождаться конца воспроизведения; True, если процесс ушёл."""
+    return hal_speaker.wait(timeout)
+
+
+# --- PCM из памяти, файлы и поток -----------------------------------
+
+def _sink_value(sink):
+    return hal_speaker.SINK if sink is None else sink
+
+
+def play_pcm(pcm, rate=PCM_RATE, channels=CHANNELS, sink=None,
+             wait=False):
+    """Сыграть PCM `s16le` из памяти; вернуть путь к raw-файлу.
+
+    Данные пишутся во временный файл процесса; при `wait=False` он
+    остаётся до следующего вызова или `stop()`.
+    """
+    if not isinstance(pcm, (bytes, bytearray)):
+        raise HalError("нужны bytes")
+    if len(pcm) % 2 != 0:
+        raise HalError("PCM должен быть кратен 2 байтам")
+    rate = int(rate)
+    channels = int(channels)
+    if rate <= 0 or channels <= 0:
+        raise HalError("rate и channels должны быть больше нуля")
+    seconds = len(pcm) / float(rate * channels * WIDTH)
+    return _play_raw(bytes(pcm), RAW, _sink_value(sink),
+                     seconds + 3.0, wait, rate, channels)
+
+
+def play_raw(path, rate=PCM_RATE, channels=CHANNELS, sink=None,
+             wait=False):
+    """Сыграть готовый файл `s16le`; вернуть PID."""
+    pid = hal_speaker.play(str(path), sink=_sink_value(sink), raw=True,
+                           rate=int(rate), channels=int(channels))
+    if wait:
+        hal_speaker.wait(None)
+    return pid
+
+
+def stream(sink=None, rate=PCM_RATE, channels=CHANNELS,
+           latency_msec=100):
+    """Поток PCM: объект `hal_speaker.Stream` (открывается вызывающим)."""
+    return hal_speaker.Stream(sink=_sink_value(sink), rate=int(rate),
+                              channels=int(channels),
+                              latency_msec=latency_msec)
+
+
+def write_wav(path, pcm, rate=PCM_RATE, channels=CHANNELS):
+    """Записать PCM в WAV; вернуть путь."""
+    data = bytes(pcm)
+    channels = int(channels)
+    rate = int(rate)
+    if len(data) % (WIDTH * channels) != 0:
+        raise HalError("PCM не делится на кадры")
+    header = lib_wav.wav_header(len(data), channels, rate, WIDTH)
+    handle = open(path, "wb")
+    try:
+        handle.write(header + data)
+    finally:
+        handle.close()
+    return path
+
+
+# --- громкость и пауза ----------------------------------------------
+
+def get_volume(sink=hal_speaker.SINK):
+    """Громкость sink в процентах."""
+    return lib_volume.Volume(_sink_value(sink)).get()
+
+
+def set_volume(value, sink=hal_speaker.SINK):
+    """Поставить громкость 0…100; вернуть значение."""
+    return lib_volume.Volume(_sink_value(sink)).set(value)
+
+
+def mute(on=True, sink=hal_speaker.SINK):
+    """Заглушить (`on=True`) или включить звук."""
+    volume = lib_volume.Volume(_sink_value(sink))
+    return volume.mute() if on else volume.unmute()
+
+
+def toggle_mute(sink=hal_speaker.SINK):
+    """Переключить mute; вернуть новое состояние."""
+    return lib_volume.Volume(_sink_value(sink)).toggle()
+
+
+def pause():
+    """Пауза текущего воспроизведения (весь sink)."""
+    return hal_speaker.pause()
+
+
+def resume():
+    """Продолжить воспроизведение."""
+    return hal_speaker.resume()
+
+
+def paused():
+    """Стоит ли воспроизведение на паузе."""
+    return hal_speaker.paused()

@@ -8,7 +8,7 @@ Pulse отдаёт нули (проверено на плате 03.11.2026).
 import os
 import time
 
-from micro_hal import hal_common
+from micro_hal import hal_common, hal_pulse
 from micro_hal.hal_common import HalError
 
 __all__ = [
@@ -90,7 +90,8 @@ def _release():
 
 def sources():
     """Имена источников Pulse."""
-    code, text = hal_common.capture(PACTL + " list short sources")
+    code, text = hal_common.capture(
+        hal_pulse.prefix() + PACTL + " list short sources")
     if code != 0:
         raise HalError("pactl list short sources: код {}".format(code))
     names = []
@@ -164,7 +165,7 @@ def start(path, source=SOURCE, channels=CHANNELS, rate=RATE,
     if folder and not hal_common.exists(folder):
         raise HalError("нет каталога для записи: {}".format(folder))
 
-    command = (
+    command = hal_pulse.prefix() + (
         "{parec} --device={source} --rate={rate} --channels={channels} "
         "--format=s16le --raw --no-remap{latency} "
         "--client-name={client} > {path} 2>/dev/null "

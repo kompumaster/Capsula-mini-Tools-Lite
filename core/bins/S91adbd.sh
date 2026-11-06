@@ -1,5 +1,11 @@
 #!/bin/sh
 # ADB по TCP (порт 5555). USB-ADB в этой сборке нет.
+#
+# MICROPYPATH и ENV: оболочки adb получают путь напрямую, а
+# интерактивные ещё и читают профиль через /etc/profile.d.
+export MICROPYPATH=/home/microp:/usr/lib/micropython:.frozen
+export ENV=/etc/profile
+
 BIN=/usr/bin/adbd-tcp
 PORT=5555
 

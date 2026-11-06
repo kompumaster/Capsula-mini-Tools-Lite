@@ -1,7 +1,8 @@
-"""Micropython: положить бинарник в overlay раздела data.
+"""Micropython: бинарник и профиль окружения в overlay раздела data.
 
-После overlay-монтирования `/data/overlay/upper` файл виден как
-`/usr/bin/micropython`. `system_b` не меняется.
+После overlay-монтирования `/data/overlay/upper` файлы видны как
+`/usr/bin/micropython` и `/etc/profile.d/10-micropython.sh`.
+`system_b` не меняется.
 """
 
 from __future__ import annotations
@@ -23,19 +24,36 @@ ASSET = "micropython/micropython"
 PATH = "overlay/upper/usr/bin/micropython"
 NAME = "micropython"
 
+ENV_ASSET = "micropython_env.sh"
+ENV_PATH = "overlay/upper/etc/profile.d/10-micropython.sh"
+ENV_NAME = "micropython-profile"
+
+FILES = (
+    (PATH, ASSET, 0o755, NAME),
+    (ENV_PATH, ENV_ASSET, 0o644, ENV_NAME),
+)
+
 
 def apply(tree: TarTree, ask: Ask | None = None) -> None:
-    put_asset(tree, PATH, ASSET, 0o755, ask)
+    for path, asset, mode, _name in FILES:
+        put_asset(tree, path, asset, mode, ask)
 
 
 def remove(tree: TarTree, ask: Ask | None = None) -> None:
-    drop_asset(tree, PATH, ASSET, ask)
+    for path, asset, _mode, _name in FILES:
+        drop_asset(tree, path, asset, ask)
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — наш бинарник, `off` — нет или чужой."""
-    digest = present_sha(tree, PATH)
-    if digest is None:
-        return "off", {}
-    state = "on" if digest == asset_sha(ASSET) else "off"
-    return state, {NAME: digest}
+    """`on` — бинарник и профиль наши, `off` — нет или чужие."""
+    hashes = {}
+    state = "on"
+    for path, asset, _mode, name in FILES:
+        digest = present_sha(tree, path)
+        if digest is None:
+            state = "off"
+            continue
+        hashes[name] = digest
+        if digest != asset_sha(asset):
+            state = "off"
+    return state, hashes

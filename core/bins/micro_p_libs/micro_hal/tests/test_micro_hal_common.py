@@ -33,6 +33,17 @@ class Paths(unittest.TestCase):
                 path.unlink()
 
 
+class Quote(unittest.TestCase):
+    def test_quote(self):
+        self.assertEqual(hal_common.quote("/tmp/a b.raw"),
+                         "'/tmp/a b.raw'")
+
+    def test_quote_rejects(self):
+        for value in ("/tmp/a'b.raw", "/tmp/a\nb.raw", "/tmp/a\rb.raw"):
+            with self.assertRaises(HalError):
+                hal_common.quote(value)
+
+
 class Commands(unittest.TestCase):
     def test_run_codes(self):
         self.assertEqual(hal_common.run("true"), 0)

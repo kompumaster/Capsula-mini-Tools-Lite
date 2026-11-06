@@ -15,6 +15,7 @@
 - `hal_light` — датчик света;
 - `lib_ntp` — синхронизация времени по NTP;
 - `hal_volume` / `lib_volume` — громкость;
+- `hal_pulse` — поиск сокета Pulse (`PULSE_SERVER`);
 - `hal_odas` / `lib_odas` — ODAS: процесс и JSON tracks.
 
 Этот файл не импортирует их сразу: пакет должен открываться и на
@@ -23,6 +24,6 @@ CPython — для тестов чистой логики.
 
 from micro_hal.hal_common import HalError, check, format_check
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = ["HalError", "check", "format_check", "__version__"]

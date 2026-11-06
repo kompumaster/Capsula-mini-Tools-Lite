@@ -12,7 +12,8 @@ import os
 import time
 
 __all__ = [
-    "HalError", "exists", "read_text", "write_text", "run", "capture",
+    "HalError", "exists", "read_text", "write_text", "quote", "run",
+    "capture",
     "Lock", "lock", "locked", "self_pid",
     "processes", "stale_owner",
     "is_root", "require_root", "va_pids", "va_running",
@@ -70,6 +71,14 @@ def write_text(path, text):
         handle.write(text)
     finally:
         handle.close()
+
+
+def quote(path):
+    """Путь в одинарных кавычках; кавычки и переводы строк запрещены."""
+    text = str(path)
+    if "'" in text or "\n" in text or "\r" in text:
+        raise HalError("недопустимый путь: {!r}".format(text))
+    return "'{}'".format(text)
 
 
 def run(command):

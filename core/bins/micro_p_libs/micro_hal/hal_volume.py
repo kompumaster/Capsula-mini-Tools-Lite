@@ -6,7 +6,7 @@
 иначе получится двойное ослабление.
 """
 
-from micro_hal import hal_common
+from micro_hal import hal_common, hal_pulse
 from micro_hal.hal_common import HalError
 
 __all__ = [
@@ -22,7 +22,8 @@ PACTL = "/usr/bin/pactl"
 
 def _pactl(args):
     """Выполнить `pactl` с аргументами и вернуть вывод."""
-    command = "{} {}".format(PACTL, " ".join(args))
+    command = hal_pulse.prefix() + "{} {}".format(
+        PACTL, " ".join(args))
     code, text = hal_common.capture(command)
     if code != 0:
         raise HalError("pactl {}: код {}: {}".format(
@@ -34,7 +35,7 @@ def available():
     """Отвечает ли PulseAudio."""
     if not hal_common.exists(PACTL):
         return False
-    code, text = hal_common.capture(PACTL + " info")
+    code, text = hal_common.capture(hal_pulse.prefix() + PACTL + " info")
     return code == 0 and "Server Name:" in text
 
 
