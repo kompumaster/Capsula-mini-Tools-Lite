@@ -86,8 +86,8 @@ def drop(tree: TarTree, path: str, expected: bytes | None = None,
 def asset_files(asset_dir: str, base: Path = BINS):
     """Файлы каталога ассетов: `(путь от каталога, ассет, mode)`.
 
-    `.so` получают 0755, остальные — 0644; `__pycache__` и `.pyc`
-    пропускаются.
+    Файлы `bins/` и `.so` получают 0755, остальные — 0644;
+    `__pycache__` и `.pyc` пропускаются.
     """
     root = base / asset_dir
     if not root.is_dir():
@@ -99,7 +99,8 @@ def asset_files(asset_dir: str, base: Path = BINS):
         if "__pycache__" in path.parts or path.suffix == ".pyc":
             continue
         rel = path.relative_to(root).as_posix()
-        mode = 0o755 if path.suffix == ".so" else 0o644
+        mode = (0o755 if path.suffix == ".so"
+                or path.parent.name == "bins" else 0o644)
         files.append((rel, (Path(asset_dir) / rel).as_posix(), mode))
     if not files:
         raise PatchError(f"пустой каталог ассетов {root}")

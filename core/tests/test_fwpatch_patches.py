@@ -18,6 +18,7 @@ from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import KILLS, PATCHES, patch_adb, patch_lapi  # noqa: E402
 from fwpatch.patches import patch_dnsmasq, patch_home  # noqa: E402
 from fwpatch.patches import patch_hostapd, patch_mhal  # noqa: E402
+from fwpatch.patches import patch_mtts  # noqa: E402
 from fwpatch.patches import patch_mpython  # noqa: E402
 from fwpatch.patches import patch_slfchk  # noqa: E402
 from fwpatch.patches import patch_ssh  # noqa: E402
@@ -176,9 +177,13 @@ class MPython(Base):
         self.assertEqual(tree.read(patch_mpython.PATH),
                          asset_bytes(patch_mpython.ASSET))
         self.assertEqual(tree.mode(patch_mpython.PATH), 0o755)
+        self.assertEqual(tree.read(patch_mpython.ENV_PATH),
+                         asset_bytes(patch_mpython.ENV_ASSET))
+        self.assertEqual(tree.mode(patch_mpython.ENV_PATH), 0o644)
         self.assertEqual(patch_mpython.detect(tree)[0], "on")
         patch_mpython.remove(tree)
         self.assertFalse(tree.exists(patch_mpython.PATH))
+        self.assertFalse(tree.exists(patch_mpython.ENV_PATH))
         self.assertEqual(patch_mpython.detect(tree)[0], "off")
 
     def test_on_twice(self):
@@ -192,6 +197,7 @@ class MPython(Base):
         tree = self.tree()
         patch_mpython.remove(tree)
         self.assertFalse(tree.exists(patch_mpython.PATH))
+        self.assertFalse(tree.exists(patch_mpython.ENV_PATH))
 
 
 class Home(Base):
@@ -253,6 +259,40 @@ class MHal(Base):
         patch_mhal.apply(tree)
         tree.remove(patch_mhal.TARGET + "/__init__.py")
         self.assertEqual(patch_mhal.detect(tree)[0], "off")
+
+
+class Mtts(Base):
+    def test_on_off(self):
+        tree = self.tree()
+        self.assertEqual(patch_mtts.detect(tree)[0], "off")
+        patch_mtts.apply(tree)
+        base = patch_mtts.TARGET
+        self.assertEqual(
+            tree.read(base + "/__init__.py"),
+            asset_bytes("micro_p_libs/micro_tts/__init__.py"))
+        self.assertEqual(tree.mode(base + "/__init__.py"), 0o644)
+        token = base + "/bins/edge_token"
+        self.assertEqual(
+            tree.read(token),
+            asset_bytes("micro_p_libs/micro_tts/bins/edge_token"))
+        self.assertEqual(tree.mode(token), 0o755)
+        self.assertEqual(patch_mtts.detect(tree)[0], "on")
+        patch_mtts.remove(tree)
+        self.assertFalse(tree.exists(base + "/__init__.py"))
+        self.assertEqual(patch_mtts.detect(tree)[0], "off")
+
+    def test_on_twice(self):
+        tree = self.tree()
+        patch_mtts.apply(tree)
+        before = tree.snapshot()
+        patch_mtts.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_partial_is_off(self):
+        tree = self.tree()
+        patch_mtts.apply(tree)
+        tree.remove(patch_mtts.TARGET + "/__init__.py")
+        self.assertEqual(patch_mtts.detect(tree)[0], "off")
 
 
 class _BinaryInData:

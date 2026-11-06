@@ -1,16 +1,26 @@
 # micro_p_libs — комплекты для колонки
 
-Снимок на 04.11.2026. Пакеты для MicroPython, которые Lite кладёт на
+Снимок на 06.11.2026. Пакеты для MicroPython, которые Lite кладёт на
 плату.
 
 ## micro_hal — HAL колонки (0.1.0)
 
 ```text
-micro_hal/                  пакет MicroPython (23 модуля)
-micro_hal/tests/            тесты для хоста (25 файлов)
-micro_hal/examples/         примеры (11 файлов)
+micro_hal/                  пакет MicroPython (24 модуля)
+micro_hal/tests/            тесты для хоста (29 файлов)
+micro_hal/examples/         примеры (12 файлов)
 micro_hal/bins/             C-библиотеки: display, ring, mic, speaker
 ```
+
+## micro_tts — синтез речи (0.1.0)
+
+```text
+micro_tts/                  пакет MicroPython (35 файлов)
+micro_tts/bins/             edge_token, libc_edge.so, libc_mp3.so
+```
+
+Патч `mtts` кладёт пакет целиком в `/home/microp/micro_tts`; путь
+`bins/edge_token` внутри пакета сохраняется.
 
 Структура повторяет исходный `micro_p_libs/micro_hal/`: `.so` лежат
 в `bins/`, а не в корне пакета.
@@ -42,7 +52,7 @@ micro_hal/bins/             C-библиотеки: display, ring, mic, speaker
 С хоста, из этой папки (`IP` — адрес колонки):
 
 ```sh
-tar -cf - micro_hal SHA256SUMS \
+tar -cf - micro_hal micro_tts SHA256SUMS \
     | ssh capsula@IP 'cd /home/microp && tar -xf - --overwrite'
 ```
 
@@ -50,7 +60,7 @@ tar -cf - micro_hal SHA256SUMS \
 
 ```sh
 ssh capsula@IP \
-    'chown -R root:root /home/microp/micro_hal'
+    'chown -R root:root /home/microp/micro_hal /home/microp/micro_tts'
 ```
 
 Проверка:

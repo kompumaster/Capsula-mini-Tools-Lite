@@ -8,7 +8,9 @@
 | `net/hostapd` | hostapd 2.9 для AP, nl80211 | 595 424 | `f32ec902…` |
 | `net/dnsmasq` | dnsmasq 2.90 с DHCP | 338 176 | `4a4286a5…` |
 | `S05home.sh` | подключить `/data/permanent/home` как `/home` | 979 | `aac7e2b1…` |
-| `micro_p_libs/micro_hal/` | комплект HAL (py + tests + examples + `bins/` с `.so`) | 864K | см. `SHA256SUMS` |
+| `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
+| `micro_p_libs/micro_hal/` | комплект HAL (py + tests + examples + `bins/` с `.so`) | 924K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_tts/` | TTS: пакет и `bins/edge_token`, `bins/libc_*.so` | 632K | см. `SHA256SUMS` |
 
 ## Ссылки
 

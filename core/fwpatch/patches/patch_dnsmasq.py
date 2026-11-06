@@ -18,7 +18,7 @@ SUMMARY = "dnsmasq 2.90 с DHCP в overlay"
 PART = "data"
 KIND = "toggle"
 FLAG = "dnsmasq"
-ORDER = 20
+ORDER = 21
 
 ASSET = "net/dnsmasq"
 PATH = "overlay/upper/usr/bin/dnsmasq"
