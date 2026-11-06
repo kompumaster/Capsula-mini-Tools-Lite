@@ -10,8 +10,8 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 - Снять бэкап: `system_a`, `system_b`, `data`, `boot_a`, `boot_b`, `misc`;
   исключая `tpl` и `bootloader` - через `store` недоступны.
 - Собрать образы с патчами: `/home`, LAPI, ADB, SSH, VK-Voice,
-  VK-Call, Selfcheck, MicroPython, Micro HAL, Hostapd, Dnsmasq,
-  заглушки телеметрии и автообновлений.
+  VK-Call, Selfcheck, MicroPython, Micro HAL, Micro TTS, Hostapd,
+  Dnsmasq, заглушки телеметрии и автообновлений.
 - Записать образ в раздел: патченый или исходный, с обратной сверкой.
 - Преобразовать UBI-раздел в tar для просмотра/правки:
   «Сервис → Раздел → tar».
@@ -60,16 +60,17 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 |---|---|---|
 | LAPI | локальный API, `:80` | `permanent/lapi` = `on` |
 | ADB | ADB, `:5555` | пересобранный `adbd-tcp`, без проверки ключа |
-| SSH | SSH, `:22` | `dropbearmulti` (dropbear + scp + dbclient), `capsula` / `mini` |
+| SSH | SSH, `:22` | `dropbearmulti` (dropbear + dropbearkey + scp + dbclient), `capsula` / `mini` |
 | VK-Voice (`vkvoice`) | отключает автозапуск, файл остаётся | `S97voice-agent.sh` → `x_S97voice-agent.sh.bak` |
 | VK-Call (`vkcall`) | отключает автозапуск, файл остаётся | `S97okcall.sh` → `x_S97okcall.sh.bak` |
 | Selfcheck (`slfchk`) | отключает автозапуск S98, файл остаётся | `S98selfcheck.sh` → `x_S98selfcheck.sh.bak` |
 | Удалить VK-Voice (`vkkill`) | заменяет бинарь заглушкой | `voice-agent` → `noop` |
-| Micropython (`mpython`) | кладёт бинарник в overlay `data` | `data/overlay/upper/usr/bin/micropython` |
+| Micropython (`mpython`) | бинарник и профиль окружения в overlay `data` | `data/overlay/upper/usr/bin/micropython`, `data/overlay/upper/etc/profile.d/10-micropython.sh` |
 | Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
 | Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
 | Micro HAL (`mhal`) | пакет целиком в `/home/microp` | `permanent/home/microp/micro_hal/` (включая `bins/`) |
+| Micro TTS (`mtts`) | пакет TTS в `/home/microp` | `permanent/home/microp/micro_tts/` (включая `bins/`) |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -81,21 +82,30 @@ Enter; пункт `10` доступен. В строке каждого патч
 Патчи применяются к образам из `backup/parts`, результат — в
 `patched/parts`; оригиналы не меняются.
 
-## MicroPython HAL
+## MicroPython: HAL и TTS
 
-Доступ к оборудованию из MicroPython: `hal_*` только железо, `lib_*` — логика.
-Готовы
-дисплей (sysfs + C-транспорт `libc_display.so`, анимация),
-кольцо (15 эффектов), кнопки (клики, удержание, сочетания),
-датчик света,
-NTP синхронизация,
-Управление громкостью,
-Микрофоны (C-захват и поток),
-Позиционирование источника звыка через ODAS,
-Вывод звука,
-Bluetooth (A2DP)
-Wi-Fi (скан и подключение с откатом).
+`micro_hal` даёт доступ к оборудованию из MicroPython: `hal_*` — только
+железо, `lib_*` — логика. Готовы:
+
+- дисплей — sysfs + C-helper `libc_display.so` (анимация);
+- кольцо — 15 эффектов, C-helper `libc_ring.so`;
+- кнопки — клики, удержание, сочетания;
+- датчик света — люксы;
+- NTP — синхронизация времени;
+- громкость — управление Pulse;
+- микрофоны — C-helper `libc_mic.so` (захват и поток);
+- позиционирование источника звука — ODAS;
+- вывод звука — тон, мелодия, WAV, C-helper `libc_speaker.so`;
+- Bluetooth — A2DP;
+- Wi-Fi — скан и подключение с откатом.
+
 Установка и API — `../micro_p_libs/micro_hal/README.md`.
+
+`micro_tts` — синтез речи (Edge TTS): пакет, `bins/edge_token`,
+`bins/libc_edge.so` и `bins/libc_mp3.so`. Патч `mtts` кладёт его в
+`/home/microp/micro_tts`; профиль `10-micropython.sh` (патч `mpython`)
+добавляет `.frozen` в `MICROPYPATH`, без чего нет `ssl` и Edge TTS не
+работает. Документация — `../micro_p_libs/micro_tts/docs/PROJECT.md`.
 
 ## Свои патчи
 
