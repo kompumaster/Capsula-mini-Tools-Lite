@@ -102,6 +102,9 @@ Enter; пункт `10` доступен. В строке каждого патч
 API и примеры — в самом пакете `micro_hal` (`hal_*`/`lib_*`,
 `examples/`).
 
+`micropython` пересобран: куча GC 8 МБ по умолчанию (было 2 МБ);
+`-X heapsize=N` переопределяет.
+
 `micro_tts` — синтез речи (Edge TTS): пакет, `bins/edge_token`,
 `bins/libc_edge.so` и `bins/libc_mp3.so`. Патч `mtts` кладёт его в
 `/home/microp/micro_tts`; профиль `10-micropython.sh` (патч `mpython`)
