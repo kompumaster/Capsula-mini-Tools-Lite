@@ -171,7 +171,9 @@ class TTS:
         try:
             handle = open(path, "wb")
             try:
-                handle.write(bytes(data))
+                # Без bytes(data): это вторая полная копия PCM, из-за
+                # неё на слабом хосте бывает MemoryError.
+                handle.write(data)
             finally:
                 handle.close()
         except OSError as exc:
@@ -181,7 +183,7 @@ class TTS:
         try:
             handle = open(path, "ab")
             try:
-                handle.write(bytes(data))
+                handle.write(data)
             finally:
                 handle.close()
         except OSError as exc:
@@ -190,14 +192,26 @@ class TTS:
     def _append_pcm(self, job, pcm):
         if job.pcm is None:
             if job.audio_path is not None:
-                self._append_file(job.audio_path, pcm)
+                try:
+                    self._append_file(job.audio_path, pcm)
+                except Exception:
+                    # Обрывок файла задаче уже не поможет: убираем.
+                    self._remove_job_file(job)
+                    raise
                 return
             job.pcm = bytearray()
         job.pcm.extend(pcm)
         if len(job.pcm) > TEMP_LIMIT:
             path = self._temp_path(job, "raw")
-            self._write_file(path, job.pcm)
+            # Путь фиксируем до записи: иначе при сбое файл остаётся
+            # «ничейным» и stop()/close() его не находят.
             job.audio_path = path
+            try:
+                self._write_file(path, job.pcm)
+            except Exception:
+                self._remove_job_file(job)
+                job.pcm = None
+                raise
             job.pcm = None
 
     def _remove_file(self, path):

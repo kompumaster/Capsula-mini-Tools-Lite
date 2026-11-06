@@ -12,7 +12,7 @@ from micro_tts.player.base import Player
 from micro_tts.text.base import Normalizer
 from micro_tts.tts import TTS
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "TtsError", "Engine", "AudioFormat", "Player", "Normalizer", "TTS",

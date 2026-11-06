@@ -11,7 +11,7 @@ micro_hal/examples/         примеры (12 файлов)
 micro_hal/bins/             C-библиотеки: display, ring, mic, speaker
 ```
 
-## micro_tts — синтез речи (0.1.0)
+## micro_tts — синтез речи (0.2.0)
 
 ```text
 micro_tts/                  пакет MicroPython + bins
