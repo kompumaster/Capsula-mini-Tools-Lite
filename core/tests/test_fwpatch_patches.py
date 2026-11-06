@@ -236,8 +236,7 @@ class MHal(Base):
             tree.read(lib),
             asset_bytes("micro_p_libs/micro_hal/bins/libc_mic.so"))
         self.assertEqual(tree.mode(lib), 0o755)
-        self.assertTrue(tree.exists(
-            base + "/tests/test_micro_hal_common.py"))
+        self.assertFalse(tree.exists(base + "/tests"))
         states, hashes = patch_mhal.detect(tree)
         self.assertEqual(states, "on")
         self.assertIn("bins/libc_mic.so", hashes)

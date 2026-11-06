@@ -2,7 +2,7 @@
 
 Целевой путь в `data` — `permanent/home/microp/micro_hal`, после
 симлинка `/home` это `/home/microp/micro_hal`. Каталог копируется
-целиком, вместе с `bins/libc_*.so`: `hal_*` ищут библиотеки по путям
+целиком (без тестов), вместе с `bins/libc_*.so`: `hal_*` ищут библиотеки по путям
 `/home/microp/micro_hal/bins/libc_*.so`.
 """
 

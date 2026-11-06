@@ -99,13 +99,14 @@ Enter; пункт `10` доступен. В строке каждого патч
 - Bluetooth — A2DP;
 - Wi-Fi — скан и подключение с откатом.
 
-Установка и API — `../micro_p_libs/micro_hal/README.md`.
+API и примеры — в самом пакете `micro_hal` (`hal_*`/`lib_*`,
+`examples/`).
 
 `micro_tts` — синтез речи (Edge TTS): пакет, `bins/edge_token`,
 `bins/libc_edge.so` и `bins/libc_mp3.so`. Патч `mtts` кладёт его в
 `/home/microp/micro_tts`; профиль `10-micropython.sh` (патч `mpython`)
 добавляет `.frozen` в `MICROPYPATH`, без чего нет `ssl` и Edge TTS не
-работает. Документация — `../micro_p_libs/micro_tts/docs/PROJECT.md`.
+работает.
 
 ## Свои патчи
 

@@ -3,11 +3,10 @@
 Снимок на 06.11.2026. Пакеты для MicroPython, которые Lite кладёт на
 плату.
 
-## micro_hal — HAL колонки (0.1.0)
+## micro_hal — HAL колонки (0.2.0)
 
 ```text
 micro_hal/                  пакет MicroPython (24 модуля)
-micro_hal/tests/            тесты для хоста (29 файлов)
 micro_hal/examples/         примеры (12 файлов)
 micro_hal/bins/             C-библиотеки: display, ring, mic, speaker
 ```
@@ -15,7 +14,7 @@ micro_hal/bins/             C-библиотеки: display, ring, mic, speaker
 ## micro_tts — синтез речи (0.1.0)
 
 ```text
-micro_tts/                  пакет MicroPython (35 файлов)
+micro_tts/                  пакет MicroPython + bins
 micro_tts/bins/             edge_token, libc_edge.so, libc_mp3.so
 ```
 
@@ -31,14 +30,16 @@ micro_tts/bins/             edge_token, libc_edge.so, libc_mp3.so
 Патч `mhal` кладёт пакет целиком:
 
 ```text
-/home/microp/micro_hal/          <- пакет (py + tests + examples)
+/home/microp/micro_hal/          <- пакет (py + examples)
 /home/microp/micro_hal/bins/     <- libc_*.so
 ```
 
 `hal_*` и `lib_speaker` ищут библиотеки по путям
 `/home/microp/micro_hal/bins/libc_*.so`, поэтому структура `bins/`
-сохраняется. `/home/microp` уже входит в `MICROPYPATH` обёртки
-`/home/microp/mp`, отдельный `/home/micro_p_libs` не нужен.
+сохраняется. `/home/microp` уже входит в `MICROPYPATH`:
+переменная задаётся в `/etc/init.d/S90dropbear` и
+`/etc/init.d/S91adbd.sh` и в `/etc/profile.d/10-micropython.sh`.
+Отдельный `/home/micro_p_libs` не нужен, обёртка `mp` не требуется.
 
 ## micro_ds
 
@@ -72,8 +73,6 @@ ssh capsula@IP \
 
 ## Важное
 
-- тесты запускаются **на хосте** (CPython: `unittest`, `mock`),
-  в MicroPython их не запустить; на плате они лежат для справки;
 - запись в NAND не выполняется: только файлы в `/home`;
 - если на плате запущены `voice-agent` или старые скрипты, они держат
   `display`/`ring`/`keys`/`mic`/`odas` — их нужно остановить;
