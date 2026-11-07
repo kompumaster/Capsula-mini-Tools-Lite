@@ -1,6 +1,6 @@
 # micro_p_libs — комплекты для колонки
 
-Снимок на 06.11.2026. Пакеты для MicroPython, которые Lite кладёт на
+Снимок на 07.11.2026. Пакеты для MicroPython, которые Lite кладёт на
 плату.
 
 ## micro_hal — HAL колонки (0.2.0)
@@ -25,6 +25,17 @@ micro_asr/                  пакет MicroPython + bins
 micro_asr/bins/             libc_mp3.so
 ```
 
+## micro_server — веб-портал (0.1.0)
+
+```text
+micro_server/               пакет MicroPython
+micro_server/web/           HTML, css/style.css, js/app.js, js/test.js
+micro_server/examples/      test_server.py
+```
+
+Страница состояния на порту `8080`, JSON `/api/status`; текущие
+настройки — `settings.json` рядом с пакетом.
+
 ## Куда класть на плате
 
 `/home` на колонке — симлинк на `/data/permanent/home`.
@@ -34,10 +45,12 @@ micro_asr/bins/             libc_mp3.so
 /home/microp/micro_hal/          <- пакет (py + examples)
 /home/microp/micro_tts/          <- пакет + bins
 /home/microp/micro_asr/          <- пакет + bins
+/home/microp/micro_server/       <- пакет + web
 ```
 
 У `micro_hal` библиотеки лежат в `bins/`, у `micro_tts`/`micro_asr` —
-тоже в `bins/`; структура сохраняется. `/home/microp` уже входит в `MICROPYPATH`:
+тоже в `bins/`, у `micro_server` — `web/`; структура сохраняется.
+`/home/microp` уже входит в `MICROPYPATH`:
 переменная задаётся в `/etc/init.d/S90dropbear` и
 `/etc/init.d/S91adbd.sh` и в `/etc/profile.d/10-micropython.sh`.
 Отдельный `/home/micro_p_libs` не нужен, обёртка `mp` не требуется.
@@ -54,7 +67,7 @@ micro_asr/bins/             libc_mp3.so
 С хоста, из этой папки (`IP` — адрес колонки):
 
 ```sh
-tar -cf - micro_hal micro_tts micro_asr SHA256SUMS \
+tar -cf - micro_hal micro_tts micro_asr micro_server SHA256SUMS \
     | ssh capsula@IP 'cd /home/microp && tar -xf - --overwrite'
 ```
 
@@ -62,7 +75,7 @@ tar -cf - micro_hal micro_tts micro_asr SHA256SUMS \
 
 ```sh
 ssh capsula@IP \
-    'chown -R root:root /home/microp/micro_hal /home/microp/micro_tts /home/microp/micro_asr'
+    'chown -R root:root /home/microp/micro_hal /home/microp/micro_tts /home/microp/micro_asr /home/microp/micro_server'
 ```
 
 Проверка:

@@ -2,7 +2,8 @@
 
 Целевой путь в `data` — `permanent/home/microp`, после симлинка `/home`
 это `/home/microp`. Содержимое комплекта раскладывается как есть:
-`micro_hal/`, `micro_tts/`, `micro_asr/` и общий `README.md`.
+`micro_hal/`, `micro_tts/`, `micro_asr/`, `micro_server/` и общий
+`README.md`; служебный `SHA256SUMS` не копируется.
 
 У каждого пакета свои `bins/`; `micro_hal` ищет библиотеки по путям
 `/home/microp/micro_hal/bins/libc_*.so`, `micro_tts` — по
@@ -13,8 +14,8 @@ from __future__ import annotations
 
 from fwpatch.tar_tree import TarTree
 
-from .common import (Ask, asset_files, asset_sha, drop_asset_dir,
-                     present_sha, put_asset_dir)
+from .common import (Ask, asset_files, asset_sha, drop_asset,
+                     present_sha, put_asset)
 
 KEY = "mplibs"
 TITLE = "MP Libs"
@@ -28,23 +29,31 @@ ASSET_DIR = "micro_p_libs"
 TARGET = "permanent/home/microp"
 
 
+def _files() -> tuple[tuple[str, str, int], ...]:
+    """`(относительный путь, ассет, mode)` без служебного SHA256SUMS."""
+    return tuple(item for item in asset_files(ASSET_DIR)
+                 if item[0] != "SHA256SUMS")
+
+
 def apply(tree: TarTree, ask: Ask | None = None) -> None:
-    put_asset_dir(tree, TARGET, ASSET_DIR, ask)
+    for rel, asset, mode in _files():
+        put_asset(tree, "{}/{}".format(TARGET, rel), asset, mode, ask)
 
 
 def remove(tree: TarTree, ask: Ask | None = None) -> None:
-    drop_asset_dir(tree, TARGET, ASSET_DIR, ask)
+    for rel, asset, _mode in _files():
+        drop_asset(tree, "{}/{}".format(TARGET, rel), asset, ask)
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
     """`on` — все файлы комплекта на месте и совпадают, иначе `off`.
 
     Ключи хешей — пути в комплекте (`micro_hal/...`, `micro_tts/...`,
-    `micro_asr/...`).
+    `micro_asr/...`, `micro_server/...`).
     """
     hashes = {}
     state = "on"
-    for rel, asset, _mode in asset_files(ASSET_DIR):
+    for rel, asset, _mode in _files():
         digest = present_sha(tree, "{}/{}".format(TARGET, rel))
         if digest is None:
             state = "off"

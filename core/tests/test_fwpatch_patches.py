@@ -240,6 +240,7 @@ class MPLibs(Base):
         token = base + "/micro_tts/bins/edge_token"
         self.assertEqual(tree.mode(token), 0o755)
         self.assertTrue(tree.exists(base + "/README.md"))
+        self.assertFalse(tree.exists(base + "/SHA256SUMS"))
         state, hashes = patch_mp_libs.detect(tree)
         self.assertEqual(state, "on")
         self.assertIn("micro_hal/bins/libc_mic.so", hashes)

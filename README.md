@@ -69,7 +69,7 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 | Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
 | Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
-| MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`) |
+| MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`, `micro_server`) |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -115,7 +115,11 @@ Yandex SpeechKit v1, VAD (остановка по тишине), MP3-кодир�
 `/home/.env` (`ASR_YANDEX_KEY`). Описание —
 [README](core/bins/micro_p_libs/micro_asr/README.md).
 
-Патч `mplibs` кладёт все три пакета в `/home/microp`; профиль
+[micro_server](core/bins/micro_p_libs/micro_server/) — веб-портал:
+страница состояния на `:8080`, JSON `/api/status`. Описание —
+[README](core/bins/micro_p_libs/micro_server/README.md).
+
+Патч `mplibs` кладёт все четыре пакета в `/home/microp`; профиль
 `10-micropython.sh` (патч `mpython`) добавляет `.frozen` в
 `MICROPYPATH`, без чего нет `ssl` и Edge TTS не работает.
 
