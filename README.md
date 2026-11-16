@@ -60,7 +60,7 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 |---|---|---|
 | LAPI | локальный API, `:80` | `permanent/lapi` = `on` |
 | ADB | ADB, `:5555` | пересобранный `adbd-tcp`, без проверки ключа |
-| SSH | SSH, `:22` | `dropbearmulti` (dropbear + dropbearkey + scp + dbclient), `capsula` / `mini` |
+| SSH | SSH, `:2222` | `dropbearmulti` (dropbear + dropbearkey + scp + dbclient), `capsula` / `mini` |
 | VK-Voice (`vkvoice`) | отключает автозапуск, файл остаётся | `S97voice-agent.sh` → `x_S97voice-agent.sh.bak` |
 | VK-Call (`vkcall`) | отключает автозапуск, файл остаётся | `S97okcall.sh` → `x_S97okcall.sh.bak` |
 | Selfcheck (`slfchk`) | отключает автозапуск S98, файл остаётся | `S98selfcheck.sh` → `x_S98selfcheck.sh.bak` |
@@ -69,7 +69,9 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 | Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
 | Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
-| MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`, `micro_server`) |
+| MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`, `micro_server`, `micro_ww`, `micro_ui`, `micro_agent`, `micro_llm`) |
+| Настр. MP агента (`agentcfg`) | шаблон `example.env` (без ключей) и `system.txt` | `permanent/home/.env`, `permanent/home/system.txt` |
+| Старт MP агента (`agentboot`) | init-скрипты агента | `etc/init.d/S98micro_ui.sh`, `S99micro_agent.sh` |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -112,16 +114,45 @@ API и примеры — в пакете [micro_hal](core/bins/micro_p_libs/mic
 [micro_asr](core/bins/micro_p_libs/micro_asr/) — распознавание речи:
 Yandex SpeechKit v1, VAD (остановка по тишине), MP3-кодирование;
 источники — файл, микрофон, память (PCM/WAV/MP3). Ключ Yandex — в
-`/home/.env` (`ASR_YANDEX_KEY`). Описание —
+`/home/.env` (`YANDEX_API`). Описание —
 [README](core/bins/micro_p_libs/micro_asr/README.md).
 
 [micro_server](core/bins/micro_p_libs/micro_server/) — веб-портал:
 страница состояния на `:8080`, JSON `/api/status`. Описание —
 [README](core/bins/micro_p_libs/micro_server/README.md).
 
-Патч `mplibs` кладёт все четыре пакета в `/home/microp`; профиль
+[micro_ww](core/bins/micro_p_libs/micro_ww/) — локальный детектор
+microWakeWord (TFLite Micro, без сети): пакет, `bins/libc_ww.so`,
+`models/` с девятью моделями (`hey_jarvis`, `jarvis`, `алиса`,
+`домовой`, `кузя`, `окей_валера`, `стив`, `умка`, `эй_железяка`).
+Смена — ключом `[ww] model`. Описание —
+[README](core/bins/micro_p_libs/micro_ww/README.md).
+
+[micro_ui](core/bins/micro_p_libs/micro_ui/) — отдельный процесс
+дисплея и кольца, команды по UDP `127.0.0.1:8766`. Описание —
+[README](core/bins/micro_p_libs/micro_ui/README.md).
+
+[micro_agent](core/bins/micro_p_libs/micro_agent/) — оркестратор:
+сценарий «WW → ASR → LLM → TTS», диалог, кнопки, mute, настройки в
+`/home/a_settings.ini`. Описание —
+[README](core/bins/micro_p_libs/micro_agent/README.md).
+
+[micro_llm](core/bins/micro_p_libs/micro_llm/) — клиент LLM
+(DeepSeek, OpenAI-совместимый REST): движки `deepseek`/`fake`,
+сессия с контекстом, SSE. Описание —
+[README](core/bins/micro_p_libs/micro_llm/README.md).
+
+Патч `mplibs` кладёт все восемь пакетов в `/home/microp`; профиль
 `10-micropython.sh` (патч `mpython`) добавляет `.frozen` в
 `MICROPYPATH`, без чего нет `ssl` и Edge TTS не работает.
+
+Патч `agentcfg` кладёт в `/home` шаблон `example.env` (без ключей) под
+именем `.env`, а также `system.txt`; существующие файлы не
+перезаписываются. Чтобы заработали LLM и облачные TTS/ASR, переименуйте
+`example.env` в `.env` и пропишите ключи. `a_settings.ini` не копируется —
+агент создаёт его сам при первом старте из умолчаний.
+Патч `agentboot` ставит `S98micro_ui.sh` и `S99micro_agent.sh` в
+`/rom/etc/init.d` (`system_b`), чтобы UI и агент стартовали сами.
 
 ## Свои патчи
 
