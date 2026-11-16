@@ -67,6 +67,7 @@ class DetectSystemB(Base):
             "adb": "off", "home": "off", "ssh": "off",
             "vkvoice": "off", "vkcall": "off", "slfchk": "off",
             "tele": "on", "fwu": "on", "swu": "on", "vkkill": "off",
+            "agentboot": "off",
         })
         self.assertNotIn("adb", hashes)
         self.assertNotIn("ssh", hashes)
@@ -88,6 +89,7 @@ class DetectSystemB(Base):
             "adb": "on", "home": "off", "ssh": "on",
             "vkvoice": "off", "vkcall": "off", "slfchk": "off",
             "tele": "off", "fwu": "on", "swu": "off", "vkkill": "off",
+            "agentboot": "off",
         })
         self.assertEqual(set(hashes["adb"]), {"adbd-tcp", "S91adbd.sh"})
         self.assertEqual(set(hashes["ssh"]),
@@ -108,21 +110,24 @@ class DetectData(Base):
     def test_absent(self):
         states, hashes = detect(self.tar([]), "data")
         self.assertEqual(states, {"lapi": "off", "mpython": "off", "mplibs": "off",
-                                "hostapd": "off", "dnsmasq": "off"})
+                                "hostapd": "off", "dnsmasq": "off",
+                                "agentcfg": "off"})
         self.assertEqual(hashes, {})
 
     def test_on(self):
         tree = self.tar([(patch_lapi.PATH, b"on", 0o644)])
         states, hashes = detect(tree, "data")
         self.assertEqual(states, {"lapi": "on", "mpython": "off", "mplibs": "off",
-                                "hostapd": "off", "dnsmasq": "off"})
+                                "hostapd": "off", "dnsmasq": "off",
+                                "agentcfg": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_other(self):
         tree = self.tar([(patch_lapi.PATH, b"off", 0o644)])
         states, hashes = detect(tree, "data")
         self.assertEqual(states, {"lapi": "off", "mpython": "off", "mplibs": "off",
-                                "hostapd": "off", "dnsmasq": "off"})
+                                "hostapd": "off", "dnsmasq": "off",
+                                "agentcfg": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_unknown_part(self):

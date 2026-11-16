@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from fwpatch.errors import PatchError
 
-from . import (patch_adb, patch_dnsmasq, patch_fwupdate, patch_home,
-               patch_hostapd, patch_lapi, patch_mpython, patch_mp_libs,
-               patch_slfchk, patch_ssh, patch_swupdate, patch_telemetryd,
-               patch_vkcall, patch_vkkill, patch_vkvoice)
+from . import (patch_adb, patch_agentboot, patch_agentcfg,
+               patch_dnsmasq, patch_fwupdate, patch_home, patch_hostapd,
+               patch_lapi, patch_mpython, patch_mp_libs, patch_slfchk,
+               patch_ssh, patch_swupdate, patch_telemetryd, patch_vkcall,
+               patch_vkkill, patch_vkvoice)
 
 # Порядок применения разделов; не зависит от ORDER патчей.
 PART_ORDER = ("system_b", "data")
@@ -74,7 +75,8 @@ def validate_registry(modules) -> None:
             seen.add(value)
 
 
-MODULES = (patch_lapi, patch_mpython, patch_mp_libs,
+MODULES = (patch_agentcfg, patch_agentboot,
+           patch_lapi, patch_mpython, patch_mp_libs,
            patch_hostapd, patch_dnsmasq, patch_adb, patch_home, patch_ssh,
            patch_vkvoice, patch_vkcall, patch_slfchk, patch_telemetryd,
            patch_fwupdate, patch_swupdate, patch_vkkill)
@@ -95,7 +97,8 @@ BY_PART = {
 __all__ = [
     "PART_ORDER", "REGISTRY", "PATCHES", "KILLS", "BY_PART",
     "validate_registry",
-    "patch_adb", "patch_dnsmasq", "patch_fwupdate", "patch_home",
+    "patch_adb", "patch_agentboot", "patch_agentcfg",
+    "patch_dnsmasq", "patch_fwupdate", "patch_home",
     "patch_hostapd", "patch_lapi", "patch_mpython", "patch_mp_libs",
     "patch_slfchk",
     "patch_ssh",

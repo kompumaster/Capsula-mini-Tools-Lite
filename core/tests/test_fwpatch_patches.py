@@ -16,6 +16,7 @@ from fwpatch import assets  # noqa: E402
 from fwpatch import patches as patches_pkg  # noqa: E402
 from fwpatch.errors import PatchError  # noqa: E402
 from fwpatch.patches import KILLS, PATCHES, patch_adb, patch_lapi  # noqa: E402
+from fwpatch.patches import patch_agentboot, patch_agentcfg  # noqa: E402
 from fwpatch.patches import patch_dnsmasq, patch_home  # noqa: E402
 from fwpatch.patches import patch_hostapd, patch_mp_libs  # noqa: E402
 from fwpatch.patches import patch_mpython  # noqa: E402
@@ -218,6 +219,86 @@ class Home(Base):
         before = tree.snapshot()
         patch_home.apply(tree)
         self.assertEqual(tree.snapshot(), before)
+
+
+class AgentCfg(Base):
+    def test_apply(self):
+        tree = self.tree()
+        self.assertEqual(patch_agentcfg.detect(tree)[0], "off")
+        patch_agentcfg.apply(tree)
+        for path, asset, mode in patch_agentcfg.FILES:
+            self.assertEqual(tree.read(path), asset_bytes(asset))
+            self.assertEqual(tree.mode(path), mode)
+        state, hashes = patch_agentcfg.detect(tree)
+        self.assertEqual(state, "on")
+        self.assertIn(patch_agentcfg.ENV_PATH, hashes)
+
+    def test_apply_keeps_existing(self):
+        tree = self.tree()
+        tree.add(patch_agentcfg.ENV_PATH, b"CUSTOM=1\n", 0o600)
+        patch_agentcfg.apply(tree)
+        self.assertEqual(tree.read(patch_agentcfg.ENV_PATH), b"CUSTOM=1\n")
+        self.assertEqual(tree.read(patch_agentcfg.PROMPT_PATH),
+                         asset_bytes(patch_agentcfg.PROMPT_ASSET))
+        self.assertEqual(patch_agentcfg.detect(tree)[0], "on")
+
+    def test_remove_keeps_changed(self):
+        tree = self.tree()
+        patch_agentcfg.apply(tree)
+        tree.replace(patch_agentcfg.ENV_PATH, b"CUSTOM=1\n", 0o600)
+        patch_agentcfg.remove(tree)
+        self.assertTrue(tree.exists(patch_agentcfg.ENV_PATH))
+        self.assertFalse(tree.exists(patch_agentcfg.PROMPT_PATH))
+        self.assertEqual(patch_agentcfg.detect(tree)[0], "off")
+
+    def test_apply_twice(self):
+        tree = self.tree()
+        patch_agentcfg.apply(tree)
+        before = tree.snapshot()
+        patch_agentcfg.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_modes(self):
+        tree = self.tree()
+        patch_agentcfg.apply(tree)
+        self.assertEqual(tree.mode(patch_agentcfg.ENV_PATH), 0o600)
+        self.assertEqual(tree.mode(patch_agentcfg.PROMPT_PATH), 0o644)
+
+
+class AgentBoot(Base):
+    def test_apply(self):
+        tree = self.tree()
+        self.assertEqual(patch_agentboot.detect(tree)[0], "off")
+        patch_agentboot.apply(tree)
+        for path, asset, _mode in patch_agentboot.FILES:
+            self.assertEqual(tree.read(path), asset_bytes(asset))
+            self.assertEqual(tree.mode(path), 0o755)
+        state, hashes = patch_agentboot.detect(tree)
+        self.assertEqual(state, "on")
+        self.assertIn("S99micro_agent", hashes)
+
+    def test_remove(self):
+        tree = self.tree()
+        patch_agentboot.apply(tree)
+        patch_agentboot.remove(tree)
+        self.assertEqual(patch_agentboot.detect(tree)[0], "off")
+
+    def test_apply_twice(self):
+        tree = self.tree()
+        patch_agentboot.apply(tree)
+        before = tree.snapshot()
+        patch_agentboot.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_foreign_file_needs_confirm(self):
+        tree = self.tree()
+        path = patch_agentboot.UI_PATH
+        tree.add(path, b"#!/bin/sh\n", 0o755)
+        with self.assertRaises(PatchError):
+            patch_agentboot.apply(tree)
+        patch_agentboot.apply(tree, ask=lambda question, default: True)
+        self.assertEqual(tree.read(path),
+                         asset_bytes(patch_agentboot.UI_ASSET))
 
 
 class MPLibs(Base):

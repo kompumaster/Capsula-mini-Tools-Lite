@@ -2,7 +2,8 @@
 
 Целевой путь в `data` — `permanent/home/microp`, после симлинка `/home`
 это `/home/microp`. Содержимое комплекта раскладывается как есть:
-`micro_hal/`, `micro_tts/`, `micro_asr/`, `micro_server/` и общий
+`micro_hal/`, `micro_tts/`, `micro_asr/`, `micro_server/`,
+`micro_ww/`, `micro_ui/`, `micro_agent/`, `micro_llm/` и общий
 `README.md`; служебный `SHA256SUMS` не копируется.
 
 У каждого пакета свои `bins/`; `micro_hal` ищет библиотеки по путям

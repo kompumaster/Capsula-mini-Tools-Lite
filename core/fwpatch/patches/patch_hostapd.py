@@ -17,7 +17,7 @@ SUMMARY = "hostapd 2.9 для точки доступа"
 PART = "data"
 KIND = "toggle"
 FLAG = "hostapd"
-ORDER = 20
+ORDER = 21
 
 ASSET = "net/hostapd"
 PATH = "overlay/upper/usr/bin/hostapd"
