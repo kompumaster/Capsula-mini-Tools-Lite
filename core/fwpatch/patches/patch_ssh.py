@@ -16,8 +16,8 @@ from fwpatch.tar_tree import TarTree
 from .common import Ask, asset_sha, drop_asset, present_sha, put_asset
 
 KEY = "ssh"
-TITLE = "SSH(:22)"
-SUMMARY = "SSH, порт 22, capsula/mini"
+TITLE = "SSH(:2222)"
+SUMMARY = "SSH, порт 2222, capsula/mini"
 PART = "system_b"
 KIND = "toggle"
 FLAG = "ssh"

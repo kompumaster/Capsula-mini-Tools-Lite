@@ -21,7 +21,7 @@ start() {
         "$KEYGEN" -t rsa -s 2048 -f "$KEYDIR/rsa" >/dev/null 2>&1
     fi
     echo "Starting dropbear..."
-    "$BIN" -e -r "$KEYDIR/ed25519" -r "$KEYDIR/rsa" -p 22 >>/data/dropbear.log 2>&1 &
+    "$BIN" -e -r "$KEYDIR/ed25519" -r "$KEYDIR/rsa" -p 2222 >>/data/dropbear.log 2>&1 &
 }
 
 stop() {
