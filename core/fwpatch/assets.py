@@ -1,7 +1,7 @@
 """Пути, которые нужны патчеру Lite.
 
-Структура: `core/bins` и `core/stubs` — локальные копии,
-`core/ubitar` — локальная копия проекта `UbiTar`.
+Структура: `core/bins` и `core/stubs` - локальные копии,
+`core/ubitar` - локальная копия проекта `UbiTar`.
 """
 
 from __future__ import annotations

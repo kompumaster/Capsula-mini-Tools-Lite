@@ -1,6 +1,6 @@
 #!/bin/sh
 # Запуск меню Capsula Mini Tools Lite.
-# Вся логика меню — в core/tui; этот файл только готовит Python.
+# Вся логика меню - в core/tui; этот файл только готовит Python.
 set -eu
 
 HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)

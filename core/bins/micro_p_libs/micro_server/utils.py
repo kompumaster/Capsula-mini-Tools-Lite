@@ -1,7 +1,7 @@
 """Помощники HTTP-запроса и ответа.
 
 Основано на MicroPyServer (MIT), Copyright (c) 2019 troublegum,
-https://github.com/troublegum/micropyserver. Текст лицензии —
+https://github.com/troublegum/micropyserver. Текст лицензии -
 в `THIRD_PARTY.md`.
 """
 
@@ -117,7 +117,7 @@ def get_request_post_params(request):
 
 
 def unquote(string):
-    """Декодировать percent-encoding; `+` — пробел."""
+    """Декодировать percent-encoding; `+` - пробел."""
     if not string:
         return ""
     if isinstance(string, str):

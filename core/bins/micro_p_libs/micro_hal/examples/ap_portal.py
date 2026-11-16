@@ -12,7 +12,7 @@
 
 При отправке формы вызывается `lib_wifi.connect()`; AP при этом
 остаётся, чтобы страница с результатом дошла. Если подключиться не
-удалось — AP уже на месте, телефон видит ошибку. Если удалось —
+удалось - AP уже на месте, телефон видит ошибку. Если удалось -
 страница предлагает выключить точку доступа.
 """
 
@@ -58,7 +58,7 @@ log-facility=/home/microp/dnsmasq-ap.log
 """
 
 SERVER = None
-# /stopap: сначала отдать страницу, погасить AP — после отправки.
+# /stopap: сначала отдать страницу, погасить AP - после отправки.
 STOP_AFTER = False
 STOP_DELAY = 0.5
 
@@ -119,7 +119,7 @@ def _ap_running():
 
 
 def _run(label, command, problems):
-    """Выполнить команду; ошибка или код ≠ 0 — в список проблем."""
+    """Выполнить команду; ошибка или код ≠ 0 - в список проблем."""
     try:
         code = hal_common.run(command)
     except Exception as exc:
@@ -238,7 +238,7 @@ def _network_rows(networks, selected):
             '<small>{signal} дБм{mark}</small></label>'.format(
                 value=_esc(ssid), checked=checked, name=_esc(ssid),
                 signal=item.get("signal", 0), mark=mark))
-    return "".join(rows) or '<small>список пуст — нажмите «Обновить»</small>'
+    return "".join(rows) or '<small>список пуст - нажмите «Обновить»</small>'
 
 
 def page(message="", selected=""):
@@ -271,7 +271,7 @@ a{{color:#2b6cb0}} small{{color:#666}}
 <form method="post" action="/connect">
 <div class="card"><b>Сети в эфире</b>
 <div class="nets">{networks}</div>
-<small><a href="/scan">Обновить список</a> — связь на пару секунд
+<small><a href="/scan">Обновить список</a> - связь на пару секунд
 может прерваться</small>
 <input type="text" name="ssid_manual"
  placeholder="или введите имя сети вручную">
@@ -282,9 +282,9 @@ a{{color:#2b6cb0}} small{{color:#666}}
 <small>Если не получится, точка доступа останется.</small>
 </div>
 </form>
-</body></html>""".format(ssid=_esc(state["ssid"] or "—"),
-                         state=_esc(state["state"] or "—"),
-                         ip=_esc(state["ip"] or "—"), saved=_esc(saved),
+</body></html>""".format(ssid=_esc(state["ssid"] or "-"),
+                         state=_esc(state["state"] or "-"),
+                         ip=_esc(state["ip"] or "-"), saved=_esc(saved),
                          networks=_network_rows(networks, selected),
                          message=message)
 
@@ -322,7 +322,7 @@ def handle(request):
         # Сначала ответ: после снятия 10.0.0.1 это соединение оборвётся.
         answer = _response(page(
             '<span class="ok">Точка доступа выключается…</span> '
-            'Если страница не обновилась — это нормально.'))
+            'Если страница не обновилась - это нормально.'))
         STOP_AFTER = True
         return answer
 
@@ -351,7 +351,7 @@ def handle(request):
         note = _ensure_ap()
         message = ('<span class="ok">Подключено: {} ({}).</span> Точку '
                    'доступа можно <a href="/stopap">выключить</a>.'.format(
-                       _esc(result["ssid"]), _esc(result["ip"] or "—")))
+                       _esc(result["ssid"]), _esc(result["ip"] or "-")))
         if note:
             message += ' <span class="msg">AP: {}.</span>'.format(
                 _esc(note))

@@ -1,7 +1,7 @@
 """ODAS: запуск и остановка `odaslive`, PID и лог.
 
 Только процесс: путь к демону, библиотека, конфиг, `kill`. JSON и
-направление — в `lib_odas`. `voice-agent` должен быть остановлен.
+направление - в `lib_odas`. `voice-agent` должен быть остановлен.
 """
 
 import os
@@ -23,7 +23,7 @@ LIBDIR = "/home/microp"
 LIB = "/home/microp/libodas.so"
 CONFIG = "/home/microp/odas/capsula_4_mic.cfg"
 SSS_CONFIG = "/home/microp/odas/capsula_4_mic_sss.cfg"
-# Файлы состояния — на процесс: два скрипта не мешают друг другу.
+# Файлы состояния - на процесс: два скрипта не мешают друг другу.
 _PID = hal_common.self_pid()
 LOG = "/tmp/micro_hal_odas.{}.log".format(_PID)
 PID_FILE = "/tmp/micro_hal_odas.{}.pid".format(_PID)
@@ -173,7 +173,7 @@ def start(config=CONFIG, single=False, verbose=False):
     if verbose:
         flags += " -v"
     # Лог пишем только в отладочном режиме: без -v он не нужен,
-    # а /tmp — это RAM. При ошибке без лога подскажем включить verbose.
+    # а /tmp - это RAM. При ошибке без лога подскажем включить verbose.
     log_path = LOG if verbose else "/dev/null"
     command = (
         "LD_LIBRARY_PATH={libdir} {binary} -c {config}{flags} "
@@ -198,7 +198,7 @@ def start(config=CONFIG, single=False, verbose=False):
                 raise HalError(
                     "ODAS не запустился: {}".format(log_tail(5)))
             raise HalError(
-                "ODAS не запустился (подробности — verbose=True)")
+                "ODAS не запустился (подробности - verbose=True)")
     except Exception:
         _forget_pid()
         _release()

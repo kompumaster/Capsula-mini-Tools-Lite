@@ -1,6 +1,6 @@
 """PCM и WAV: проверки, длительность, моно, ресемплинг.
 
-Внутренний формат библиотеки — `s16le`, моно. Функции не трогают
+Внутренний формат библиотеки - `s16le`, моно. Функции не трогают
 железо, сеть и не запускают процессов.
 """
 
@@ -24,7 +24,7 @@ def _frame_size(channels, width):
 
 
 def validate_pcm(pcm, channels=1, width=2):
-    """Проверить, что PCM — байты, кратные кадру."""
+    """Проверить, что PCM - байты, кратные кадру."""
     if not isinstance(pcm, (bytes, bytearray)):
         raise AsrError("PCM должен быть bytes или bytearray")
     frame = _frame_size(channels, width)

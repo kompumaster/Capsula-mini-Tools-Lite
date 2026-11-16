@@ -1,7 +1,7 @@
 """Громкость: проценты, шаг, mute поверх `hal_volume`.
 
 Логика без железа: удобные `up`/`down`, ограничение 0…100 и шаг.
-Владелец громкости — PulseAudio; ALSA `TV-Set` не трогаем.
+Владелец громкости - PulseAudio; ALSA `TV-Set` не трогаем.
 """
 
 from micro_hal import hal_volume

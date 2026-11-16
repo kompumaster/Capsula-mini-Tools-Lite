@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# micro_agent — оркестратор колонки.
+# micro_agent - оркестратор колонки.
 # Установка: /etc/init.d/S99micro_agent.sh, права 755.
 #
 PROG=/home/microp/micro_agent/agent.py
@@ -49,7 +49,7 @@ start() {
         return 0
     fi
     if pgrep -x voice-agent >/dev/null 2>&1; then
-        echo "voice-agent запущен — micro_agent не стартует" >&2
+        echo "voice-agent запущен - micro_agent не стартует" >&2
         echo "остановите voice-agent (патч vkvoice)" >&2
         return 1
     fi

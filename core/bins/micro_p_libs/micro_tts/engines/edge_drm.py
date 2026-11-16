@@ -1,6 +1,6 @@
 """Sec-MS-GEC для Edge TTS через `libc_edge.so` (`ffi`).
 
-Основной путь — вызов C-функции из `libc_edge.so` через MicroPython
+Основной путь - вызов C-функции из `libc_edge.so` через MicroPython
 `ffi`. Раньше тяжёлая функция падала из-за `snprintf("%llu%s", …)`;
 теперь форматирование в C ручное, без `printf`.
 

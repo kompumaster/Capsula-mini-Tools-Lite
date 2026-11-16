@@ -1,11 +1,11 @@
 """Динамик: воспроизведение через PulseAudio (`pacat`/`paplay`).
 
 Только железо/звуковой стек: sink, команда, фоновый процесс, PID,
-остановка. Тон, мелодии и WAV — в `lib_speaker`. `voice-agent`
+остановка. Тон, мелодии и WAV - в `lib_speaker`. `voice-agent`
 владеет звуком, его останавливаем отдельно.
 
-`paplay` на плате — симлинк на `pacat`: WAV играет по имени
-`paplay`, сырой поток — `pacat --raw`.
+`paplay` на плате - симлинк на `pacat`: WAV играет по имени
+`paplay`, сырой поток - `pacat --raw`.
 """
 
 import os
@@ -23,7 +23,7 @@ __all__ = [
 PACAT = "/usr/bin/pacat"
 PAPLAY = "/usr/bin/paplay"
 PCTL = "/usr/bin/pactl"
-# Файлы состояния — на процесс: два скрипта не мешают друг другу.
+# Файлы состояния - на процесс: два скрипта не мешают друг другу.
 _PID = hal_common.self_pid()
 PID_FILE = "/tmp/micro_hal_spk.{}.pid".format(_PID)
 ERR = "/tmp/micro_hal_spk.{}.err".format(_PID)
@@ -35,7 +35,7 @@ SINK = "master"
 # Метка в cmdline: по ней находится осиротевший `pacat`/`paplay`.
 CLIENT = "micro_hal-spk"
 
-# Текущий sink и признак паузы: пауза — `pactl suspend-sink`
+# Текущий sink и признак паузы: пауза - `pactl suspend-sink`
 # (в pactl 16.1 нет `suspend-sink-input`).
 _ACTIVE_SINK = SINK
 _PAUSED = False
@@ -135,7 +135,7 @@ def _cmdline(pid):
 
 
 def _is_player(pid):
-    """`pacat`/`paplay` ли это; пустой cmdline — окно exec."""
+    """`pacat`/`paplay` ли это; пустой cmdline - окно exec."""
     cmdline = _cmdline(pid)
     if cmdline:
         return "pacat" in cmdline or "paplay" in cmdline
@@ -178,7 +178,7 @@ def _command(player, options, source):
 
     Внешняя подоболочка дожидается плеера и пишет код выхода в
     `STATUS`: без него `stop()` и падение неотличимы от нормального
-    конца. `hal_pulse.prefix()` должен стоять внутри подоболочки —
+    конца. `hal_pulse.prefix()` должен стоять внутри подоболочки -
     `PULSE_SERVER=... ( ... )` оболочка не принимает.
     """
     return ("( {}{} {} < {} 2>{} & pid=$!; echo $pid > {}; "
@@ -232,7 +232,7 @@ def play(path, sink=SINK, raw=False, rate=16000, channels=1,
          latency_msec=100):
     """Запустить воспроизведение в фоне; вернуть PID.
 
-    `raw=True` — сырой поток `s16le` (`rate`/`channels`), иначе файл
+    `raw=True` - сырой поток `s16le` (`rate`/`channels`), иначе файл
     WAV. `path` не удаляется. Один процесс на всё: пока играет
     предыдущий, новый не запускается.
     """
@@ -279,7 +279,7 @@ def play(path, sink=SINK, raw=False, rate=16000, channels=1,
         message = _error_text()
         if message:
             raise HalError("pacat: {}".format(message))
-        # Короткий клип мог закончиться до проверки — это не ошибка.
+        # Короткий клип мог закончиться до проверки - это не ошибка.
         pid = saved
         if pid is None:
             raise HalError("pacat не запустился")
@@ -295,7 +295,7 @@ def _halt():
     if pid is None:
         _forget_pid()
         return False
-    # Запоминаем, что остановили сами: код 143/137 — не ошибка.
+    # Запоминаем, что остановили сами: код 143/137 - не ошибка.
     _STOPPED_PID = pid
     hal_common.run("kill {}".format(pid))
     for _ in range(10):
@@ -318,7 +318,7 @@ def stop():
 def wait(timeout=10.0):
     """Ждать конца воспроизведения; True, если процесс ушёл.
 
-    `timeout=None` — ждать без ограничения (для `wait=True`
+    `timeout=None` - ждать без ограничения (для `wait=True`
     в `lib_speaker.play_wav`). Код выхода здесь не читается:
     для этого есть `result()`.
     """
@@ -334,7 +334,7 @@ def wait(timeout=10.0):
 def result():
     """Статус последнего файлового/raw-воспроизведения или None.
 
-    None — процесс ещё идёт, остановлен через `stop()` или статус
+    None - процесс ещё идёт, остановлен через `stop()` или статус
     неизвестен. Поток (`Stream`) сюда не входит.
     Иначе `{"pid": int, "code": int, "error": str}`.
 
@@ -368,7 +368,7 @@ def _suspend_sink(sink, suspend):
 def pause():
     """Приостановить воспроизведение; True при успехе.
 
-    Пауза — на уровне sink (`pactl suspend-sink`): в pactl 16.1 нет
+    Пауза - на уровне sink (`pactl suspend-sink`): в pactl 16.1 нет
     `suspend-sink-input`. Sink запоминается при `play()` и
     `Stream.open()`.
     """
@@ -417,7 +417,7 @@ class Stream:
     `write()` блокируется, когда Pulse не успевает: память ограничена
     буфером FIFO, длительность значения не имеет. Один поток на
     процесс: пока играет файл или другой поток, `open()` даёт
-    `HalError`. Пауза — общая, `hal_speaker.pause()`.
+    `HalError`. Пауза - общая, `hal_speaker.pause()`.
     """
 
     def __init__(self, sink=SINK, rate=24000, channels=1,

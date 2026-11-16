@@ -6,7 +6,7 @@ NAND 256 МиБ) на родной прошивке: чистый Python, `fw_io
 нестабильно, но возможно, на свой страх и риск.
 
 Краткая инструкция «как запустить своего помощника вместо
-VK-ассистента» — [STEPS.md](STEPS.md).
+VK-ассистента» - [STEPS.md](STEPS.md).
 
 ## Что умеет
 
@@ -20,12 +20,12 @@ VK-ассистента» — [STEPS.md](STEPS.md).
   «Сервис → Раздел → tar».
 - Собрать раздел из tar обратно: «Сервис → tar → раздел».
 - Перезагрузить колонку: «Сервис → Перезагрузить колонку»
-  (`core/common/reboot.py`) — сначала SSH, при неудаче ADB.
+  (`core/common/reboot.py`) - сначала SSH, при неудаче ADB.
 
 ## Драйвер
 
-- Windows: WinUSB для загрузчика колонки — [driver/Install](driver/Install/README.md);
-  удаление старого или лишнего драйвера — [driver/Remove](driver/Remove/README.md).
+- Windows: WinUSB для загрузчика колонки - [driver/Install](driver/Install/README.md);
+  удаление старого или лишнего драйвера - [driver/Remove](driver/Remove/README.md).
 
 ## Запуск
 
@@ -84,70 +84,70 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 Enter; пункт `10` доступен. В строке каждого патча выводится краткое
 описание (`SUMMARY`).
 
-Патчи применяются к образам из `backup/parts`, результат — в
+Патчи применяются к образам из `backup/parts`, результат - в
 `patched/parts`; оригиналы не меняются.
 
 Патч `yse` ставит пакетный менеджер Entware и .yap: клиент, статический
-curl (mbedTLS) и профиль PATH. После прошивки — `yse bootstrap`, затем
-`yse install …`. Подробности — [README](core/bins/yse/README.md).
+curl (mbedTLS) и профиль PATH. После прошивки - `yse bootstrap`, затем
+`yse install …`. Подробности - [README](core/bins/yse/README.md).
 
 ## MicroPython: библиотеки
 
-`micro_hal` даёт доступ к оборудованию из MicroPython: `hal_*` — только
-железо, `lib_*` — логика. Готовы:
+`micro_hal` даёт доступ к оборудованию из MicroPython: `hal_*` - только
+железо, `lib_*` - логика. Готовы:
 
-- дисплей — sysfs + C-helper `libc_display.so` (анимация);
-- кольцо — 15 эффектов, C-helper `libc_ring.so`;
-- кнопки — клики, удержание, сочетания;
-- датчик света — люксы;
-- NTP — синхронизация времени;
-- громкость — управление Pulse;
-- микрофоны — C-helper `libc_mic.so` (захват и поток);
-- позиционирование источника звука — ODAS;
-- вывод звука — тон, мелодия, WAV, C-helper `libc_speaker.so`;
-- Bluetooth — A2DP;
-- Wi-Fi — скан и подключение с откатом.
+- дисплей - sysfs + C-helper `libc_display.so` (анимация);
+- кольцо - 15 эффектов, C-helper `libc_ring.so`;
+- кнопки - клики, удержание, сочетания;
+- датчик света - люксы;
+- NTP - синхронизация времени;
+- громкость - управление Pulse;
+- микрофоны - C-helper `libc_mic.so` (захват и поток);
+- позиционирование источника звука - ODAS;
+- вывод звука - тон, мелодия, WAV, C-helper `libc_speaker.so`;
+- Bluetooth - A2DP;
+- Wi-Fi - скан и подключение с откатом.
 
-API и примеры — в пакете [micro_hal](core/bins/micro_p_libs/micro_hal/)
-(`hal_*`/`lib_*`, `examples/`), описание —
+API и примеры - в пакете [micro_hal](core/bins/micro_p_libs/micro_hal/)
+(`hal_*`/`lib_*`, `examples/`), описание -
 [README](core/bins/micro_p_libs/micro_hal/README.md).
 
 `micropython` пересобран: куча GC 8 МБ по умолчанию (было 2 МБ);
 `-X heapsize=N` переопределяет.
 
-[micro_tts](core/bins/micro_p_libs/micro_tts/) — синтез речи (Edge TTS):
+[micro_tts](core/bins/micro_p_libs/micro_tts/) - синтез речи (Edge TTS):
 пакет, `bins/edge_token`, `bins/libc_edge.so` и `bins/libc_mp3.so`.
-Описание — [README](core/bins/micro_p_libs/micro_tts/README.md).
+Описание - [README](core/bins/micro_p_libs/micro_tts/README.md).
 
-[micro_asr](core/bins/micro_p_libs/micro_asr/) — распознавание речи:
+[micro_asr](core/bins/micro_p_libs/micro_asr/) - распознавание речи:
 Yandex SpeechKit v1, VAD (остановка по тишине), MP3-кодирование;
-источники — файл, микрофон, память (PCM/WAV/MP3). Ключ Yandex — в
-`/home/.env` (`YANDEX_API`). Описание —
+источники - файл, микрофон, память (PCM/WAV/MP3). Ключ Yandex - в
+`/home/.env` (`YANDEX_API`). Описание -
 [README](core/bins/micro_p_libs/micro_asr/README.md).
 
-[micro_server](core/bins/micro_p_libs/micro_server/) — веб-портал:
-страница состояния на `:8080`, JSON `/api/status`. Описание —
+[micro_server](core/bins/micro_p_libs/micro_server/) - веб-портал:
+страница состояния на `:8080`, JSON `/api/status`. Описание -
 [README](core/bins/micro_p_libs/micro_server/README.md).
 
-[micro_ww](core/bins/micro_p_libs/micro_ww/) — локальный детектор
+[micro_ww](core/bins/micro_p_libs/micro_ww/) - локальный детектор
 microWakeWord (TFLite Micro, без сети): пакет, `bins/libc_ww.so`,
 `models/` с девятью моделями (`hey_jarvis`, `jarvis`, `алиса`,
 `домовой`, `кузя`, `окей_валера`, `стив`, `умка`, `эй_железяка`).
-Смена — ключом `[ww] model`. Описание —
+Смена - ключом `[ww] model`. Описание -
 [README](core/bins/micro_p_libs/micro_ww/README.md).
 
-[micro_ui](core/bins/micro_p_libs/micro_ui/) — отдельный процесс
-дисплея и кольца, команды по UDP `127.0.0.1:8766`. Описание —
+[micro_ui](core/bins/micro_p_libs/micro_ui/) - отдельный процесс
+дисплея и кольца, команды по UDP `127.0.0.1:8766`. Описание -
 [README](core/bins/micro_p_libs/micro_ui/README.md).
 
-[micro_agent](core/bins/micro_p_libs/micro_agent/) — оркестратор:
+[micro_agent](core/bins/micro_p_libs/micro_agent/) - оркестратор:
 сценарий «WW → ASR → LLM → TTS», диалог, кнопки, mute, настройки в
-`/home/a_settings.ini`. Описание —
+`/home/a_settings.ini`. Описание -
 [README](core/bins/micro_p_libs/micro_agent/README.md).
 
-[micro_llm](core/bins/micro_p_libs/micro_llm/) — клиент LLM
+[micro_llm](core/bins/micro_p_libs/micro_llm/) - клиент LLM
 (DeepSeek, OpenAI-совместимый REST): движки `deepseek`/`fake`,
-сессия с контекстом, SSE. Описание —
+сессия с контекстом, SSE. Описание -
 [README](core/bins/micro_p_libs/micro_llm/README.md).
 
 Патч `mplibs` кладёт все восемь пакетов в `/home/microp`; профиль
@@ -157,27 +157,27 @@ microWakeWord (TFLite Micro, без сети): пакет, `bins/libc_ww.so`,
 Патч `agentcfg` кладёт в `/home` шаблон `example.env` (без ключей) под
 именем `.env`, а также `system.txt`; существующие файлы не
 перезаписываются. Чтобы заработали LLM и облачные TTS/ASR, переименуйте
-`example.env` в `.env` и пропишите ключи. `a_settings.ini` не копируется —
+`example.env` в `.env` и пропишите ключи. `a_settings.ini` не копируется -
 агент создаёт его сам при первом старте из умолчаний.
 Патч `agentboot` ставит `S98micro_ui.sh` и `S99micro_agent.sh` в
 `/rom/etc/init.d` (`system_b`), чтобы UI и агент стартовали сами.
 
 ## Свои патчи
 
-`core/fwpatch/patches/README.md` — структура модуля, шаблон и
+`core/fwpatch/patches/README.md` - структура модуля, шаблон и
 регистрация. Новые модули подхватываются автоматически: появляются в
 меню и статусах.
 
 ## Что сделано
 
 - UBI разбирается в tar: сохраняются имена, права, uid/gid и симлинки,
-  поэтому сборка работает и на Windows —
+  поэтому сборка работает и на Windows -
   [kompumaster/UbiTar](https://github.com/kompumaster/UbiTar).
-- `adbd` пересобран статически (AArch64) — компактнее и без
+- `adbd` пересобран статически (AArch64) - компактнее и без
   зависимости от стоковой glibc.
-- `dropbearmulti` — `dropbear` + `dropbearkey` + `scp` + `dbclient`
+- `dropbearmulti` - `dropbear` + `dropbearkey` + `scp` + `dbclient`
   в одном файле, вход `capsula` / `mini` без настройки учётной записи.
-- `system` и `data` пересобираются с zlib вместо стокового lzo —
+- `system` и `data` пересобираются с zlib вместо стокового lzo -
   образы меньше.
 
 ## Требования

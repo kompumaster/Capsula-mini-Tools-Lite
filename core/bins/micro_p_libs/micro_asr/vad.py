@@ -73,7 +73,7 @@ def rms(pcm):
 
 
 def dbfs(pcm):
-    """Уровень сигнала в dBFS (тишина — `MIN_DB`)."""
+    """Уровень сигнала в dBFS (тишина - `MIN_DB`)."""
     value = rms(pcm)
     if value <= 0:
         return MIN_DB
@@ -139,7 +139,7 @@ class SpeechDetector:
         return self._threshold
 
     def feed(self, pcm):
-        """Добавить кусок PCM; `True` — запись продолжается."""
+        """Добавить кусок PCM; `True` - запись продолжается."""
         if self._finished:
             return False
         audio.validate_pcm(pcm)
@@ -152,7 +152,7 @@ class SpeechDetector:
             if self._finished:
                 break
         if offset:
-            # MicroPython не умеет del у bytearray — берём остаток срезом.
+            # MicroPython не умеет del у bytearray - берём остаток срезом.
             self._buffer = self._buffer[offset:]
         return not self._finished
 

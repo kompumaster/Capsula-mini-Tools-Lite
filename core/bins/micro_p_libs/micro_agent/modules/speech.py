@@ -124,7 +124,7 @@ class Speech:
         return event
 
     def capture(self, max_seconds=None):
-        """Записать и распознать вопрос; после — снова слушать фразу."""
+        """Записать и распознать вопрос; после - снова слушать фразу."""
         self._require()
         seconds = self.max_seconds if max_seconds is None else _max_seconds(
             max_seconds)

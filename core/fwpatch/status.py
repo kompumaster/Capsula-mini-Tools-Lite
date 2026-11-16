@@ -2,12 +2,12 @@
 
 Статус означает наличие функции:
 
-- `on`  — файл/функция есть: оригинал (tele/fwu/swu) или наш
+- `on`  - файл/функция есть: оригинал (tele/fwu/swu) или наш
   добавленный файл (adb/ssh/lapi);
-- `off` — файла нет или он заменён заглушкой.
+- `off` - файла нет или он заменён заглушкой.
 
 Состояния и хеши собираются из реестра патчей: каждый модуль сам
-знает, что искать в дереве. Формат `status.txt` — плоский `KEY=VALUE`.
+знает, что искать в дереве. Формат `status.txt` - плоский `KEY=VALUE`.
 """
 
 from __future__ import annotations
@@ -130,7 +130,7 @@ def parse_status(text: str) -> dict[str, str]:
 
 
 def _decode_status(data: bytes, path: Path) -> str:
-    """UTF-8 (с BOM) или cp1251; иначе — понятная ошибка."""
+    """UTF-8 (с BOM) или cp1251; иначе - понятная ошибка."""
     for encoding in ("utf-8-sig", "cp1251"):
         try:
             return data.decode(encoding)

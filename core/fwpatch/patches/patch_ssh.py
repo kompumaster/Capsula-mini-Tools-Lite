@@ -3,7 +3,7 @@
 Один бинарник `dropbearmulti` содержит `dropbear`, `dropbearkey`,
 `scp` и `dbclient`; на плате они доступны как симлинки на него.
 
-Ассет init-скрипта — `S90dropbear.sh` (для единообразия с
+Ассет init-скрипта - `S90dropbear.sh` (для единообразия с
 `S05home.sh` и `S91adbd.sh`); на плате он ставится как
 `etc/init.d/S90dropbear`.
 """
@@ -49,7 +49,7 @@ LINKS = (
 
 
 def _drop_path(tree: TarTree, path: str, ask: Ask | None) -> None:
-    """Убрать файл или симлинк; обычный файл — с подтверждением."""
+    """Убрать файл или симлинк; обычный файл - с подтверждением."""
     if not tree.exists(path):
         return
     if tree.kind(path) == "link":
@@ -84,7 +84,7 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — multi, init и все симлинки на месте и совпадают."""
+    """`on` - multi, init и все симлинки на месте и совпадают."""
     hashes = {}
     state = "on"
     for path, asset, _mode in FILES:

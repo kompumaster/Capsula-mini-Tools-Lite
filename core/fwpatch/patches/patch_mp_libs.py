@@ -1,13 +1,13 @@
 """MicroPython libs: весь `micro_p_libs` в `/home/microp`.
 
-Целевой путь в `data` — `permanent/home/microp`, после симлинка `/home`
+Целевой путь в `data` - `permanent/home/microp`, после симлинка `/home`
 это `/home/microp`. Содержимое комплекта раскладывается как есть:
 `micro_hal/`, `micro_tts/`, `micro_asr/`, `micro_server/`,
 `micro_ww/`, `micro_ui/`, `micro_agent/`, `micro_llm/` и общий
 `README.md`; служебный `SHA256SUMS` не копируется.
 
 У каждого пакета свои `bins/`; `micro_hal` ищет библиотеки по путям
-`/home/microp/micro_hal/bins/libc_*.so`, `micro_tts` — по
+`/home/microp/micro_hal/bins/libc_*.so`, `micro_tts` - по
 `/home/microp/micro_tts/bins/...`.
 """
 
@@ -47,9 +47,9 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — все файлы комплекта на месте и совпадают, иначе `off`.
+    """`on` - все файлы комплекта на месте и совпадают, иначе `off`.
 
-    Ключи хешей — пути в комплекте (`micro_hal/...`, `micro_tts/...`,
+    Ключи хешей - пути в комплекте (`micro_hal/...`, `micro_tts/...`,
     `micro_asr/...`, `micro_server/...`).
     """
     hashes = {}

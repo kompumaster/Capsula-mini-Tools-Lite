@@ -8,12 +8,12 @@ MicroPython. По умолчанию показывает часы и нейтр
 
 ## Что уже есть
 
-- `UiCore` — режимы, часы, оверлеи, TTL и lease без IPC и железа;
-- `Display` — кадры через `micro_hal.lib_display`;
-- `RingAnimator` — неблокирующие анимации через `micro_hal.lib_ring`;
-- `faces` — девять 7-сегментных смайлов (`flat`, `wink`, `eyes`,
+- `UiCore` - режимы, часы, оверлеи, TTL и lease без IPC и железа;
+- `Display` - кадры через `micro_hal.lib_display`;
+- `RingAnimator` - неблокирующие анимации через `micro_hal.lib_ring`;
+- `faces` - девять 7-сегментных смайлов (`flat`, `wink`, `eyes`,
   `calm`, `round`, `wide`, `narrow`, `smile`, `big`);
-- `protocol` и `server` — UDP `127.0.0.1:8766`, команды `mode`,
+- `protocol` и `server` - UDP `127.0.0.1:8766`, команды `mode`,
   `face`, `overlay`, `bright`, `global`, `sync`, `status`;
 - глобальная яркость как множитель: отдельные базы дисплея/кольца
   и общий `global`;
@@ -24,20 +24,20 @@ MicroPython. По умолчанию показывает часы и нейтр
 - тесты на хосте с фиктивными дисплеем, кольцом и сокетом;
 - запуск на плате и UDP-команды проверены.
 
-Клиент агента (`UiClient`) уже есть; совместная приёмка — следующий
+Клиент агента (`UiClient`) уже есть; совместная приёмка - следующий
 этап.
 
 ## Режимы
 
 Постоянные: `base`, `bt_mode`, `netlost`, `apmode`, `muted`.
-Временные: `wake`, `asr`, `think`, `speak`, `error` — с lease.
+Временные: `wake`, `asr`, `think`, `speak`, `error` - с lease.
 Оверлеи: `date` (20 с), `volume` (5 с), `face` (5 с).
 Лица: `flat` `- . -`, `wink` `о . -`, `eyes` `0 . 0`,
 `calm` `о . 0`, `round` `о . о`, `wide` `П . П`,
 `narrow` `п . п`, `smile` `u . u`, `big` `U . U`.
 
 Если временный режим или оверлей истёк, UI возвращается к последнему
-постоянному режиму; по умолчанию — к часам.
+постоянному режиму; по умолчанию - к часам.
 
 ## Пример
 

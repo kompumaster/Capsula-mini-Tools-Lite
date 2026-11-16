@@ -1,7 +1,7 @@
 """Bluetooth: адаптер BlueZ и звук A2DP через PulseAudio.
 
 Только железо/стек: вызовы `gdbus` к `org.bluez` и `pactl` к Pulse.
-Политика (когда включать, когда глушить) — в `lib_bt`.
+Политика (когда включать, когда глушить) - в `lib_bt`.
 
 Проверено на плате 03.11.2026: A2DP Sink регистрирует
 `module-bluez5-discover`; звук с телефона приходит **источником**
@@ -406,7 +406,7 @@ def input_volume():
 
 
 def input_muted():
-    """Временно ли снят звук телефона; None — loopback нет."""
+    """Временно ли снят звук телефона; None - loopback нет."""
     index = loopback_input()
     if index is None:
         return None

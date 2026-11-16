@@ -2,7 +2,7 @@
 
 `micro_hal` импортируется только в `open()`, чтобы импорт пакета не
 трогал железо. `read()` возвращает одно окно моно-PCM (`s16le`,
-16 кГц, 20 мс) — ровно то, что ждёт VAD.
+16 кГц, 20 мс) - ровно то, что ждёт VAD.
 """
 
 from micro_asr.errors import AsrError
@@ -87,7 +87,7 @@ class MicroHalMic:
         return self
 
     def read(self, size=None):
-        """Одно окно моно-PCM; `size` — подсказка, окно фиксировано."""
+        """Одно окно моно-PCM; `size` - подсказка, окно фиксировано."""
         if not self._opened or self._stream is None:
             raise AsrError("микрофон не открыт")
         try:

@@ -1,6 +1,6 @@
 """Разбор команд UDP-шины micro_ui.
 
-Одна датаграмма — одна строка. Формат описан в `docs/PLAN.md` и
+Одна датаграмма - одна строка. Формат описан в `docs/PLAN.md` и
 `micro_agent/docs/PLAN_UI_CLIENT.md`.
 """
 
@@ -29,7 +29,7 @@ def _mode(value):
 
 
 def parse(text):
-    """Разобрать строку в команду; ошибка — `UiError`."""
+    """Разобрать строку в команду; ошибка - `UiError`."""
     if not isinstance(text, str):
         raise UiError("команда должна быть строкой")
     if len(text.encode("utf-8")) > MAX_BYTES:

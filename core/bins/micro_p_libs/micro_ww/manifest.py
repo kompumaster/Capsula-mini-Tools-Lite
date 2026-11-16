@@ -1,6 +1,6 @@
 """Манифест модели microWakeWord.
 
-Манифест — JSON рядом с `.tflite`:
+Манифест - JSON рядом с `.tflite`:
 
 ```json
 {
@@ -156,7 +156,7 @@ class Manifest:
 
     @classmethod
     def from_data(cls, data, base_dir="", check_model=False):
-        """Манифест из словаря — для тестов и внешних вызовов."""
+        """Манифест из словаря - для тестов и внешних вызовов."""
         return cls(data, base_dir=base_dir, check_model=check_model)
 
     def as_dict(self):

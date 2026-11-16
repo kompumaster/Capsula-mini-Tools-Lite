@@ -8,12 +8,12 @@
 | `net/hostapd` | hostapd 2.9 для AP, nl80211 | 595 424 | `f32ec902…` |
 | `net/dnsmasq` | dnsmasq 2.90 с DHCP | 338 176 | `4a4286a5…` |
 | `S05home.sh` | подключить `/data/permanent/home` как `/home` | 979 | `aac7e2b1…` |
-| `S98micro_ui.sh` | запуск `micro_ui` (дисплей и кольцо) | 2 968 | `116a45cf…` |
-| `S99micro_agent.sh` | запуск `micro_agent` | 3 060 | `8e980cce…` |
+| `S98micro_ui.sh` | запуск `micro_ui` (дисплей и кольцо) | 2 966 | `224c2bc8…` |
+| `S99micro_agent.sh` | запуск `micro_agent` | 3 056 | `8d4e3a15…` |
 | `config/example.env` | шаблон ключей для `/home/.env`: переименовать в `.env` и прописать ключи | 351 | см. `config/` |
-| `config/system.txt` | системный промпт для `/home/system.txt` | 781 | см. `config/` |
+| `config/system.txt` | системный промпт для `/home/system.txt` | 777 | см. `config/` |
 | `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
-| `yse/yse` | клиент пакетного менеджера Entware и .yap | 19 278 | `7bb5cba8…` |
+| `yse/yse` | клиент пакетного менеджера Entware и .yap | 19 248 | `5ddffe9e…` |
 | `yse/curl` | статический musl curl (mbedTLS) для HTTPS-загрузок `.yap` | 1 626 008 | `4f7ce832…` |
 | `yse/yse_profile.sh` | профиль PATH для `/opt/bin` и `/data/opt/bin` | 276 | `2afb266d…` |
 | `micro_p_libs/micro_hal/` | HAL: py + examples + `bins/` с `.so` | 644K | см. `SHA256SUMS` |
@@ -25,7 +25,7 @@
 | `micro_p_libs/micro_agent/` | оркестратор: пакет, `modules/` | 196K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_llm/` | LLM-клиент: пакет, движки, `net/` | 88K | см. `SHA256SUMS` |
 
-Дефолтная куча GC у `micropython` — 8 МБ: в исходнике правится
+Дефолтная куча GC у `micropython` - 8 МБ: в исходнике правится
 `ports/unix/main.c` (`long heap_size = 8 * 1024 * 1024;`), запуск с
 `-X heapsize=...` по-прежнему переопределяет. На AArch64 прежний
 дефолт был 2 МБ.

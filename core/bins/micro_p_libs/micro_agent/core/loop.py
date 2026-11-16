@@ -93,7 +93,7 @@ class Scheduler:
             result = task["callback"]()
             events.extend(_events(result))
             if task["repeat"]:
-                # Догоняющие запуски не нужны: следующая точка — от now.
+                # Догоняющие запуски не нужны: следующая точка - от now.
                 if name in self._tasks:
                     task["at"] = now_ms + task["interval"]
             else:

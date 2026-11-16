@@ -240,7 +240,7 @@ class TTS:
         self._remove_file(path)
 
     def _normalize_one(self, text):
-        """Нормализовать текст без деления; None — метод не поддержан."""
+        """Нормализовать текст без деления; None - метод не поддержан."""
         method = getattr(self._normalizer, "normalize", None)
         if not callable(method):
             return None
@@ -656,7 +656,7 @@ class TTS:
             interrupt=False, stream=False):
         """Подготовить и, если не `defer`, воспроизвести.
 
-        `stream=True` — потоковый режим: текст синтезируется и сразу
+        `stream=True` - потоковый режим: текст синтезируется и сразу
         играет кусками, PCM не накапливается. Кеш не используется,
         `defer` игнорируется, вызов блокирующий.
         """
@@ -889,7 +889,7 @@ class TTS:
         return message
 
     def cache_info(self):
-        """Сводка кеша; без кеша — нули."""
+        """Сводка кеша; без кеша - нули."""
         self._check()
         if self._cache is None:
             return {

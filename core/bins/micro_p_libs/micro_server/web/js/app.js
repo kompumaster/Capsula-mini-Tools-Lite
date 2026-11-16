@@ -8,7 +8,7 @@ function esc(value) {
 
 function val(value) {
   if (value === null || value === undefined || value === '') {
-    return '—';
+    return '-';
   }
   return esc(value);
 }

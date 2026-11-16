@@ -1,6 +1,6 @@
 """Настройки агента в `/home/a_settings.ini`.
 
-Формат — простой INI: секции `[agent]`, `[network]`, `[server]`,
+Формат - простой INI: секции `[agent]`, `[network]`, `[server]`,
 `[ui]`, `[ww]`, `[llm]`, `[asr]`, `[tts]`, `[keys]`, `[audio]`.
 Неизвестные секции и ключи сохраняются. Запись атомарная: временный
 файл рядом, затем rename.
@@ -298,7 +298,7 @@ class Settings:
         raise AgentError("{}: не True/False".format(key))
 
     def last_volume(self):
-        """Сохранённая громкость `[audio] last_volume`; None — не было."""
+        """Сохранённая громкость `[audio] last_volume`; None - не было."""
         value = self.get("audio", "last_volume")
         if value is None or str(value).strip() == "":
             return None

@@ -1,6 +1,6 @@
 @echo off
 rem Запуск меню Capsula Mini Tools Lite.
-rem Вся логика меню — в core\tui; этот файл только готовит Python.
+rem Вся логика меню - в core\tui; этот файл только готовит Python.
 chcp 65001 >nul
 title Capsula-mini Tools Lite
 setlocal EnableDelayedExpansion

@@ -43,7 +43,7 @@ LAYOUT = {
 }
 DIGITS = ("digit0", "digit1", "digit2", "digit3")
 
-# Двоеточие — два независимых канала контроллера (не GPIO):
+# Двоеточие - два независимых канала контроллера (не GPIO):
 # 0-based 16 = верхняя точка (clock-led17), 15 = нижняя (clock-led16).
 COLON_TOP = 16
 COLON_BOTTOM = 15
@@ -51,7 +51,7 @@ COLON = (COLON_TOP, COLON_BOTTOM)
 
 
 def brightness(percent=None, gamma=None):
-    """Глобальная яркость 0…100; без аргументов — текущий уровень."""
+    """Глобальная яркость 0…100; без аргументов - текущий уровень."""
     global _brightness, _gamma
     if gamma is not None:
         _gamma = bool(gamma)
@@ -153,7 +153,7 @@ def _masks(masks):
 def frame_masks(masks, value=None, colon=True):
     """30 физических значений для четырёх произвольных масок.
 
-    Бит 0 — сегмент `a`, бит 1 — `b`, …, бит 6 — `g`.
+    Бит 0 - сегмент `a`, бит 1 - `b`, …, бит 6 - `g`.
     """
     value = _resolve(value)
     values = [0] * hal_display.COUNT
@@ -197,7 +197,7 @@ def show_frame(values):
 def clock(value=None, colon=True, blink=False, off_ms=250):
     """Текущее время ЧЧ:ММ, 24 часа, ведущий ноль.
 
-    `blink=True` — один цикл: точки выключены `off_ms`, затем включены
+    `blink=True` - один цикл: точки выключены `off_ms`, затем включены
     остаток секунды. Функция возвращает кадр с включёнными точками.
     """
     now = time.localtime()
@@ -223,7 +223,7 @@ def transition(old, new, fade_out=1.0, fade_in=1.0, steps=20,
     """Плавно заменить цифры: старые гаснут, новые загораются.
 
     Меняются только различающиеся сегменты; общие остаются на месте.
-    `fade_out` и `fade_in` — секунды на фазу, `steps` — шагов в каждой.
+    `fade_out` и `fade_in` - секунды на фазу, `steps` - шагов в каждой.
     `colon=None` сохраняет текущее состояние точек; True/False или пара
     задаёт их на всё время перехода.
     """
@@ -286,7 +286,7 @@ def transition(old, new, fade_out=1.0, fade_in=1.0, steps=20,
 def pulse(string, seconds=1.0, steps=20, value=None, colon=True):
     """Показать кадр ярко и плавно погасить за `seconds`.
 
-    Первый кадр — полный, затем `steps` кадров с уменьшением яркости до
+    Первый кадр - полный, затем `steps` кадров с уменьшением яркости до
     нуля. В конце дисплей погашен.
     """
     if steps < 1:
@@ -318,7 +318,7 @@ def colon_fade(seconds=1.0, steps=20, top=True, bottom=True,
                value=None, stop=None):
     """Плавно погасить точки от `value` до нуля за `seconds`.
 
-    `stop` — необязательная функция без аргументов; если она вернула
+    `stop` - необязательная функция без аргументов; если она вернула
     True, цикл прерывается (например, наступила следующая секунда).
     """
     if steps < 1:

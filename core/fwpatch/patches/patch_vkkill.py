@@ -1,6 +1,6 @@
 """VK-Voice: заменить voice-agent заглушкой `noop`.
 
-Необратимый kill-патч: оригинал в образе заменяется, откат — только
+Необратимый kill-патч: оригинал в образе заменяется, откат - только
 перезаписью раздела из бэкапа. Watchdog после этого не запускается,
 потому что `voice-agent` не открывает `/dev/watchdog`.
 """
@@ -28,7 +28,7 @@ def kill(tree: TarTree) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — оригинал, `off` — заглушка или файла нет."""
+    """`on` - оригинал, `off` - заглушка или файла нет."""
     digest = present_sha(tree, PATH)
     if digest is None:
         return "off", {}

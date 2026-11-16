@@ -27,7 +27,7 @@ DEFAULT_DATE_MS = 20000
 DEFAULT_VOLUME_MS = 5000
 DEFAULT_FACE_MS = 5000
 
-# Переход между смайлами — как смена минуты: 5 шагов за 200 мс.
+# Переход между смайлами - как смена минуты: 5 шагов за 200 мс.
 FACE_TRANSITION_MS = 200
 FACE_TRANSITION_STEPS = 5
 
@@ -41,7 +41,7 @@ AUTO_POINTS = (
     (800.0, 0.85),
     (3000.0, 1.0),
 )
-# Выше этого — выброс датчика, а не свет: не меняем яркость.
+# Выше этого - выброс датчика, а не свет: не меняем яркость.
 MAX_LUX = 5000.0
 DEFAULT_AUTO_MIN = 20
 DEFAULT_AUTO_MAX = 100
@@ -446,7 +446,7 @@ class UiCore:
             self._draw_clock(now)
 
     def _show_face(self, name):
-        """Показать лицо; при смене — плавный переход от прежнего."""
+        """Показать лицо; при смене - плавный переход от прежнего."""
         target = self.display.face_frame(name)
         if self._face_frame is None or self._face_frame == target:
             self.display.show_frame(target)

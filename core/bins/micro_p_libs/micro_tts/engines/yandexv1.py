@@ -1,10 +1,10 @@
 """Yandex SpeechKit: синтез речи, REST API v1.
 
 `POST https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize`.
-Параметры — в теле формы, ответ — PCM `s16le` моно (`format=lpcm`),
+Параметры - в теле формы, ответ - PCM `s16le` моно (`format=lpcm`),
 поэтому декодер не нужен.
 
-Ключ — общий для платформы Яндекса (ASR и TTS): `api_key` или
+Ключ - общий для платформы Яндекса (ASR и TTS): `api_key` или
 `YANDEX_API` в `/home/.env`.
 """
 
@@ -277,16 +277,16 @@ class YandexV1Engine(Engine):
             return bytes(body)
         detail = _error_text(body)
         if status == 400:
-            message = "Yandex: 400 — неверный запрос"
+            message = "Yandex: 400 - неверный запрос"
         elif status == 401:
-            message = "Yandex: 401 — ключ не принят"
+            message = "Yandex: 401 - ключ не принят"
         elif status == 402:
-            message = "Yandex: 402 — не оплачен биллинг"
+            message = "Yandex: 402 - не оплачен биллинг"
         elif status == 403:
-            message = ("Yandex: 403 — доступ запрещён "
+            message = ("Yandex: 403 - доступ запрещён "
                        "(роль, каталог или биллинг)")
         elif status == 429:
-            message = "Yandex: 429 — превышена квота"
+            message = "Yandex: 429 - превышена квота"
         else:
             message = "Yandex: HTTP {}".format(status)
         if detail:

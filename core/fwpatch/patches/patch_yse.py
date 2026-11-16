@@ -1,6 +1,6 @@
 """yse: пакетный менеджер Entware и .yap в разделе data.
 
-Кладёт клиент `yse` в `/data/opt/bin/yse` (в таре раздела data — путь
+Кладёт клиент `yse` в `/data/opt/bin/yse` (в таре раздела data - путь
 `opt/bin/yse`), профиль PATH в overlay (`overlay/upper/etc/profile.d/yse.sh`,
 виден как `/etc/profile.d/yse.sh`), симлинк `overlay/upper/opt` ->
 `/data/opt/entware` (виден как `/opt`) и статический `curl` (musl, mbedTLS)
@@ -11,7 +11,7 @@ glibc 2.33 обратно совместима с Entware-овской 2.27, а 
 busybox-`wget` (нужный `opkg`) ломается, получив `/opt/lib` (2.27).
 
 Дальше по SSH: `yse bootstrap` (Entware, нужна сеть); для `.yap`-реестров
-нужен ещё `awk` — `yse install gawk` (в busybox колонки awk нет).
+нужен ещё `awk` - `yse install gawk` (в busybox колонки awk нет).
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ LOGICAL = {
 
 
 def _drop_link(tree: TarTree, path: str, ask: Ask | None) -> None:
-    """Убрать симлинк; чужой файл/каталог — с подтверждением."""
+    """Убрать симлинк; чужой файл/каталог - с подтверждением."""
     if not tree.exists(path):
         return
     if tree.kind(path) == "link":
@@ -83,7 +83,7 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — yse, профиль, curl и симлинк на месте и совпадают."""
+    """`on` - yse, профиль, curl и симлинк на месте и совпадают."""
     hashes = {}
     state = "on"
     for path, asset, _mode in FILES:

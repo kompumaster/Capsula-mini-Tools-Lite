@@ -1,4 +1,4 @@
-"""Источник аудио из файла: PCM и WAV; MP3 — отдельный этап."""
+"""Источник аудио из файла: PCM и WAV; MP3 - отдельный этап."""
 
 from micro_asr import audio
 from micro_asr.errors import AsrError
@@ -16,7 +16,7 @@ def _text(value, name):
 class FileSource(Source):
     """Файл PCM или WAV.
 
-    WAV определяется по заголовку, расширение — подсказка. Файлы `.mp3`
+    WAV определяется по заголовку, расширение - подсказка. Файлы `.mp3`
     пока не поддерживаются.
     """
 

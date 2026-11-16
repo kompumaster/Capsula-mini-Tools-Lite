@@ -93,7 +93,7 @@ class Tts:
             raise AgentError("micro_tts: {}".format(exc))
 
     def _options(self):
-        """Параметры движка: повторы — на агенте, остальное — из настроек."""
+        """Параметры движка: повторы - на агенте, остальное - из настроек."""
         result = {"retries": 0, "retry_delay": 0}
         result.update(self.options)
         return result

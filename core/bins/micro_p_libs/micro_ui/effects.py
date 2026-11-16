@@ -5,7 +5,7 @@
 
 Скорость движения задаётся периодом в миллисекундах (`period_ms`),
 а не шагом за кадр: тогда частота кадров (`interval`) не влияет на
-скорость. Позиции голов — дробные, поэтому движение плавное.
+скорость. Позиции голов - дробные, поэтому движение плавное.
 """
 
 BLACK = (0, 0, 0)
@@ -164,7 +164,7 @@ def comet(pixels, phase, config, head=None, color=None):
     for index in range(pixels):
         behind = (head - index) % pixels
         if behind > pixels / 2.0:
-            behind -= pixels          # отрицательное — впереди головы
+            behind -= pixels          # отрицательное - впереди головы
         if behind >= 0.0:
             level = falloff(behind / tail)
         else:
@@ -287,7 +287,7 @@ EFFECTS = {
 
 
 def frame(effect, pixels, phase, config):
-    """Собрать кадр эффекта; неизвестный эффект — ValueError."""
+    """Собрать кадр эффекта; неизвестный эффект - ValueError."""
     try:
         function = EFFECTS[effect]
     except KeyError:

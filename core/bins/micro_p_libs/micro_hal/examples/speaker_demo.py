@@ -6,9 +6,9 @@
     /home/microp/mp /home/microp/micro_hal/examples/speaker_demo.py
     /home/microp/mp /home/microp/micro_hal/examples/speaker_demo.py alarm
 
-Аргумент — sink (по умолчанию `master`). Шаги: три тона, мелодия,
+Аргумент - sink (по умолчанию `master`). Шаги: три тона, мелодия,
 пауза, длинный тон с остановкой через секунду. Громкость не
-меняется — ей управляет `lib_volume`.
+меняется - ей управляет `lib_volume`.
 """
 
 import sys

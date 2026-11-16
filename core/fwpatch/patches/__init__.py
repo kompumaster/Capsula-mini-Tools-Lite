@@ -1,8 +1,8 @@
 """Реестр патчей Lite.
 
-`REGISTRY` — единственный список модулей; порядок задаёт `ORDER`
-в каждом модуле. `PATCHES` и `KILLS` — представления по типу,
-`BY_PART` — по разделу, в порядке `PART_ORDER`.
+`REGISTRY` - единственный список модулей; порядок задаёт `ORDER`
+в каждом модуле. `PATCHES` и `KILLS` - представления по типу,
+`BY_PART` - по разделу, в порядке `PART_ORDER`.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ PART_ORDER = ("system_b", "data")
 def validate_registry(modules) -> None:
     """Проверяет метаданные и функции модулей патчей.
 
-    Ошибка — `PatchError` с именем модуля: тихий пропуск недопустим.
+    Ошибка - `PatchError` с именем модуля: тихий пропуск недопустим.
     """
     keys: set = set()
     flags: set = set()

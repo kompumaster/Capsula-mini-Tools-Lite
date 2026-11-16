@@ -16,15 +16,15 @@ class Player:
     """
 
     def play_pcm(self, pcm, rate, sink=None, wait=False, owner=None):
-        """Начать вывод PCM; занятый плеер — `TtsError`."""
+        """Начать вывод PCM; занятый плеер - `TtsError`."""
         raise TtsError("плеер не реализует play_pcm()")
 
     def play_wav(self, path, sink=None, wait=False, owner=None):
-        """Начать вывод WAV; занятый плеер — `TtsError`."""
+        """Начать вывод WAV; занятый плеер - `TtsError`."""
         raise TtsError("плеер не реализует play_wav()")
 
     def start_stream(self, rate, sink=None, owner=None):
-        """Начать потоковый вывод PCM; занятый плеер — `TtsError`."""
+        """Начать потоковый вывод PCM; занятый плеер - `TtsError`."""
         raise TtsError("плеер не реализует поток")
 
     def write_stream(self, pcm):
@@ -52,7 +52,7 @@ class Player:
         return None
 
     def stop(self, owner=None):
-        """Остановить; `owner` — только свою фразу."""
+        """Остановить; `owner` - только свою фразу."""
         return False
 
     def playing(self):
@@ -63,7 +63,7 @@ class Player:
         """Текст ошибки последнего воспроизведения или `None`.
 
         Плеер сообщает о падении процесса уже после его старта.
-        Неизвестный статус и остановка через `stop()` — не ошибка.
+        Неизвестный статус и остановка через `stop()` - не ошибка.
         """
         return None
 

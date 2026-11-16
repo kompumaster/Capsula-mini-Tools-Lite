@@ -18,7 +18,7 @@ def _sockaddr(host, port):
     """Адрес для bind/sendto.
 
     В этой сборке MicroPython `bind(("127.0.0.1", port))` не работает,
-    а sockaddr из `getaddrinfo` — работает.
+    а sockaddr из `getaddrinfo` - работает.
     """
     try:
         infos = socket.getaddrinfo(

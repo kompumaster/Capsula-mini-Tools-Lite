@@ -1,8 +1,8 @@
 """Сеть: watchdog и переход в точку доступа.
 
-Проверка связи идёт по таймеру `poll(now_ms)`. Потеря — событие
-`network_lost`; дольше `ap_after_ms` — `ap_mode` и портал AP. После
-восстановления — `network_ok`/`ap_stop`.
+Проверка связи идёт по таймеру `poll(now_ms)`. Потеря - событие
+`network_lost`; дольше `ap_after_ms` - `ap_mode` и портал AP. После
+восстановления - `network_ok`/`ap_stop`.
 """
 
 from micro_agent.core import events as ev

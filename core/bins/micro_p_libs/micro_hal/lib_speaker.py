@@ -1,7 +1,7 @@
 """Динамик: тон, тишина и мелодии поверх `hal_speaker`.
 
 Только логика: синус, огибающая, склейка нот и запись во временный
-raw. Процесс, PID и остановка — в `hal_speaker`; громкость —
+raw. Процесс, PID и остановка - в `hal_speaker`; громкость -
 в `lib_volume`.
 """
 
@@ -96,7 +96,7 @@ def helper(path=LIB):
     """Загрузить C-генератор; `None`, если библиотеки нет.
 
     Неудачу не кэшируем: если библиотеку поставили позже, следующий
-    вызов попробует снова (повторная попытка — только при ошибке).
+    вызов попробует снова (повторная попытка - только при ошибке).
     """
     global _HELPER
     if _HELPER is False:
@@ -109,7 +109,7 @@ def helper(path=LIB):
 
 def _tone_python(freq, seconds, amplitude=AMPLITUDE, fade_ms=FADE_MS,
                  rate=RATE):
-    """Синус на чистом Python — запасной путь и эталон."""
+    """Синус на чистом Python - запасной путь и эталон."""
     freq, seconds, amplitude = _check(freq, seconds, amplitude)
     rate = int(rate)
     frames = int(rate * seconds)
@@ -138,7 +138,7 @@ def _tone_python(freq, seconds, amplitude=AMPLITUDE, fade_ms=FADE_MS,
 
 def tone_pcm(freq, seconds, amplitude=AMPLITUDE, fade_ms=FADE_MS,
              rate=RATE):
-    """Синус в `s16le`; `freq=0` — тишина. На краях — огибающая."""
+    """Синус в `s16le`; `freq=0` - тишина. На краях - огибающая."""
     freq, seconds, amplitude = _check(freq, seconds, amplitude)
     rate = int(rate)
     frames = int(rate * seconds)
@@ -159,7 +159,7 @@ def tone_pcm(freq, seconds, amplitude=AMPLITUDE, fade_ms=FADE_MS,
 
 
 def melody_pcm(notes, amplitude=AMPLITUDE, fade_ms=FADE_MS, rate=RATE):
-    """Мелодия `[(freq, ms), …]`; `freq=0` — пауза."""
+    """Мелодия `[(freq, ms), …]`; `freq=0` - пауза."""
     out = bytearray()
     if not notes:
         raise HalError("пустая мелодия")
@@ -236,7 +236,7 @@ def melody(notes, sink=hal_speaker.SINK, amplitude=AMPLITUDE,
 def play_wav(path, sink=hal_speaker.SINK, wait=False):
     """Сыграть готовый WAV через `paplay`.
 
-    `wait=True` — блокироваться до конца воспроизведения (любая
+    `wait=True` - блокироваться до конца воспроизведения (любая
     длительность, без таймаута).
     """
     pid = hal_speaker.play(str(path), sink=sink, raw=False)
@@ -269,7 +269,7 @@ def wait(timeout=10.0):
 def result():
     """Статус последнего файлового/raw-воспроизведения или None.
 
-    `None` — ещё играет, остановлено через `stop()` или статус
+    `None` - ещё играет, остановлено через `stop()` или статус
     неизвестен. Иначе `{"pid", "code", "error"}`. Поток сюда не
     входит.
     """

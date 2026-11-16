@@ -51,7 +51,7 @@ def _run(args: list[str], timeout: int = TIMEOUT) -> str:
 def unpack(image: Path, part: str, out: Path, *,
            force: bool = False,
            report: bool = False) -> Path | tuple[Path, str]:
-    """Раздел -> tar. Возвращает путь; с `report` — путь и вывод UbiTar."""
+    """Раздел -> tar. Возвращает путь; с `report` - путь и вывод UbiTar."""
     image = Path(image)
     out = Path(out)
     if not image.is_file():

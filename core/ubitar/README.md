@@ -90,7 +90,7 @@ https://github.com/kompumaster/mtd-utils-tar.
 
 ## Ограничения
 
-- PEB 131072 Б, VID offset 2048, data offset 4096 — другой layout не
+- PEB 131072 Б, VID offset 2048, data offset 4096 - другой layout не
   поддерживается;
 - один том UBIFS с `vol_id = 0`;
 - образ читается в память целиком;

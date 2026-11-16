@@ -72,7 +72,7 @@ def put(tree: TarTree, path: str, data: bytes, mode: int,
 
 def drop(tree: TarTree, path: str, expected: bytes | None = None,
          ask: Ask | None = None) -> None:
-    """Удалить файл; чужой — только после подтверждения."""
+    """Удалить файл; чужой - только после подтверждения."""
     if not tree.exists(path):
         return
     if expected is not None:
@@ -86,7 +86,7 @@ def drop(tree: TarTree, path: str, expected: bytes | None = None,
 def asset_files(asset_dir: str, base: Path = BINS):
     """Файлы каталога ассетов: `(путь от каталога, ассет, mode)`.
 
-    Файлы `bins/` и `.so` получают 0755, остальные — 0644;
+    Файлы `bins/` и `.so` получают 0755, остальные - 0644;
     `__pycache__` и `.pyc` пропускаются.
     """
     root = base / asset_dir
@@ -132,7 +132,7 @@ def drop_asset(tree: TarTree, path: str, asset: str,
 
 
 def kill_stub(tree: TarTree, path: str, stub: str) -> None:
-    """Заменить оригинал заглушкой; отсутствующий или уже заглушка — no-op."""
+    """Заменить оригинал заглушкой; отсутствующий или уже заглушка - no-op."""
     if not tree.exists(path):
         return
     if tree.kind(path) == "file" and tree.sha256(path) in stub_hashes():

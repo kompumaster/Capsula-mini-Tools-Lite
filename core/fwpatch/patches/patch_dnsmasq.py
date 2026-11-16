@@ -34,7 +34,7 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — наш бинарник, `off` — нет или чужой."""
+    """`on` - наш бинарник, `off` - нет или чужой."""
     digest = present_sha(tree, PATH)
     if digest is None:
         return "off", {}

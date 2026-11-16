@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Перезагрузка колонки: сначала SSH, при неудаче — ADB.
+"""Перезагрузка колонки: сначала SSH, при неудаче - ADB.
 
 IP по умолчанию ищется через `common.find_ip.find_capsula()`;
 `--ip` задаёт адрес вручную.
 
 SSH: `capsula@IP`, пароль из `CAPSULA_SSH_PASSWORD` (по умолчанию
-`mini`). Если есть `sshpass` — используется он, иначе `SSH_ASKPASS`
+`mini`). Если есть `sshpass` - используется он, иначе `SSH_ASKPASS`
 (Linux/macOS) или ключ (`BatchMode=yes`, Windows).
 
-ADB: клиент `adb` из `PATH`/`CAPSULA_ADB`, если есть; иначе —
+ADB: клиент `adb` из `PATH`/`CAPSULA_ADB`, если есть; иначе -
 минимальный протокол ADB напрямую на `IP:5555` (`reboot:`).
 """
 
@@ -39,7 +39,7 @@ ROOT = Path(__file__).resolve().parents[2]
 KNOWN_HOSTS = ROOT / "_tmp" / "known_hosts"
 ASKPASS = ROOT / "_tmp" / "askpass.sh"
 
-# nohup и sleep — чтобы ssh успел выйти до перезагрузки.
+# nohup и sleep - чтобы ssh успел выйти до перезагрузки.
 REMOTE_REBOOT = "nohup sh -c 'sleep 1; sync; /sbin/reboot' >/dev/null 2>&1 &"
 
 # Минимальный ADB-протокол (без клиента adb).
@@ -310,7 +310,7 @@ def reboot(ip: str | None = None, log: Log = print) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Перезагрузка колонки: SSH, затем ADB")
-    parser.add_argument("--ip", help="адрес колонки; без него — поиск в сети")
+    parser.add_argument("--ip", help="адрес колонки; без него - поиск в сети")
     args = parser.parse_args(argv)
     return reboot(args.ip)
 

@@ -25,7 +25,7 @@ def _exists(path):
 
 
 def default_library():
-    """`bins/libc_ww.so`; на хосте — `_tmp/libc_ww_host.so`, если есть."""
+    """`bins/libc_ww.so`; на хосте - `_tmp/libc_ww_host.so`, если есть."""
     base = _package_dir()
     host = base + "/_tmp/libc_ww_host.so"
     try:

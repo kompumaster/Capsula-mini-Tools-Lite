@@ -1,7 +1,7 @@
 """DeepSeek: чат через REST, совместимый с OpenAI.
 
 `POST https://api.deepseek.com/chat/completions`.
-Ключ — `DEEPSEEK` в `/home/.env`, модель — `DS_MODEL` там же.
+Ключ - `DEEPSEEK` в `/home/.env`, модель - `DS_MODEL` там же.
 Режим размышлений по умолчанию выключен: для голосового ответа
 важна скорость.
 """
@@ -273,7 +273,7 @@ class DeepSeekEngine(Engine):
         detail = _error_text(body)
         hint = _ERROR_HINTS.get(status)
         if hint:
-            message = "DeepSeek: {} — {}".format(status, hint)
+            message = "DeepSeek: {} - {}".format(status, hint)
         else:
             message = "DeepSeek: HTTP {}".format(status)
         if detail:

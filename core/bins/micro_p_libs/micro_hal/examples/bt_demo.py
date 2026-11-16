@@ -6,7 +6,7 @@
     /home/microp/mp /home/microp/micro_hal/examples/bt_demo.py
     /home/microp/mp /home/microp/micro_hal/examples/bt_demo.py AA:BB:CC:DD:EE:FF
 
-Без аргумента только включает и выключает Bluetooth. С адресом —
+Без аргумента только включает и выключает Bluetooth. С адресом -
 подключает телефон, выводит звук на динамик, показывает отдельную
 громкость телефона, глушит его на время системного тона и снова
 включает. В конце Bluetooth выключается (как по умолчанию).
@@ -52,7 +52,7 @@ def main():
             item["connected"]))
 
     if address is None:
-        print("адрес не задан — только включение/выключение")
+        print("адрес не задан - только включение/выключение")
         print("выключаю:", lib_bt.disable()["enabled"])
         return
 

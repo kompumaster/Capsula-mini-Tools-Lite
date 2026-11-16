@@ -1,6 +1,6 @@
 """Wi-Fi: `wpa_cli` и `dhcpcd`, только команды стека.
 
-Политика переключения сетей (сторож, откат) — в `lib_wifi`.
+Политика переключения сетей (сторож, откат) - в `lib_wifi`.
 `iw`/`iwconfig` на плате нет, поэтому скан идёт через `wpa_cli`.
 
 Осторожно: `select_network` и `reconnect` рвут текущее соединение.
@@ -176,11 +176,11 @@ def scan(fresh=True, wait=3.0):
 def add_network(ssid, psk=None, key_mgmt=None, scan_ssid=False):
     """Добавить сеть; вернуть её id. Конфиг на диск не пишется.
 
-    `key_mgmt=None` — по паролю: с паролем `WPA-PSK`, без — `NONE`
+    `key_mgmt=None` - по паролю: с паролем `WPA-PSK`, без - `NONE`
     (открытая сеть). Допустимы `NONE`, `WPA-PSK` и `SAE` (WPA3).
     Для открытой сети пароль не записывается.
 
-    `scan_ssid=True` — искать сеть по имени в probe-запросах: нужно
+    `scan_ssid=True` - искать сеть по имени в probe-запросах: нужно
     для скрытых SSID, иначе `wpa_supplicant` её не найдёт.
     """
     if not ssid:
@@ -212,7 +212,7 @@ def add_network(ssid, psk=None, key_mgmt=None, scan_ssid=False):
 
 
 def _psk_value(psk):
-    """PSK: 64 hex — как есть, иначе в кавычках."""
+    """PSK: 64 hex - как есть, иначе в кавычках."""
     text = str(psk)
     if len(text) == 64:
         try:

@@ -37,7 +37,7 @@ def _size(path):
 
 
 def wav_header(data_size, channels=CHANNELS, rate=RATE, width=WIDTH):
-    """Заголовок WAV PCM; умолчания — микрофонные (см. `lib_wav`)."""
+    """Заголовок WAV PCM; умолчания - микрофонные (см. `lib_wav`)."""
     return lib_wav.wav_header(data_size, channels=channels, rate=rate,
                               width=width)
 
@@ -168,7 +168,7 @@ def mono(data, channels=CHANNELS):
 
 
 def dbfs(rms_value, full_scale=32768.0):
-    """Значение RMS → dBFS; 0 и меньше — `SILENCE_DBFS`."""
+    """Значение RMS → dBFS; 0 и меньше - `SILENCE_DBFS`."""
     rms_value = float(rms_value)
     if rms_value <= 0:
         return SILENCE_DBFS
@@ -178,10 +178,10 @@ def dbfs(rms_value, full_scale=32768.0):
 class MicStream:
     """Непрерывный поток: окна, моно, кольцо и dBFS.
 
-    `read()` отдаёт моно-кусок (окно 20 мс), `read_raw()` — сырое
+    `read()` отдаёт моно-кусок (окно 20 мс), `read_raw()` - сырое
     окно как есть. Кольцо хранит последние `ring_seconds` секунд
     моно: пре-ролл и `snapshot()`. Политики (VAD, тишина, границы
-    фраз) здесь нет — это дело вызывающего.
+    фраз) здесь нет - это дело вызывающего.
     """
 
     def __init__(self, stream=None, channels=1, source=hal_mic.SOURCE,
@@ -373,7 +373,7 @@ def open_odas(sss=False):
 
     Порядок: `open_odas()` → `hal_odas.start()` (с тем же набором
     выходов). Повторный вызов с тем же набором возвращает то же
-    соединение; с другим — `HalError` (сначала `close_odas()`).
+    соединение; с другим - `HalError` (сначала `close_odas()`).
     """
     global _odas
     sss = bool(sss)
@@ -381,7 +381,7 @@ def open_odas(sss=False):
         _odas = Odas(sss=sss).listen()
     elif _odas.sss != sss:
         raise HalError(
-            "ODAS уже открыт {}; нужен набор {} — вызовите close_odas() "
+            "ODAS уже открыт {}; нужен набор {} - вызовите close_odas() "
             "и откройте заново".format(
                 "с SSS" if _odas.sss else "без SSS",
                 "с SSS" if sss else "без SSS"))
@@ -442,9 +442,9 @@ def _prepare(odas, timeout):
 
 
 def tracks(timeout=0.0, odas=None):
-    """Последние треки ODAS; `odas` — свой `Odas` или `lib_odas.Server`.
+    """Последние треки ODAS; `odas` - свой `Odas` или `lib_odas.Server`.
 
-    `timeout` — сколько ждать новый кадр, секунды (0 — только
+    `timeout` - сколько ждать новый кадр, секунды (0 - только
     накопленное). Пустой список, если ODAS ещё ничего не прислал.
     """
     return _prepare(odas, timeout).tracks()
@@ -454,8 +454,8 @@ def direction(timeout=1.0, odas=None):
     """Азимут/возвышение самого активного трека ODAS.
 
     Возвращает `{"azimuth", "elevation", "activity", "id"}`;
-    азимут: 0° — спереди, +90° — справа, −90° — слева.
-    Если ODAS не прислал ни одного кадра — `HalError`.
+    азимут: 0° - спереди, +90° - справа, −90° - слева.
+    Если ODAS не прислал ни одного кадра - `HalError`.
     """
     value = _prepare(odas, timeout).direction()
     if value is None:
@@ -465,7 +465,7 @@ def direction(timeout=1.0, odas=None):
 
 
 def separate(path=None):
-    """Разделение источников — через `lib_odas.AudioServer`.
+    """Разделение источников - через `lib_odas.AudioServer`.
 
     SSS отдаёт PCM на 9002 (`separated`) и 9003 (`postfiltered`);
     сервер нужно открыть до запуска `odaslive` и работать с ним

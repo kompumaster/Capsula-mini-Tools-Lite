@@ -1,4 +1,4 @@
-"""Цветной вывод: ANSI только когда поток — терминал.
+"""Цветной вывод: ANSI только когда поток - терминал.
 
 На Windows включает VT-режим у консоли; при перенаправлении вывода
 или в тестах цвет не добавляется.
@@ -33,7 +33,7 @@ def _enable_windows_vt() -> None:
 
 
 def paint(text: str, color: str, stream=None) -> str:
-    """Красит текст, если поток — терминал; иначе возвращает как есть."""
+    """Красит текст, если поток - терминал; иначе возвращает как есть."""
     global _prepared
     stream = stream if stream is not None else sys.stdout
     if not getattr(stream, "isatty", lambda: False)():

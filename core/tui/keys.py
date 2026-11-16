@@ -1,4 +1,4 @@
-"""Ввод одной клавиши: Linux — termios, Windows — msvcrt."""
+"""Ввод одной клавиши: Linux - termios, Windows - msvcrt."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 
 
 def read_key() -> str:
-    """Одна клавиша без Enter; EOF в неинтерактивном режиме — 'q'."""
+    """Одна клавиша без Enter; EOF в неинтерактивном режиме - 'q'."""
     if os.name == "nt":
         try:
             import msvcrt

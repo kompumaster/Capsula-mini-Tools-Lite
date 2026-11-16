@@ -1,11 +1,11 @@
 """Wi-Fi: политика и безопасное переключение сетей.
 
-Главное правило: единственный канал управления колонкой — Wi-Fi.
+Главное правило: единственный канал управления колонкой - Wi-Fi.
 Поэтому переключение сети делается только вместе со **сторожем**:
 до `select_network` запускается независимый процесс, который через
 `timeout` вернёт прежнюю сеть, если не появился `ok`-файл.
 
-Сам сторож — маленький shell-скрипт в `/tmp`: он не зависит ни от
+Сам сторож - маленький shell-скрипт в `/tmp`: он не зависит ни от
 MicroPython, ни от `/home`, и переживает обрыв SSH.
 """
 
@@ -39,8 +39,8 @@ MGMT_SAE = "SAE"
 def _key_mgmt(flags, psk=None):
     """Тип key_mgmt по флагам скана и наличию пароля.
 
-    `PSK` — WPA/WPA2 (в переходном WPA2+WPA3 тоже: он совместимее),
-    только `SAE` — WPA3, иначе открытая сеть. EAP/802.1X не умеем.
+    `PSK` - WPA/WPA2 (в переходном WPA2+WPA3 тоже: он совместимее),
+    только `SAE` - WPA3, иначе открытая сеть. EAP/802.1X не умеем.
     """
     flags = str(flags or "")
     if "EAP" in flags or "802.1X" in flags:
@@ -56,7 +56,7 @@ def _key_mgmt(flags, psk=None):
     return MGMT_PSK if psk else MGMT_OPEN
 
 _SCRIPT = """#!/bin/sh
-# Сторож Wi-Fi: нет ok-файла к моменту таймаута — вернуть старую сеть.
+# Сторож Wi-Fi: нет ok-файла к моменту таймаута - вернуть старую сеть.
 # Токен отменяет сторожа, если за это время запустили новый connect.
 new="$1"
 old="$2"
@@ -109,7 +109,7 @@ def guard_write(path=None):
 def guard_start(new_id, old_id, timeout=60, dry_run=False, path=None):
     """Запустить сторожа в фоне; вернуть команду.
 
-    `dry_run=True` — только записать в лог, что сделал бы откат.
+    `dry_run=True` - только записать в лог, что сделал бы откат.
     Токен в файле состояния отменяет предыдущего сторожа: если за
     время его сна начали новый `connect`, старый откат не сработает.
     """
@@ -176,7 +176,7 @@ def status():
 def scan(fresh=False, wait=3.0):
     """Сети, сильные первыми, без дублей по SSID.
 
-    `wait` — сколько ждать результатов свежего скана: при поднятом AP
+    `wait` - сколько ждать результатов свежего скана: при поднятом AP
     радио занято, и трёх секунд иногда мало.
     """
     items = (hal_wifi.scan(wait=wait) if fresh
@@ -202,7 +202,7 @@ def _current_network():
 
 
 def _visible(ssid, fresh=False):
-    """Найти сеть в кэше скана; `fresh=True` — сначала новый скан."""
+    """Найти сеть в кэше скана; `fresh=True` - сначала новый скан."""
     if fresh:
         hal_wifi.scan(fresh=True, wait=SCAN_WAIT)
     for item in hal_wifi.scan_results():
@@ -217,17 +217,17 @@ def connect(ssid, psk=None, timeout=60.0, hidden=False,
 
     Порядок: проверить → добавить сеть → **запустить сторожа** →
     `select_network` → ждать ассоциацию и адрес → `save_config`.
-    При неудаче — вернуть прежнюю сеть и бросить `HalError`.
+    При неудаче - вернуть прежнюю сеть и бросить `HalError`.
 
     Если SSID нет в кэше скана, делается один свежий скан; `dry_run`
     тоже может его запустить (это чтение, конфиг не меняется).
 
     Тип защиты берётся из флагов скана: открытая, WPA/WPA2-PSK или
-    WPA3-SAE. `key_mgmt` (`NONE`/`WPA-PSK`/`SAE`) перекрывает выбор —
+    WPA3-SAE. `key_mgmt` (`NONE`/`WPA-PSK`/`SAE`) перекрывает выбор -
     нужно для скрытых сетей, которых нет в скане. `hidden=True` также
     включает `scan_ssid=1`, иначе скрытый SSID не найти.
 
-    `dry_run=True` — только проверить и вернуть план, ничего не
+    `dry_run=True` - только проверить и вернуть план, ничего не
     меняя.
     """
     ssid = str(ssid)
@@ -258,7 +258,7 @@ def connect(ssid, psk=None, timeout=60.0, hidden=False,
     visible = _visible(ssid)
     if visible is None and not hidden:
         # Кэш мог устареть: один свежий скан. Если скан занят
-        # (FAIL-BUSY), ещё раз читаем кэш — он мог обновиться.
+        # (FAIL-BUSY), ещё раз читаем кэш - он мог обновиться.
         try:
             visible = _visible(ssid, fresh=True)
         except HalError:
@@ -412,7 +412,7 @@ def forget(ssid):
 
 
 def disconnect(allow=False):
-    """Отключиться от сети — только с явным разрешением."""
+    """Отключиться от сети - только с явным разрешением."""
     if not allow:
         raise HalError("disconnect рвёт канал; нужен allow=True")
     wifi_lock = hal_common.lock("wifi")

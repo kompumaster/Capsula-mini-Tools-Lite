@@ -45,7 +45,7 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — бинарник и профиль наши, `off` — нет или чужие."""
+    """`on` - бинарник и профиль наши, `off` - нет или чужие."""
     hashes = {}
     state = "on"
     for path, asset, _mode, name in FILES:

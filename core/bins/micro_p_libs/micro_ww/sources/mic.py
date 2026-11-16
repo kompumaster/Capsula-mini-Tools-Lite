@@ -3,8 +3,8 @@
 `micro_hal` импортируется только в `open()`. Источник отдаёт одно окно
 моно-PCM (`s16le`, 16 кГц, 20 мс), как `micro_asr`:
 
-- `mics` — захват `channels=1`, моно сводит Pulse;
-- `speex` — готовый моно-поток после beamforming и AGC.
+- `mics` - захват `channels=1`, моно сводит Pulse;
+- `speex` - готовый моно-поток после beamforming и AGC.
 """
 
 from micro_ww.errors import WwError

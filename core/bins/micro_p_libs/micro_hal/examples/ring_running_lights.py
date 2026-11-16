@@ -5,7 +5,7 @@
 
     /home/microp/mp micro_hal/examples/ring_running_lights.py
 
-Ctrl+C — остановить и погасить кольцо.
+Ctrl+C - остановить и погасить кольцо.
 """
 
 from micro_hal import hal_ring, lib_ring

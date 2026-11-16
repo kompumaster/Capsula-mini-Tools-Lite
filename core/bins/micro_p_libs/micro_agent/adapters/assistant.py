@@ -1,6 +1,6 @@
 """Ассистент: интерфейс LLM и простые заглушки.
 
-`LlmAssistant` — настоящий ответ через `micro_llm`;
+`LlmAssistant` - настоящий ответ через `micro_llm`;
 `EchoAssistant` и `ScriptedAssistant` нужны для тестов и когда LLM
 недоступна.
 """

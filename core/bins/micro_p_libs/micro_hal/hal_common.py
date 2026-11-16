@@ -4,7 +4,7 @@
 команд и определение конфликта с `voice-agent`. Модули `hal_*` должны
 импортировать этот файл и не дублировать проверки.
 
-Совместимость: MicroPython 1.30 (unix, AArch64) и CPython 3.9+ — чтобы
+Совместимость: MicroPython 1.30 (unix, AArch64) и CPython 3.9+ - чтобы
 чистую логику можно было тестировать на хосте в `_venv`.
 """
 
@@ -112,7 +112,7 @@ def capture(command):
 
 
 def processes():
-    """Список `(pid, cmdline)` процессов; cmdline — с пробелами."""
+    """Список `(pid, cmdline)` процессов; cmdline - с пробелами."""
     result = []
     try:
         entries = os.listdir("/proc")
@@ -135,7 +135,7 @@ def stale_owner(pid, prefix="micro_hal_"):
     """Остался ли процесс `pid` без живого владельца.
 
     В `/tmp` ищутся файлы `<prefix><owner>.pid`, где записан `pid`.
-    Если владелец из имени файла уже мёртв — процесс осиротел и его
+    Если владелец из имени файла уже мёртв - процесс осиротел и его
     можно остановить из другого скрипта. Живого владельца не трогаем.
     """
     pid = str(int(pid))
@@ -225,7 +225,7 @@ def start_va():
 
 
 def display_channels():
-    """Сколько каналов `clock-led*` есть в sysfs (0 — дисплея нет)."""
+    """Сколько каналов `clock-led*` есть в sysfs (0 - дисплея нет)."""
     try:
         names = os.listdir(SYSFS_LEDS)
     except OSError:
@@ -364,7 +364,7 @@ class Lock:
         _LOCKS.pop(self.name, None)
         owner = _lock_pid(self.path)
         if owner is None or owner == _self_pid():
-            # Нет pid — значит запись не удалась (или её подменили
+            # Нет pid - значит запись не удалась (или её подменили
             # в тесте); свой замок всё равно надо снять.
             _lock_drop(self.path)
         return True
@@ -386,7 +386,7 @@ def _lock_state(path):
 
     Общее правило для `lock()` и `locked()`: пустой каталог без `pid`
     считается занятым, пока ему меньше 10 с (процесс мог умереть между
-    `mkdir` и записью pid); позже — устаревшим.
+    `mkdir` и записью pid); позже - устаревшим.
     """
     if not exists(path):
         return "free", None
@@ -406,7 +406,7 @@ def _lock_state(path):
 def lock(name, timeout=0.0):
     """Взять замок на ресурс; `HalError`, если занято.
 
-    `timeout` — сколько секунд ждать чужой замок (0 — сразу).
+    `timeout` - сколько секунд ждать чужой замок (0 - сразу).
     Замок с мёртвым PID или пустой старше 10 с перехватывается.
     """
     name = str(name)

@@ -23,7 +23,7 @@ def kill(tree: TarTree) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — оригинал, `off` — файла нет или стоит заглушка."""
+    """`on` - оригинал, `off` - файла нет или стоит заглушка."""
     digest = present_sha(tree, PATH)
     if digest is None:
         return "off", {}

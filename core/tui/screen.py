@@ -50,7 +50,7 @@ class Screen:
     def prompt(self, text: str = "Выбор: ") -> None:
         print(text, end="", flush=True)
 
-    def pause(self, text: str = "Enter — вернуться...") -> None:
+    def pause(self, text: str = "Enter - вернуться...") -> None:
         if not self.tty:
             return
         try:

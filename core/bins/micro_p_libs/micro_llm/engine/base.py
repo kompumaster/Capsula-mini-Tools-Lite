@@ -42,7 +42,7 @@ class Engine:
         self._opened = False
 
     def open(self, model=None, **options):
-        """Подготовить движок; ошибка — `LlmError`."""
+        """Подготовить движок; ошибка - `LlmError`."""
         raise LlmError(
             "движок {} не реализует open()".format(self.name))
 
@@ -67,7 +67,7 @@ class Engine:
             "движок {} не реализует complete()".format(self.name))
 
     def stream(self, messages):
-        """Куски текста ответа; по умолчанию — один кусок."""
+        """Куски текста ответа; по умолчанию - один кусок."""
         raise LlmError(
             "движок {} не поддерживает поток".format(self.name))
 

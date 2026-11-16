@@ -5,8 +5,8 @@
 
     /home/microp/mp micro_hal/examples/volume_demo.py
 
-vol+ / vol- — шаг 5, play дважды или vol-+vol+ — mute,
-mic — напечатать текущую громкость и состояние mute.
+vol+ / vol- - шаг 5, play дважды или vol-+vol+ - mute,
+mic - напечатать текущую громкость и состояние mute.
 """
 
 from micro_hal import hal_keys, lib_keys, lib_volume

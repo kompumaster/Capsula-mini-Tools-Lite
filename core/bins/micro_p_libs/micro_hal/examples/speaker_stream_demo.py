@@ -8,7 +8,7 @@
     /home/microp/mp \
         /home/microp/micro_hal/examples/speaker_stream_demo.py alarm
 
-Аргумент — sink (по умолчанию `master`). Все вызовы — через
+Аргумент - sink (по умолчанию `master`). Все вызовы - через
 `lib_speaker`; громкость не меняется.
 """
 

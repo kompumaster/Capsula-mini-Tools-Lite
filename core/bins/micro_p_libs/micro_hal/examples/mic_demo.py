@@ -7,9 +7,9 @@
     /home/microp/mp /home/microp/micro_hal/examples/mic_demo.py 4
     /home/microp/mp /home/microp/micro_hal/examples/mic_demo.py 1 5
 
-Первый аргумент — каналы потока (1 — моно, 4 — сырьё), второй —
-сколько секунд слушать (0 или пусто — до Ctrl+C). Каждые 200 мс
-печатается dBFS, по выходу — сводка и размер кольца.
+Первый аргумент - каналы потока (1 - моно, 4 - сырьё), второй -
+сколько секунд слушать (0 или пусто - до Ctrl+C). Каждые 200 мс
+печатается dBFS, по выходу - сводка и размер кольца.
 """
 
 import sys
@@ -44,7 +44,7 @@ def main():
     mic.open()
     print("каналов:", mic.channels, "окно:", mic.window(),
           "кадров, кольцо:", mic.ring_frames, "кадров")
-    print("dBFS: 0 — полная шкала, −80 — тишина; Ctrl+C — выход")
+    print("dBFS: 0 - полная шкала, −80 - тишина; Ctrl+C - выход")
 
     levels = []
     started = time.ticks_ms()

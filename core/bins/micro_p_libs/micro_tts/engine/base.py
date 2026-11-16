@@ -66,7 +66,7 @@ class Engine:
         self._opened = False
 
     def open(self, voice=None, rate=1.0, pitch=1.0, **options):
-        """Подготовить движок; ошибка — `TtsError`."""
+        """Подготовить движок; ошибка - `TtsError`."""
         raise TtsError("движок {} не реализует open()".format(self.name))
 
     def voices(self):
@@ -104,7 +104,7 @@ class Engine:
     def request_bytes(self):
         """Сколько байт текста движок принимает за один запрос.
 
-        `0` — без ограничения. По умолчанию 4096: столько принимает
+        `0` - без ограничения. По умолчанию 4096: столько принимает
         Edge. Потоковый режим склеивает текст до этого размера.
         """
         return 4096

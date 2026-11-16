@@ -6,7 +6,7 @@
     /home/microp/mp micro_hal/examples/ring_demo.py
 
 Эффекты идут по одному разу, как в `test_micro_hal_ring_effects.py`,
-но с живыми паузами. Ctrl+C — остановить и погасить кольцо.
+но с живыми паузами. Ctrl+C - остановить и погасить кольцо.
 """
 
 from micro_hal import hal_ring, lib_ring

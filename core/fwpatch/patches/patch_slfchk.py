@@ -56,7 +56,7 @@ def remove(tree: TarTree, ask: Ask | None = None) -> None:
 
 
 def detect(tree: TarTree) -> tuple[str, dict[str, str]]:
-    """`on` — S98 убран, `off` — S98 на месте."""
+    """`on` - S98 убран, `off` - S98 на месте."""
     original = present_sha(tree, PATH)
     backup = present_sha(tree, BACKUP)
     if backup is not None and original is None:

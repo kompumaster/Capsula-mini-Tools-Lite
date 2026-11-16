@@ -22,7 +22,7 @@ def limit_text(text, limit):
 
 
 def load_system(path=DEFAULT_SYSTEM_FILE, limit=DEFAULT_SYSTEM_CHARS):
-    """Прочитать системный промпт; нет файла — пустая строка."""
+    """Прочитать системный промпт; нет файла - пустая строка."""
     try:
         handle = open(path, "r")
     except OSError:

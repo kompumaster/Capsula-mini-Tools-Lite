@@ -16,8 +16,8 @@ Wi-Fi и ODAS.
 
 ## Два слоя
 
-- `hal_*` — только железо: sysfs, ioctl, `/dev/input`, команды Pulse.
-- `lib_*` — смысл: шрифты, раскладка, время, эффекты, комбинации.
+- `hal_*` - только железо: sysfs, ioctl, `/dev/input`, команды Pulse.
+- `lib_*` - смысл: шрифты, раскладка, время, эффекты, комбинации.
 
 `lib_*` может импортировать `hal_*`; обратное запрещено.
 
@@ -26,7 +26,7 @@ Wi-Fi и ODAS.
 Файлы передаются через `ssh ... 'cat > ...'`:
 
 ```sh
-# IP — адрес колонки в локальной сети
+# IP - адрес колонки в локальной сети
 ssh capsula@IP 'mkdir -p /home/microp/micro_hal/bins'
 for f in micro_hal/*.py; do
     ssh capsula@IP \
@@ -75,12 +75,12 @@ MICROPYPATH=/home/microp:/usr/lib/micropython \
 | Динамик | `hal_speaker` | `lib_speaker` | `tone`, `melody`, `play`, `stop` |
 | Громкость | `hal_volume` | `lib_volume` | `get`, `set`, `up`, `down`, `mute` |
 | Bluetooth | `hal_bt` | `lib_bt` | `enable`, `status`, `audio`, `volume` |
-| Датчик света | `hal_light` | — | `available`, `read`, `lux` |
+| Датчик света | `hal_light` | - | `available`, `read`, `lux` |
 | Wi-Fi | `hal_wifi` | `lib_wifi` | `status`, `scan`, `connect`, `saved` |
-| NTP | — | `lib_ntp` | `query`, `scan`, `sync` |
+| NTP | - | `lib_ntp` | `query`, `scan`, `sync` |
 | ODAS | `hal_odas` | `lib_odas` | `start`, `stop`, `tracks`, `pots`, `categories`, `separated` |
 
-Все модули железа готовы; точка доступа и портал — `examples/ap_portal.py`.
+Все модули железа готовы; точка доступа и портал - `examples/ap_portal.py`.
 Сокет Pulse общий для звука: его ищет `hal_pulse` (см. «Pulse»).
 
 ## Дисплей
@@ -111,7 +111,7 @@ hal_display.scale(50)              # проценты от текущего
 hal_display.probe()                # по одному каналу, с паузой
 ```
 
-`lib_display.frame("1234")` возвращает 30 физических значений без записи —
+`lib_display.frame("1234")` возвращает 30 физических значений без записи -
 удобно для тестов. `lib_display.raw_logical(values)` пишет кадр в
 стоковом порядке (как в JSON-анимациях).
 
@@ -141,22 +141,22 @@ lib_display.text("1234", value=100)        # явная яркость, без �
 ```
 
 - линейный режим: `153 * percent / 100`;
-- `gamma=True` — стоковая формула
+- `gamma=True` - стоковая формула
   `round(255 * pow(percent*0.62862504/100 + 0.2514867, 4))`,
-  при `percent = 0` — 0;
+  при `percent = 0` - 0;
 - по умолчанию `100 %` → `153`;
 - `text`, `clock`, `colon` используют глобальную яркость, `value=`
   перекрывает её;
 - `demo_stock` масштабирует кадры на текущую яркость
   (`scale=False` отключает).
 
-Плавные анимации (например, затухание цифр при смене минуты) —
+Плавные анимации (например, затухание цифр при смене минуты) -
 `libc_display.so`: дисплей пишет через C, sysfs остаётся для
 чтения (`get`) и диагностики; библиотека ставится вместе с пакетом.
 
 Шрифт, раскладка и перестановка взяты из `voice-agent`; порядок
 `clock-ledN`, ориентация цифр и двоеточие проверены на плате.
-Пример часов — `examples/display_clock.py`.
+Пример часов - `examples/display_clock.py`.
 
 ## Кольцо
 
@@ -173,16 +173,16 @@ ring.close()
 ```
 
 - 12 пикселей, 36 каналов;
-- пиксель 0 — 12 часов (сзади, у провода питания), далее по часовой
+- пиксель 0 - 12 часов (сзади, у провода питания), далее по часовой
   стрелке;
-- цвета RGB, перестановка и яркость — в `hal_ring`;
+- цвета RGB, перестановка и яркость - в `hal_ring`;
 - `pixel`/`fill` меняют буфер, `show()` отправляет кадр;
-- `clear()` только гасит буфер, `off()` — гасит и отправляет;
+- `clear()` только гасит буфер, `off()` - гасит и отправляет;
 - кадр лежит в C-буфере `libc_ring.so`; Python заполняет его через
   `ffi.as_bytearray`. Прямой Python-буфер в `ring_write` не работает
   (`EINVAL`).
 
-Эффекты — в `lib_ring`:
+Эффекты - в `lib_ring`:
 
 ```python
 from micro_hal import lib_ring
@@ -205,7 +205,7 @@ lib_ring.fire_flicker(ring)
 ```
 
 Все эффекты блокирующие; `delay` задаёт паузу между кадрами.
-Примеры — `examples/ring_demo.py` и
+Примеры - `examples/ring_demo.py` и
 `examples/ring_running_lights.py`.
 
 ## Кнопки
@@ -226,15 +226,15 @@ while True:
 
 Сочетания: `vol-+vol+` (114+115), `circle+vol+` (164+115),
 `circle+vol-` (164+114). Пока сочетание активно, одиночные события
-его клавиш не выдаются. `count` — число кликов, номер шага или 0.
+его клавиш не выдаются. `count` - число кликов, номер шага или 0.
 
 Тайминги по умолчанию: debounce 40 мс, hold 600 мс, click 350 мс,
 combo 100 мс, step 150 мс; `combo_hold` по умолчанию равен `hold`.
 
 `wait()` не теряет события: если один `poll()` дал `click` и `single`,
-первый `wait()` вернёт `click`, следующий — `single`.
+первый `wait()` вернёт `click`, следующий - `single`.
 
-Пример — `examples/keys_demo.py`.
+Пример - `examples/keys_demo.py`.
 
 ## Датчик света
 
@@ -246,8 +246,8 @@ hal_light.read()        # люксы, float
 hal_light.lux()         # то же, что read()
 ```
 
-Драйвер BH1730FVC отдаёт готовые люксы; `clear_raw`/`ir_raw` —
-только диагностика. Кэша нет, ошибки — `HalError`.
+Драйвер BH1730FVC отдаёт готовые люксы; `clear_raw`/`ir_raw` -
+только диагностика. Кэша нет, ошибки - `HalError`.
 
 ## NTP
 
@@ -283,14 +283,14 @@ server.close()
 hal_odas.stop()
 ```
 
-`odaslive` — отдельный демон. При `start(verbose=True)` его вывод
-пишется в `/tmp/micro_hal_odas.<pid>.log`; без `verbose` — в
+`odaslive` - отдельный демон. При `start(verbose=True)` его вывод
+пишется в `/tmp/micro_hal_odas.<pid>.log`; без `verbose` - в
 `/dev/null`, чтобы не занимать RAM. Выходы:
-`tracks` — JSON на `9000`, `pots` — JSON на `9001`,
-`categories` — JSON на `9004`; `sss.separated`/`postfiltered` —
-PCM на `9002`/`9003` (через `lib_odas.AudioServer`). Занятый порт —
-`HalError` с номером порта, сокет при этом закрывается. Азимут: `0°` — спереди,
-`+90°` — справа, `−90°` — слева. Пример трекинга —
+`tracks` - JSON на `9000`, `pots` - JSON на `9001`,
+`categories` - JSON на `9004`; `sss.separated`/`postfiltered` -
+PCM на `9002`/`9003` (через `lib_odas.AudioServer`). Занятый порт -
+`HalError` с номером порта, сокет при этом закрывается. Азимут: `0°` - спереди,
+`+90°` - справа, `−90°` - слева. Пример трекинга -
 `examples/odas_tracking.py`.
 
 ## Pulse
@@ -309,7 +309,7 @@ hal_pulse.forget()   # сбросить кэш поиска
 
 Порядок поиска: заданный `PULSE_SERVER` → `$XDG_RUNTIME_DIR/pulse/native`
 → `/run/user/*/pulse/native` → самый свежий `/tmp/pulse-*/native`.
-Найденный путь кэшируется и перепроверяется: исчез — ищем заново.
+Найденный путь кэшируется и перепроверяется: исчез - ищем заново.
 В MicroPython переменная читается из `/proc/self/environ`, потому что
 `os.environ` там нет.
 
@@ -331,7 +331,7 @@ volume.muted() / volume.mute() / volume.unmute()
 
 `pactl` управляет Pulse; `ntp-ibb-volume-syncer` повторяет за ним в
 ALSA `TV-Set`. `PULSE_SERVER` подставляется автоматически
-(`hal_pulse`). Пример с кнопками — `examples/volume_demo.py`.
+(`hal_pulse`). Пример с кнопками - `examples/volume_demo.py`.
 
 ## Динамик
 
@@ -358,7 +358,7 @@ lib_speaker.playing()                          # PID или None
 lib_speaker.result()                           # код выхода или None
 ```
 
-`lib_speaker` — фасад для проекта: подтягивает `hal_pulse`,
+`lib_speaker` - фасад для проекта: подтягивает `hal_pulse`,
 `hal_speaker`, `hal_volume`, `lib_volume` и `lib_wav`, поэтому
 достаточно импортировать только его.
 
@@ -378,21 +378,21 @@ hal_speaker.stop()
 
 - sink'и: `master` (по умолчанию), `alarm`, `ring`, `call`,
   `alsa_playback`, `snapcast`; все `s16le 2ch 48000Hz`;
-- `paplay` на плате — симлинк на `pacat`: WAV играет по имени
-  `paplay`, сырой поток — `pacat --raw`;
+- `paplay` на плате - симлинк на `pacat`: WAV играет по имени
+  `paplay`, сырой поток - `pacat --raw`;
 - тон и мелодия генерируются в C (`libc_speaker.so`): 16 кГц, моно,
   `s16le`, Pulse ресемплирует; огибающая 10 мс на краях и на каждой
-  ноте — без щелчков;
+  ноте - без щелчков;
 - без библиотеки работает Python-реализация (эталон для сверки),
   но примерно в 20 раз медленнее;
-- громкость — отдельно, `lib_volume`; 100 % — максимум;
+- громкость - отдельно, `lib_volume`; 100 % - максимум;
 - `pacat`/`paplay` получают `PULSE_SERVER` от `hal_pulse`;
 - `pacat` стартует ~0,15 с, поэтому длительность чуть больше
   номинала; `wait()` возвращается после конца;
 - `play_wav(wait=True)` блокируется до конца WAV любой длины
-  (`hal_speaker.wait(None)`), `wait=False` — не ждёт.
+  (`hal_speaker.wait(None)`), `wait=False` - не ждёт.
 
-Поток PCM — `hal_speaker.Stream` (FIFO, память ограничена буфером):
+Поток PCM - `hal_speaker.Stream` (FIFO, память ограничена буфером):
 
 ```python
 from micro_hal import hal_speaker
@@ -407,12 +407,12 @@ with hal_speaker.Stream(rate=24000, channels=1) as out:
   2 байтам;
 - `close()` закрывает FIFO, ждёт слива (до 5 с) и убирает файл;
   `stop()` обрывает сразу;
-- пауза — `hal_speaker.pause()` / `resume()` / `paused()`:
+- пауза - `hal_speaker.pause()` / `resume()` / `paused()`:
   `pactl suspend-sink <sink>` (в pactl 16.1 нет
   `suspend-sink-input`), поэтому пауза действует на весь sink.
 
-Пример — `examples/speaker_demo.py` (тоны, мелодия, пауза, `stop`);
-поток, PCM и файлы — `examples/speaker_stream_demo.py`.
+Пример - `examples/speaker_demo.py` (тоны, мелодия, пауза, `stop`);
+поток, PCM и файлы - `examples/speaker_stream_demo.py`.
 
 ## Bluetooth
 
@@ -432,7 +432,7 @@ lib_bt.disable()         # снять звук, скрыть, power off
 ```
 
 - по умолчанию Bluetooth **выключен**; `enable()` включает и делает
-  колонку видимой (`Discoverable`/`Pairable`), `disable()` —
+  колонку видимой (`Discoverable`/`Pairable`), `disable()` -
   наоборот;
 - A2DP Sink поднимает Pulse (`module-bluez5-discover`): телефон
   приходит **источником** `bluez_source.<MAC>.a2dp_source`, а на
@@ -442,14 +442,14 @@ lib_bt.disable()         # снять звук, скрыть, power off
   подключение A2DP отклоняется (`Access denied`). После сопряжения
   вызовите `connect(address)` (он сам ставит `Trusted`) или
   `trust_paired()`;
-- `mute()` глушит только звук телефона и не рвёт A2DP — удобно на
+- `mute()` глушит только звук телефона и не рвёт A2DP - удобно на
   время системного сообщения (`lib_speaker` играет в `master`);
-- `volume()` — громкость телефона, отдельная от `master`;
+- `volume()` - громкость телефона, отдельная от `master`;
 - телефонная книга (PBAP) не поднимается: `bluetoothd` запущен с
   `--plugin=a2dp,avrc`;
-- HFP (звонки) не поддерживается — нет `oFono`.
+- HFP (звонки) не поддерживается - нет `oFono`.
 
-Пример — `examples/bt_demo.py`.
+Пример - `examples/bt_demo.py`.
 
 ## Wi-Fi
 
@@ -457,17 +457,17 @@ lib_bt.disable()         # снять звук, скрыть, power off
 from micro_hal import lib_wifi
 
 lib_wifi.status()          # ssid, state, ip, freq, signal
-lib_wifi.scan()            # кэш; scan(fresh=True) — свежий
+lib_wifi.scan()            # кэш; scan(fresh=True) - свежий
 lib_wifi.saved()           # сохранённые SSID
 lib_wifi.connect("HOME", "пароль")   # рвёт канал: есть сторож и откат
 lib_wifi.forget("TEST")    # текущую сеть удалять нельзя
 lib_wifi.disconnect(allow=True)
 ```
 
-- управление — `wpa_cli` и `dhcpcd`; `iw`/`iwconfig` на плате нет;
+- управление - `wpa_cli` и `dhcpcd`; `iw`/`iwconfig` на плате нет;
 - тип защиты берётся из флагов скана: открытая (`NONE`),
-  WPA/WPA2 (`WPA-PSK`), WPA3 (`SAE`); переходный WPA2+WPA3 — через
-  `WPA-PSK`; `EAP`/`802.1X` и `WEP` — `HalError`;
+  WPA/WPA2 (`WPA-PSK`), WPA3 (`SAE`); переходный WPA2+WPA3 - через
+  `WPA-PSK`; `EAP`/`802.1X` и `WEP` - `HalError`;
 - `hidden=True` включает `scan_ssid=1` (иначе скрытый SSID не
   находится); тип защиты для скрытой сети задаётся явно:
   `connect(..., hidden=True, key_mgmt="SAE")`;
@@ -475,7 +475,7 @@ lib_wifi.disconnect(allow=True)
   (3 с); если радио занято (`FAIL-BUSY`), перечитывает кэш;
 - `connect()` **до** переключения запускает сторож
   (`/tmp/micro_hal_wifi_guard.sh`): если новая сеть не поднимется за
-  `timeout` (60 с), он вернёт прежнюю; `save_config` — только после
+  `timeout` (60 с), он вернёт прежнюю; `save_config` - только после
   успеха;
 - при откате `guard_ok()` ставится только когда поднялась именно
   прежняя сеть (`status().id`/`ssid` + `COMPLETED`), а не любой
@@ -485,21 +485,21 @@ lib_wifi.disconnect(allow=True)
   что сторож прошлого подключения не откатит новый сеанс;
 - повторный `connect()` к уже настроенной сети (но не `COMPLETED`)
   делает `reconnect` без новой записи; результат содержит
-  `saved: True/False` (`False` — конфиг не сохранился, сеть работает);
+  `saved: True/False` (`False` - конфиг не сохранился, сеть работает);
 - `forget()`/`disconnect()` берут тот же замок;
 - текущую сеть библиотека не трогает, `forget()` её запрещает;
 - `disconnect()` без `allow=True` бросает `HalError`;
 - проверено на железе: подключение к выдуманной сети → обрыв 13,9 с
   → откат вернул прежнюю сеть и адрес, конфиг не изменился;
-- точка доступа и captive portal — `examples/ap_portal.py`:
+- точка доступа и captive portal - `examples/ap_portal.py`:
   `hostapd` на `p2p0`, `dnsmasq` с DHCP, страница на `10.0.0.1:80`;
   `/stopap` сначала отдаёт страницу, затем гасит AP (иначе ответ
   теряется вместе с адресом);
 - `start_ap()` проверяет коды `hostapd`/`ip`/`dnsmasq` и возвращает
   текст ошибок; `_ap_running()` требует оба процесса и адрес
-  `10.0.0.1` — портал показывает проблему на странице.
+  `10.0.0.1` - портал показывает проблему на странице.
 
-Пример — `examples/wifi_demo.py`.
+Пример - `examples/wifi_demo.py`.
 
 ## Микрофоны
 
@@ -516,21 +516,21 @@ lib_mic.levels(data)         # по каналам
 lib_mic.mono(data)           # s16le моно
 ```
 
-`mics` — 4 канала / 16 кГц / s16le. Внутри `parec` запускается с
+`mics` - 4 канала / 16 кГц / s16le. Внутри `parec` запускается с
 `--no-remap`: без него Pulse отдаёт нули. Запись идёт фоновым
 процессом, PID хранится в `/tmp/micro_hal_mic.<pid>.pid`.
 
-Непрерывный захват — C-хелпер `libc_mic.so` из `bins/`:
+Непрерывный захват - C-хелпер `libc_mic.so` из `bins/`:
 `mic_open(source, rate, channels, window_ms, settle_ms)`, `mic_read`
 по окну 20 мс, `mic_mono`, `mic_stats`.
 
-- `channels=4` — сырьё `aux0…aux3` (эквивалент `parec --no-remap`);
-- `channels=1` — Pulse сводит 4 → 1 (среднее, как
+- `channels=4` - сырьё `aux0…aux3` (эквивалент `parec --no-remap`);
+- `channels=1` - Pulse сводит 4 → 1 (среднее, как
   `pulse:mics/16000/1` у стока);
 - `settle_ms` отбрасывает оседание постоянной составляющей после
   старта (около секунды); уровни считаются по переменной части.
 
-`parec --channels=1 --no-remap` — это **только `aux0`**, не микс.
+`parec --channels=1 --no-remap` - это **только `aux0`**, не микс.
 
 Непрерывный поток:
 
@@ -547,20 +547,20 @@ mic.close()
 ```
 
 `read()` отдаёт моно-кусок (20 мс), кольцо хранит последние
-`ring_seconds`, `snapshot()` — пре-ролл. VAD, тишины и границ фраз
-здесь нет — это дело вызывающего.
+`ring_seconds`, `snapshot()` - пре-ролл. VAD, тишины и границ фраз
+здесь нет - это дело вызывающего.
 
 В C счётчик кадров 64-битный, наружу отдаётся `int` с насыщением
 (`INT32_MAX`): после очень долгого захвата `frames()` не уходит в
 минус.
 
 Долгие записи в файлы на колонке не храним: ~100 МБ RAM и ~70 МБ
-раздела, `record()` — только короткая отладка.
+раздела, `record()` - только короткая отладка.
 
-Пример — `examples/mic_demo.py`: полоска dBFS каждые 200 мс,
+Пример - `examples/mic_demo.py`: полоска dBFS каждые 200 мс,
 аргументы «каналы» и «секунды», по выходу сводка и размер кольца.
 
-Направление и треки — через ODAS:
+Направление и треки - через ODAS:
 
 ```python
 from micro_hal import hal_odas, lib_mic
@@ -575,7 +575,7 @@ hal_odas.stop()
 ```
 
 Набор выходов фиксируется при открытии: если ODAS уже открыт без
-SSS, а нужен SSS (или наоборот), будет `HalError` — сначала
+SSS, а нужен SSS (или наоборот), будет `HalError` - сначала
 `close_odas()`.
 
 Разделение (SSS):
@@ -617,7 +617,7 @@ data = server.channel(index)            # PCM одного источника
 (`MicStream`) и воспроизведение делятся через Pulse.
 
 Пустой каталог замка без `pid` считается занятым первые 10 секунд
-(процесс мог умереть между `mkdir` и записью pid) — одинаково для
+(процесс мог умереть между `mkdir` и записью pid) - одинаково для
 `lock()` и `locked()`; после этого он устаревший и перехватывается.
 
 `running()` в `hal_mic`, `hal_speaker` и `hal_odas` находит и
@@ -654,7 +654,7 @@ data = server.channel(index)            # PCM одного источника
 
 ## Установка
 
-`/data/permanent` переживает factory reset; overlay — нет.
+`/data/permanent` переживает factory reset; overlay - нет.
 
 Без обёртки `mp`:
 
@@ -666,23 +666,23 @@ from micro_hal import lib_display
 
 ## Правила для новых модулей
 
-- `hal_<устройство>.py` — железо, `lib_<устройство>.py` — логика;
+- `hal_<устройство>.py` - железо, `lib_<устройство>.py` - логика;
 - при импорте ничего не открывать и не писать;
 - `ffi` и прочие системные библиотеки импортировать внутри функции;
-- ошибки — `HalError`, тексты по-русски;
-- общие проверки — из `hal_common`;
+- ошибки - `HalError`, тексты по-русски;
+- общие проверки - из `hal_common`;
 - чистую логику тестировать на хосте, без платы.
 
 ## Тесты
 
-Тесты идут на CPython, без платы и без настоящего Pulse — 697 штук.
+Тесты идут на CPython, без платы и без настоящего Pulse - 697 штук.
 На колонке пакет разворачивается в `/home/microp/micro_hal`.
 
 ## Благодарности
 
-- [GyverButton](https://github.com/GyverLibs/GyverButton) — идеи
+- [GyverButton](https://github.com/GyverLibs/GyverButton) - идеи
   обработки кнопок: дебаунс, удержание, клики, автоповтор.
-- [WS2812FX](https://github.com/kitesurfer1404/WS2812FX) — идеи
+- [WS2812FX](https://github.com/kitesurfer1404/WS2812FX) - идеи
   эффектов для светодиодного кольца.
 
-Ссылки — справочные; код библиотек в проект не копируется.
+Ссылки - справочные; код библиотек в проект не копируется.

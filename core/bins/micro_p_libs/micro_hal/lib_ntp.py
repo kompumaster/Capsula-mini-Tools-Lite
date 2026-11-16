@@ -1,12 +1,12 @@
 """NTP: запрос времени по SNTP и установка системных часов.
 
-Сеть — чистый MicroPython: `socket`, `struct`, `time`. Отдельного
+Сеть - чистый MicroPython: `socket`, `struct`, `time`. Отдельного
 `hal_ntp` нет. По умолчанию сначала московские серверы; если пинг
 больше порога, список перебирается дальше (регионы, `pool.ntp.org`).
 
-Установка времени — `date -u -s` (BusyBox): в MicroPython `ffi` нет
+Установка времени - `date -u -s` (BusyBox): в MicroPython `ffi` нет
 `new`, поэтому собрать `struct timeval` для `settimeofday` нельзя.
-Точность установки — секунда; для часов на дисплее этого достаточно.
+Точность установки - секунда; для часов на дисплее этого достаточно.
 """
 
 import os
@@ -28,7 +28,7 @@ __all__ = [
 NTP_PORT = 123
 NTP_EPOCH = 2208988800          # секунды 1900 → 1970
 TIMEOUT = 2.0                   # секунд на один сервер
-MAX_DELAY = 0.15                # 150 мс: выше — считаем «большим пингом»
+MAX_DELAY = 0.15                # 150 мс: выше - считаем «большим пингом»
 
 LOCALTIME = "/etc/localtime"
 ZONEINFO = "/usr/share/zoneinfo"
@@ -47,7 +47,7 @@ MOSCOW = (
     "3.ru.pool.ntp.org",
 )
 
-# Региональные серверы ВНИИФТРИ — если Москва далеко.
+# Региональные серверы ВНИИФТРИ - если Москва далеко.
 REGIONAL = (
     "ntp1.niiftri.irkutsk.ru",
     "ntp2.niiftri.irkutsk.ru",
@@ -204,7 +204,7 @@ def _remember(server):
 
 
 def _default_servers():
-    """Список по умолчанию; запомненный сервер — первым."""
+    """Список по умолчанию; запомненный сервер - первым."""
     if _cached is None:
         return DEFAULT
     return (_cached,) + tuple(
@@ -212,10 +212,10 @@ def _default_servers():
 
 
 def _pick_servers(server, servers):
-    """Явный сервер или список; без обоих — встроенный список."""
+    """Явный сервер или список; без обоих - встроенный список."""
     if server is not None:
         if servers is not None:
-            raise HalError("NTP: укажите что-то одно — server или servers")
+            raise HalError("NTP: укажите что-то одно - server или servers")
         return (server,)
     if servers is None:
         return _default_servers()
@@ -230,8 +230,8 @@ def _pick_servers(server, servers):
 def query(server=None, servers=None, timeout=TIMEOUT, max_delay=MAX_DELAY):
     """Спросить время; вернуть offset, delay, stratum и кто ответил.
 
-    `server` — только этот сервер, без перебора; `servers` — список
-    для перебора; ничего не указано — встроенный список, а первым
+    `server` - только этот сервер, без перебора; `servers` - список
+    для перебора; ничего не указано - встроенный список, а первым
     пробуется сервер, запомненный как лучший.
     """
     servers = _pick_servers(server, servers)
@@ -245,8 +245,8 @@ def query(server=None, servers=None, timeout=TIMEOUT, max_delay=MAX_DELAY):
 def scan(servers=None, timeout=TIMEOUT):
     """Проверить все серверы и вернуть список, быстрые первыми.
 
-    Каждый элемент: `server`, `ok`, а для ответивших — `ip`, `offset`,
-    `delay`, `stratum`, `leap`; для остальных — `error`. Исключения
+    Каждый элемент: `server`, `ok`, а для ответивших - `ip`, `offset`,
+    `delay`, `stratum`, `leap`; для остальных - `error`. Исключения
     не бросает, кроме пустого списка и неверного timeout. Лучший
     сервер запоминается на сессию.
     """
@@ -360,8 +360,8 @@ def set_timezone(zone):
 def sync(server=None, servers=None, timeout=TIMEOUT, max_delay=MAX_DELAY):
     """Спросить время и установить его; вернуть offset до установки.
 
-    `server` — явный сервер, `servers` — список для перебора,
-    ничего не указано — встроенный список.
+    `server` - явный сервер, `servers` - список для перебора,
+    ничего не указано - встроенный список.
     """
     result = query(server, servers, timeout, max_delay)
     set_time(time.time() + result["offset"])

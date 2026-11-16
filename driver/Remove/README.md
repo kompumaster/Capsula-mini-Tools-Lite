@@ -1,6 +1,6 @@
 # Удаление драйвера Капсулы Мини
 
-Утилита — **DriverStore Explorer** (Rapr), официальные релизы:
+Утилита - **DriverStore Explorer** (Rapr), официальные релизы:
 
 ```
 https://github.com/lostindark/DriverStoreExplorer/releases/

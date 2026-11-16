@@ -1,6 +1,6 @@
 """Объект ASR: сценарии распознавания.
 
-Библиотека не решает, когда слушать: `listen()` и `capture()` —
+Библиотека не решает, когда слушать: `listen()` и `capture()` -
 блокирующие вызовы, которые запускает оркестратор. Для файлов и
 памяти есть кооперативный режим `submit` + `pump`.
 """
@@ -293,7 +293,7 @@ class ASR:
                max_seconds=DEFAULT_MAX_SECONDS,
                start_timeout=DEFAULT_START_TIMEOUT,
                min_speech=DEFAULT_MIN_SPEECH, threshold_db=None):
-        """Записать с микрофона и распознать; пустая строка — тишина."""
+        """Записать с микрофона и распознать; пустая строка - тишина."""
         job, pcm = self._capture(
             seconds, until_silence, max_seconds, start_timeout,
             min_speech, threshold_db)

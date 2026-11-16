@@ -1,16 +1,16 @@
 #!/bin/sh
-# yse — Yandex Station Extended package manager (клиент для устройства)
+# yse - Yandex Station Extended package manager (клиент для устройства)
 # Скачать / обновить: https://github.com/Marker284/yandex-station-extended/blob/main/contrib/bin/yse
 # Установщик с ПК:    https://github.com/Marker284/yandex-station-extended/blob/main/contrib/install-yse.sh
 # Документация:       https://hackalice.me/start/packages/
 # Два источника пакетов, всё ставится в /data/opt (rootfs только для чтения):
-#   ent — Entware (opkg): тысячи пакетов под embedded ARM, self-contained в /opt;
-#   yap — реестры .yap на GitHub (формат yapkg: index.json + архивы с plugin.toml),
+#   ent - Entware (opkg): тысячи пакетов под embedded ARM, self-contained в /opt;
+#   yap - реестры .yap на GitHub (формат yapkg: index.json + архивы с plugin.toml),
 #         по умолчанию https://github.com/nyakokitsu/yapkg; только aarch64.
 #
 #   yse bootstrap              развернуть Entware (один раз; нужен и для .yap)
 #   yse update                 обновить индексы Entware и .yap-реестров
-#   yse install <pkg>...       установить (ent:<pkg> / yap:<pkg> — из конкретного источника)
+#   yse install <pkg>...       установить (ent:<pkg> / yap:<pkg> - из конкретного источника)
 #   yse remove  <pkg>...       удалить
 #   yse list [-a]              установленные (или -a: все доступные)
 #   yse search <строка>
@@ -20,7 +20,7 @@
 #   yse env                    окружение для текущей сессии: eval "$(yse env)"
 #   yse help
 #
-# Без префикса пакет берётся из Entware, а если там его нет — из .yap-реестров
+# Без префикса пакет берётся из Entware, а если там его нет - из .yap-реестров
 # (порядок меняется переменной YSE_PREFER=yap).
 #
 set -u
@@ -66,7 +66,7 @@ fetch_https(){
     elif [ -x "$OPT/bin/wget" ]; then
         LD_LIBRARY_PATH="$OPT/lib" "$OPT/bin/wget" -q -O "$2" "$1"
     else
-        msg "для загрузки с GitHub нужен curl — ставлю из Entware"
+        msg "для загрузки с GitHub нужен curl - ставлю из Entware"
         opkg install curl >/dev/null 2>&1 && [ -x "$OPT/bin/curl" ] || die "не удалось поставить curl (yse install curl)"
         LD_LIBRARY_PATH="$OPT/lib" "$OPT/bin/curl" -fsSL --retry 2 -o "$2" "$1"
     fi
@@ -89,15 +89,15 @@ ensure_profile(){
 }
 
 # ---------- Entware ----------
-# /opt должен указывать в записываемое /data/opt/entware (на заводе /opt — пустой
+# /opt должен указывать в записываемое /data/opt/entware (на заводе /opt - пустой
 # каталог на RO-rootfs, его надо заменить симлинком)
 ensure_opt(){
     target="$YSE_ROOT/entware"
     mkdir -p "$target"
-    [ -L "$OPT" ] && return 0                                  # уже симлинк — ок
+    [ -L "$OPT" ] && return 0                                  # уже симлинк - ок
     if [ -e "$OPT" ] && [ ! -d "$OPT" ]; then die "$OPT существует и это не каталог"; fi
     if [ -d "$OPT" ] && [ -n "$(ls -A "$OPT" 2>/dev/null)" ]; then
-        die "$OPT — непустой каталог; освободи его вручную и повтори"
+        die "$OPT - непустой каталог; освободи его вручную и повтори"
     fi
     msg "настраиваю $OPT -> $target (нужен rootfs rw)"
     mount -o remount,rw / 2>/dev/null || die "не удалось сделать rootfs записываемым"
@@ -114,7 +114,7 @@ cmd_bootstrap(){
     ensure_opt
     url="$ENT_MIRROR/$ea/installer/generic.sh"
     msg "Entware bootstrap ($ea): $url"
-    fetch "$url" /tmp/entware-generic.sh || die "не скачать установщик. busybox wget без TLS: если зеркало редиректит на https — поставь Entware с помощью хоста или задай http-зеркало через YSE_ENT_MIRROR"
+    fetch "$url" /tmp/entware-generic.sh || die "не скачать установщик. busybox wget без TLS: если зеркало редиректит на https - поставь Entware с помощью хоста или задай http-зеркало через YSE_ENT_MIRROR"
     [ -s /tmp/entware-generic.sh ] || die "установщик пуст"
     sh /tmp/entware-generic.sh || die "установщик Entware завершился с ошибкой"
     ent_ready || die "opkg не появился в $OPKG"
@@ -210,7 +210,7 @@ yap_install_one(){
     gunzip -c "$tmp" | tar -xf - -C "$stage" || { rm -rf "$tmp" "$stage"; err "yap:$id: архив повреждён"; return 1; }
     rm -f "$tmp"
     [ -f "$stage/plugin.toml" ] || { rm -rf "$stage"; err "yap:$id: в архиве нет plugin.toml"; return 1; }
-    grep -q '"arch.aarch64"' "$stage/plugin.toml" || msg "yap:$id: в plugin.toml не указан arch.aarch64 — пробую всё равно"
+    grep -q '"arch.aarch64"' "$stage/plugin.toml" || msg "yap:$id: в plugin.toml не указан arch.aarch64 - пробую всё равно"
     lp="$(yap_launch_path "$stage/plugin.toml")"
     case "$lp" in ""|/*|*..*) rm -rf "$stage"; err "yap:$id: некорректный [launch] path '$lp'"; return 1 ;; esac
     [ -f "$stage/$lp" ] || { rm -rf "$stage"; err "yap:$id: нет файла $lp"; return 1; }
@@ -220,7 +220,7 @@ yap_install_one(){
     cmd="${lp##*/}"
     wrapper="$YAP_BIN/$cmd"
     if [ -e "$wrapper" ] && ! grep -q "^# yse-yap $id\$" "$wrapper" 2>/dev/null; then
-        rm -rf "$stage"; err "yap:$id: $wrapper уже существует и не от yse — не перезаписываю (удали его сам)"; return 1
+        rm -rf "$stage"; err "yap:$id: $wrapper уже существует и не от yse - не перезаписываю (удали его сам)"; return 1
     fi
     # перенос на место: старую версию убираем только после успешной распаковки новой
     rm -rf "$YAP_DIR/$id.old"; [ -d "$YAP_DIR/$id" ] && mv "$YAP_DIR/$id" "$YAP_DIR/$id.old"
@@ -290,7 +290,7 @@ cmd_install(){
     [ $# -ge 1 ] || die "yse install <pkg>..."
     need_ent; rc=0
     for p in "$@"; do
-        # shellcheck disable=SC2046  # "ent <имя>" / "yap <имя>" — намеренно по словам
+        # shellcheck disable=SC2046  # "ent <имя>" / "yap <имя>" - намеренно по словам
         set -- $(resolve "$p")
         if [ "$1" = yap ]; then yap_install_one "$2" || rc=1; else opkg install "$2" || rc=1; fi
     done
@@ -304,7 +304,7 @@ cmd_remove(){
             yap:*) yap_remove_one "${p#yap:}" || rc=1 ;;
             ent:*) need_ent; opkg remove "${p#ent:}" || rc=1 ;;
             *) if yap_installed "$p" && ! ent_installed "$p"; then yap_remove_one "$p" || rc=1
-               elif yap_installed "$p"; then err "$p стоит и из Entware, и из .yap — укажи ent:$p или yap:$p"; rc=1
+               elif yap_installed "$p"; then err "$p стоит и из Entware, и из .yap - укажи ent:$p или yap:$p"; rc=1
                else need_ent; opkg remove "$p" || rc=1; fi ;;
         esac
     done
@@ -342,7 +342,7 @@ cmd_list(){
     fi
 }
 cmd_sources(){
-    [ -s "$YAP_SOURCES" ] || msg "свой список не задан — используется реестр по умолчанию (добавь строки \"<имя> <url index.json>\" в $YAP_SOURCES)"
+    [ -s "$YAP_SOURCES" ] || msg "свой список не задан - используется реестр по умолчанию (добавь строки \"<имя> <url index.json>\" в $YAP_SOURCES)"
     yap_sources
 }
 

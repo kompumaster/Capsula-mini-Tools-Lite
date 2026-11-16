@@ -1,7 +1,7 @@
 """Yandex SpeechKit: синхронное распознавание, REST API v1.
 
 `POST https://stt.api.cloud.yandex.net/speech/v1/stt:recognize`.
-Тело — PCM `s16le` моно; ответ — `{"result": "..."}`.
+Тело - PCM `s16le` моно; ответ - `{"result": "..."}`.
 """
 
 import json
@@ -225,14 +225,14 @@ class YandexV1Engine(Engine):
             return result
         detail = _error_text(body)
         if status == 400:
-            message = "Yandex: 400 — неверный запрос"
+            message = "Yandex: 400 - неверный запрос"
         elif status == 401:
-            message = "Yandex: 401 — ключ не принят"
+            message = "Yandex: 401 - ключ не принят"
         elif status == 403:
-            message = ("Yandex: 403 — доступ запрещён "
+            message = ("Yandex: 403 - доступ запрещён "
                        "(роль, каталог или биллинг)")
         elif status == 429:
-            message = "Yandex: 429 — превышена квота"
+            message = "Yandex: 429 - превышена квота"
         else:
             message = "Yandex: HTTP {}".format(status)
         if detail:

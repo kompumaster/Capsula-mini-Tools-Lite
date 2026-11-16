@@ -1,7 +1,7 @@
 """HTTP-сервер для MicroPython.
 
 Основано на MicroPyServer (MIT), Copyright (c) 2019 troublegum,
-https://github.com/troublegum/micropyserver. Текст лицензии —
+https://github.com/troublegum/micropyserver. Текст лицензии -
 в `THIRD_PARTY.md`.
 
 Сервер блокирующий: `serve_forever()` крутится, пока не вызван
@@ -131,7 +131,7 @@ class MicroServer:
     def handle_once(self, timeout=0.0):
         """Обработать не больше одного запроса.
 
-        `timeout` — сколько ждать соединение. `0` — не ждать.
+        `timeout` - сколько ждать соединение. `0` - не ждать.
         `True`, если запрос был принят и обработан.
         """
         if self._sock is None:

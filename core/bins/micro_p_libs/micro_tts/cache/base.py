@@ -7,7 +7,7 @@ class Cache:
     """Хранилище готового аудио по ключу."""
 
     def get(self, key, text=None):
-        """`(pcm, rate, meta)` или `None`; `text` — проверка коллизии."""
+        """`(pcm, rate, meta)` или `None`; `text` - проверка коллизии."""
         raise TtsError("кеш не реализует get()")
 
     def put(self, key, pcm, rate, meta=None):

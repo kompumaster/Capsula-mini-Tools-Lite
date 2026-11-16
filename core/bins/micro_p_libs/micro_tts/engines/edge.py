@@ -355,7 +355,7 @@ class EdgeEngine(Engine):
             except TtsError as exc:
                 if "403" in str(exc):
                     raise TtsError(
-                        "Edge: 403 — доступ запрещён "
+                        "Edge: 403 - доступ запрещён "
                         "(проверьте время/NTP)")
                 raise
             decoder.open(24000)

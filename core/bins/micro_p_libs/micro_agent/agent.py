@@ -95,7 +95,7 @@ class Agent:
         return event
 
     def _schedule_error_recovery(self, data):
-        """Запланировать возврат из ERROR; 0/None — не возвращаться."""
+        """Запланировать возврат из ERROR; 0/None - не возвращаться."""
         scheduler = self.loop.scheduler
         scheduler.cancel(ERROR_TASK)
         delay = data.get("recover_ms")
@@ -275,7 +275,7 @@ class Agent:
                             recover_ms=ERROR_RECOVER_MS))
 
     def _poll_buttons(self):
-        """Кнопки — до всего остального: работают в любом режиме."""
+        """Кнопки - до всего остального: работают в любом режиме."""
         buttons = self.services.get("buttons")
         if buttons is None or self.router is None:
             return []
@@ -582,7 +582,7 @@ SYSTEM_LIMIT = 2000
 
 
 def age_limit_prefix(age):
-    """Блок про детей для промпта; пусто — ограничения нет."""
+    """Блок про детей для промпта; пусто - ограничения нет."""
     if age is None or age >= 18:
         return ""
     return AGE_LIMIT_TEMPLATE.format(int(age))
@@ -630,7 +630,7 @@ def build_state(settings):
 
 
 def build_speech(settings, config=None):
-    """Речь: `[ww]` — фраза, `[asr]` — запись вопроса, `[agent]` — предел."""
+    """Речь: `[ww]` - фраза, `[asr]` - запись вопроса, `[agent]` - предел."""
     from micro_agent.modules.speech import Speech
     config = config if config is not None else settings.agent_config()
     return Speech(
@@ -649,7 +649,7 @@ def build_speech(settings, config=None):
 
 
 def build_buttons(settings):
-    """Кнопки по настройкам `[keys]`; выключены — `None`."""
+    """Кнопки по настройкам `[keys]`; выключены - `None`."""
     if not settings.get_bool("keys", "enabled", True):
         return None
     from micro_agent.modules.buttons import Buttons

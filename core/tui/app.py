@@ -28,7 +28,7 @@ BACK_MENU = (
 )
 
 # Пункты меню берутся из реестра патчей: название задаётся в модуле
-# патча (`TITLE`), порядок — порядком в `PATCHES` и `KILLS`.
+# патча (`TITLE`), порядок - порядком в `PATCHES` и `KILLS`.
 PATCH_ITEMS = tuple(
     (str(number), module.TITLE, module.KEY)
     for number, module in enumerate(
@@ -43,7 +43,7 @@ WRITE_FOLDERS = (
 )
 
 # Ширины колонок меню патчей: название, затем статус. Статус длиннее
-# всего бывает `[kill]*` (7 символов), поэтому 7 — общая ширина.
+# всего бывает `[kill]*` (7 символов), поэтому 7 - общая ширина.
 PATCH_TITLE_WIDTH = 16
 PATCH_STATUS_WIDTH = 7
 
@@ -63,7 +63,7 @@ def result_text(code: int) -> str:
 
 
 def patch_state_text(label: str) -> str:
-    """Состояние патча: on/kill — зелёные, off/work — красные."""
+    """Состояние патча: on/kill - зелёные, off/work - красные."""
     if label.startswith("[") and "]" in label:
         state = label[1:label.index("]")]
         if state in ("on", "kill"):

@@ -8,7 +8,7 @@ from micro_tts.errors import TtsError
 DEFAULT_CACHE_DIR = "/home/microp/tts_cache"
 DEFAULT_CHUNK_CHARS = 200
 # По умолчанию текст не делим: один запрос, пока влезает в лимит
-# движка. Деление — только аварийное, для текста больше лимита.
+# движка. Деление - только аварийное, для текста больше лимита.
 DEFAULT_SPLIT = False
 DEFAULT_CACHE_MAX_BYTES = 16 * 1024 * 1024
 DEFAULT_CACHE_MAX_ENTRIES = 256

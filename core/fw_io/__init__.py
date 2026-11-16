@@ -1,4 +1,4 @@
-"""`fw_io` — чтение и запись разделов NAND через USB-загрузчик."""
+"""`fw_io` - чтение и запись разделов NAND через USB-загрузчик."""
 
 from __future__ import annotations
 

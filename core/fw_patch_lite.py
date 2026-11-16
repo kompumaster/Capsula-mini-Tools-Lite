@@ -295,7 +295,7 @@ def run_patch(args) -> int:
     if staging is None:
         out.mkdir(parents=True, exist_ok=True)
         if any(out.iterdir()):
-            print("выход совпадает с источником — старые файлы не архивирую")
+            print("выход совпадает с источником - старые файлы не архивирую")
     else:
         try:
             prepare_staging(staging)
@@ -326,7 +326,7 @@ def run_patch(args) -> int:
                 added, removed, changed = diff(before, after)
                 if not (added or removed or changed):
                     print(f"{image.name}: "
-                          f"{state_text(part, before_states)} — изменений нет")
+                          f"{state_text(part, before_states)} - изменений нет")
                     inspected_statuses.append(
                         status.make_status(part, image.name, image, tree,
                                            params[part]))
@@ -385,7 +385,7 @@ def run_patch(args) -> int:
             discard_staging(staging)
         if inspected_statuses and not (src / STATUS_NAME).is_file():
             status.write_status(src / STATUS_NAME, inspected_statuses)
-        print(paint("готово: новых образов нет — "
+        print(paint("готово: новых образов нет - "
                     "запрошенные патчи уже в этом состоянии", GREEN))
     return 0
 

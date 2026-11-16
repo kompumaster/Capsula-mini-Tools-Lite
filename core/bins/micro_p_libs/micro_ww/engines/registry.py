@@ -47,8 +47,8 @@ def _load_builtins():
 def register_engine(name, factory, replace=False):
     """Зарегистрировать движок; вернуть нормализованное имя.
 
-    `factory` — класс или функция без аргументов, возвращающая
-    объект `Engine`. Повторное имя без `replace=True` — ошибка.
+    `factory` - класс или функция без аргументов, возвращающая
+    объект `Engine`. Повторное имя без `replace=True` - ошибка.
     """
     name = _check_name(name)
     if not callable(factory):
@@ -68,7 +68,7 @@ def available_engines():
 def get_engine(spec=None):
     """Получить движок по имени или готовому объекту.
 
-    `None` — движок по умолчанию. Движок создаётся, но не
+    `None` - движок по умолчанию. Движок создаётся, но не
     открывается.
     """
     _load_builtins()

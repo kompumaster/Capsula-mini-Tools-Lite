@@ -31,7 +31,7 @@ IDENTIFY_TIMEOUT = 1000
 BLOCK_GAP = 0.007
 
 # Пауза после заголовка 0x33, перед чтением данных: даёт TPL время
-# наполнить буфер. Только Windows; 2 мс — самый стабильный вариант.
+# наполнить буфер. Только Windows; 2 мс - самый стабильный вариант.
 PRE_READ_GAP = 0.002
 
 
@@ -40,7 +40,7 @@ class UsbError(RuntimeError):
 
 
 class BackendAdapter:
-    """Стоковый интерфейс плохо отвечает на GET_CONFIGURATION — отдаём 1."""
+    """Стоковый интерфейс плохо отвечает на GET_CONFIGURATION - отдаём 1."""
 
     def __init__(self, backend):
         self.backend = backend
@@ -367,7 +367,7 @@ class Transport:
                        allow_short: bool = False) -> str:
         """Читает раздел, пишет файл, возвращает SHA-256.
 
-        `allow_short` — принять частичное чтение (зонд размера): при
+        `allow_short` - принять частичное чтение (зонд размера): при
         ошибке/конце раздела файл остаётся с прочитанным.
         """
         import hashlib

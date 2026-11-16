@@ -1,7 +1,7 @@
 """Микрофоны: запуск `parec`, сырой PCM и PID фонового процесса.
 
 Только железо: источник Pulse, команда, PID, остановка. WAV, уровни
-и моно — в `lib_mic`. Важно: для `mics` нужен `--no-remap`, иначе
+и моно - в `lib_mic`. Важно: для `mics` нужен `--no-remap`, иначе
 Pulse отдаёт нули (проверено на плате 03.11.2026).
 """
 
@@ -27,12 +27,12 @@ WIDTH = 2
 
 PAREC = "/usr/bin/parec"
 PACTL = "/usr/bin/pactl"
-# Файлы состояния — на процесс: два скрипта не мешают друг другу.
+# Файлы состояния - на процесс: два скрипта не мешают друг другу.
 _PID = hal_common.self_pid()
 PID_FILE = "/tmp/micro_hal_mic.{}.pid".format(_PID)
 RAW = "/tmp/micro_hal_mic.{}.raw".format(_PID)
 
-# C-хелпер непрерывного захвата: окно 20 мс, оседание DC — 300 мс.
+# C-хелпер непрерывного захвата: окно 20 мс, оседание DC - 300 мс.
 LIB = "/home/microp/micro_hal/bins/libc_mic.so"
 WINDOW_MS = 20
 SETTLE_MS = 300
@@ -125,7 +125,7 @@ def set_mute(on=True, source=SOURCE):
 
 
 def muted(source=SOURCE):
-    """Заглушен ли источник; `None` — не удалось прочитать."""
+    """Заглушен ли источник; `None` - не удалось прочитать."""
     _check_source(source)
     code, text = hal_common.capture(
         hal_pulse.prefix() + PACTL + " get-source-mute {}".format(source))
@@ -329,7 +329,7 @@ class _Library:
 
 
 def library(path=LIB):
-    """Загрузить C-хелпер; ошибка — `HalError`."""
+    """Загрузить C-хелпер; ошибка - `HalError`."""
     try:
         return _Library(path)
     except (OSError, ImportError) as exc:
@@ -339,8 +339,8 @@ def library(path=LIB):
 class Stream:
     """Непрерывный захват через `libc_mic.so`.
 
-    `read()` отдаёт одно окно (20 мс) сырого PCM, `mono()` — то же
-    окно, сведённое в моно, `stats()` — уровни за последнее окно.
+    `read()` отдаёт одно окно (20 мс) сырого PCM, `mono()` - то же
+    окно, сведённое в моно, `stats()` - уровни за последнее окно.
     Один поток на процесс: второй `open()` даёт `HalError`.
     """
 

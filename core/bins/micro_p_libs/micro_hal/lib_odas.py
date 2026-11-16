@@ -2,7 +2,7 @@
 
 Только логика сети и разбора: TCP-сервер, поток JSON без
 разделителей, вычисление азимута/возвышения. Запуск самого
-`odaslive` — в `hal_odas`.
+`odaslive` - в `hal_odas`.
 """
 
 import json
@@ -91,8 +91,8 @@ def parse_stream(data, buffer=b""):
 def direction(track, energy_key="activity"):
     """Азимут/возвышение одного трека ODAS.
 
-    Азимут: 0° — перед (+Y), +90° — справа (+X), −90° — слева.
-    `energy_key` — `"activity"` для tracks, `"E"` для pots.
+    Азимут: 0° - перед (+Y), +90° - справа (+X), −90° - слева.
+    `energy_key` - `"activity"` для tracks, `"E"` для pots.
     """
     x = float(track.get("x", 0.0))
     y = float(track.get("y", 0.0))
@@ -447,7 +447,7 @@ class AudioServer:
         return self._latest
 
     def channel(self, index, chunk=None):
-        """Один источник из чанка (`bytes`); `None` — из последнего.
+        """Один источник из чанка (`bytes`); `None` - из последнего.
 
         В MicroPython нет среза с шагом, поэтому копируем побайтово:
         на чанк 128 кадров это ~256 операций, при 125 чанках/с

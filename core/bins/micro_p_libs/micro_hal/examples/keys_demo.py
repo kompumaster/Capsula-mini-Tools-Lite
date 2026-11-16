@@ -7,7 +7,7 @@ def main():
     device = hal_keys.KeysDevice()
     keys = lib_keys.Keys(device=device)
     print("device: %s (%s)" % (device.path, device.name))
-    print("нажмите кнопки; Ctrl+C — выход")
+    print("нажмите кнопки; Ctrl+C - выход")
     try:
         while True:
             for name, action, count in keys.poll(100):

@@ -2,7 +2,7 @@
 
 Только стек: где сейчас Pulse (`PULSE_SERVER`) и как передать это
 `pactl`, `pacat`/`paplay` и `parec`. Команды запускают `hal_volume`,
-`hal_speaker`, `hal_mic` и `hal_bt`; здесь — один поиск на процесс.
+`hal_speaker`, `hal_mic` и `hal_bt`; здесь - один поиск на процесс.
 
 Порядок: `PULSE_SERVER` из окружения → `$XDG_RUNTIME_DIR/pulse/native`
 → `/run/user/*/pulse/native` → самый свежий `/tmp/pulse-*/native`.
@@ -37,7 +37,7 @@ def _socket(path):
     except (IndexError, TypeError):
         mode = getattr(info, "st_mode", 0)
     if not mode:
-        # Тип не прочитать — доверяем существованию.
+        # Тип не прочитать - доверяем существованию.
         return True
     return (mode & _MASK) == _SOCKET
 

@@ -16,7 +16,7 @@ SpeechKit, синхронный REST).
 - облачное распознавание Yandex SpeechKit (`yandexv1`);
 - движки через реестр: свой движок подключается регистрацией;
 - состояния задачи и отмена;
-- внутренний формат — PCM `s16le`, моно, 16 кГц.
+- внутренний формат - PCM `s16le`, моно, 16 кГц.
 
 ## Что нужно на колонке
 
@@ -24,7 +24,7 @@ SpeechKit, синхронный REST).
 - `micro_hal` для микрофона;
 - свободный микрофон (если его держит `voice-agent`, запись не
   пойдёт);
-- сеть и ключ Yandex SpeechKit в `/home/.env` (`YANDEX_API`) —
+- сеть и ключ Yandex SpeechKit в `/home/.env` (`YANDEX_API`) -
   для движка `yandexv1`;
 - `MICROPYPATH` с `/home/microp` и `.frozen`:
 
@@ -66,10 +66,10 @@ with ASR(engine="fake") as asr:
 ```python
 text = asr.listen(seconds=4.0)        # ровно 4 секунды
 text = asr.listen(max_seconds=25.0)   # до тишины, но не дольше 25 с
-text = asr.listen(silence=0.8,        # 0,8 с тишины — конец фразы
+text = asr.listen(silence=0.8,        # 0,8 с тишины - конец фразы
                   start_timeout=5.0,  # ждать речь не дольше 5 с
                   max_seconds=25.0,
-                  min_speech=0.3)     # короче 0,3 с — не речь
+                  min_speech=0.3)     # короче 0,3 с - не речь
 
 pcm = asr.capture(until_silence=0.8, max_seconds=25.0)
 ```
@@ -83,7 +83,7 @@ pcm = asr.capture(until_silence=0.8, max_seconds=25.0)
 | `min_speech` | минимальная длительность речи |
 | `threshold_db` | порог речи, по умолчанию −45 dBFS |
 
-Если речи не было, возвращается пустая строка — это не ошибка.
+Если речи не было, возвращается пустая строка - это не ошибка.
 
 ## Файлы и память
 
@@ -110,8 +110,8 @@ text = asr.recognize_file("/home/microp/voice.mp3")
 
 ## Движки
 
-- `fake` — детерминированный текст, работает без сети;
-- `yandexv1` — Yandex SpeechKit, синхронный REST: ключ в
+- `fake` - детерминированный текст, работает без сети;
+- `yandexv1` - Yandex SpeechKit, синхронный REST: ключ в
   `/home/.env` (`YANDEX_API`), лимиты 30 с и 1 МБ, без
   частичных результатов.
 
@@ -142,11 +142,11 @@ asr = ASR(engine="myservice")
 
 В пакете `examples/`:
 
-- `recognize_fake.py` — буфер в памяти, движок `fake`;
-- `recognize_file.py FILE` — файл PCM/WAV/MP3, движок `fake`;
-- `listen_fake.py` — микрофон и VAD, движок `fake`;
-- `recognize_cloud.py FILE` — файл через `yandexv1`;
-- `listen_cloud.py` — микрофон через `yandexv1`.
+- `recognize_fake.py` - буфер в памяти, движок `fake`;
+- `recognize_file.py FILE` - файл PCM/WAV/MP3, движок `fake`;
+- `listen_fake.py` - микрофон и VAD, движок `fake`;
+- `recognize_cloud.py FILE` - файл через `yandexv1`;
+- `listen_cloud.py` - микрофон через `yandexv1`.
 
 На колонке:
 
@@ -171,7 +171,7 @@ asr = ASR(engine="myservice")
 - аудио нигде не сохраняется; временные файлы удаляются в `stop()` и
   `close()`;
 - по умолчанию запись ограничена 25 с (движок принимает до 30 с и
-  1 МБ; 25 с при 16 кГц — 800 КБ);
+  1 МБ; 25 с при 16 кГц - 800 КБ);
 - звук уходит в облако Yandex; библиотека его не хранит;
 - частичных результатов (текст по мере речи) пока нет.
 

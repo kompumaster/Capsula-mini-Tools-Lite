@@ -59,7 +59,7 @@ def is_ubi(path: Path) -> bool:
 
 
 def list_images(folders) -> list[TarImage]:
-    """UBI-образы из папок по порядку; внутри папки — по имени."""
+    """UBI-образы из папок по порядку; внутри папки - по имени."""
     result = []
     for folder in folders:
         folder = Path(folder)
@@ -133,7 +133,7 @@ def image_for_tar(tar: Path) -> Path:
 
 
 def list_tars(folders) -> list[TarFile]:
-    """tar-файлы из папок по порядку; внутри папки — по имени."""
+    """tar-файлы из папок по порядку; внутри папки - по имени."""
     result = []
     for folder in folders:
         folder = Path(folder)

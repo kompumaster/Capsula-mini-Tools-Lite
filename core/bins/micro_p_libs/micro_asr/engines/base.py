@@ -1,7 +1,7 @@
 """Базовый интерфейс движка распознавания.
 
 Движок только превращает PCM в текст. Он не трогает микрофон, сеть и
-`micro_hal`; всё это — дело источников и координатора.
+`micro_hal`; всё это - дело источников и координатора.
 """
 
 from micro_asr.errors import AsrError
@@ -66,7 +66,7 @@ class Engine:
         self._opened = False
 
     def open(self, language=None, sample_rate=16000, **options):
-        """Подготовить движок; ошибка — `AsrError`."""
+        """Подготовить движок; ошибка - `AsrError`."""
         raise AsrError("движок {} не реализует open()".format(self.name))
 
     def capabilities(self):

@@ -2,7 +2,7 @@
 """Запись с микрофона и распознавание через Yandex SpeechKit (yandexv1).
 
 Ключ: `/home/.env`, переменная `YANDEX_API`.
-Говорите после запуска; конец фразы — пауза около секунды.
+Говорите после запуска; конец фразы - пауза около секунды.
 
 Запуск: `micropython /home/microp/micro_asr/examples/listen_cloud.py`
 """

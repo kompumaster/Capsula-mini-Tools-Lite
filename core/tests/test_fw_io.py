@@ -133,7 +133,7 @@ class WritePartition(unittest.TestCase):
             transport.write_partition("system_b", len(image), path)
         self.assertEqual(bytes(device.epout.data), image)
         self.assertEqual(len(device.controls), 3)  # download + 2 блока
-        # controls[0] — download (0x30), далее две записи блоков (0x32)
+        # controls[0] - download (0x30), далее две записи блоков (0x32)
         download = device.controls[0].rstrip(b"\0").decode()
         self.assertIn("download store system_b normal", download)
         blocks = device.controls[1:]
