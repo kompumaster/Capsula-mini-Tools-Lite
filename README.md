@@ -64,17 +64,17 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 | VK-Voice (`vkvoice`) | отключает автозапуск, файл остаётся | `S97voice-agent.sh` → `x_S97voice-agent.sh.bak` |
 | VK-Call (`vkcall`) | отключает автозапуск, файл остаётся | `S97okcall.sh` → `x_S97okcall.sh.bak` |
 | Selfcheck (`slfchk`) | отключает автозапуск S98, файл остаётся | `S98selfcheck.sh` → `x_S98selfcheck.sh.bak` |
-| Удалить VK-Voice (`vkkill`) | заменяет бинарь заглушкой | `voice-agent` → `noop` |
-| Micropython (`mpython`) | бинарник и профиль окружения в overlay `data` | `data/overlay/upper/usr/bin/micropython`, `data/overlay/upper/etc/profile.d/10-micropython.sh` |
-| Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
-| Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Подключить `/home` (`home`) | подключает `/data/permanent/home` как `/home` | `S05home.sh` → `/etc/init.d/S05home.sh` |
+| Micropython (`mpython`) | бинарник и профиль окружения в overlay `data` | `data/overlay/upper/usr/bin/micropython`, `data/overlay/upper/etc/profile.d/10-micropython.sh` |
 | MP Libs (`mplibs`) | Библиотеки Micropython для работы с колонкой | `permanent/home/microp/` (`micro_hal`, `micro_tts`, `micro_asr`, `micro_server`, `micro_ww`, `micro_ui`, `micro_agent`, `micro_llm`) |
 | Настр. MP агента (`agentcfg`) | шаблон `example.env` (без ключей) и `system.txt` | `permanent/home/.env`, `permanent/home/system.txt` |
 | Старт MP агента (`agentboot`) | init-скрипты агента | `etc/init.d/S98micro_ui.sh`, `S99micro_agent.sh` |
+| Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
+| Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
+| Удалить VK-Voice (`vkkill`) | заменяет бинарь заглушкой | `voice-agent` → `noop` |
 
 В меню «Патчи» номер или команда вводятся строкой и подтверждаются
 Enter; пункт `10` доступен. В строке каждого патча выводится краткое
