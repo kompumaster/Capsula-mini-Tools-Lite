@@ -5,7 +5,7 @@
 возвращает текст. Библиотека не решает, когда слушать: это делает
 вызывающий код.
 
-Версия 0.2.0. Движки: `fake` (без сети) и `yandexv1` (Yandex
+Версия 0.2.1. Движки: `fake` (без сети) и `yandexv1` (Yandex
 SpeechKit, синхронный REST).
 
 ## Что умеет
@@ -24,7 +24,7 @@ SpeechKit, синхронный REST).
 - `micro_hal` для микрофона;
 - свободный микрофон (если его держит `voice-agent`, запись не
   пойдёт);
-- сеть и ключ Yandex SpeechKit в `/home/.env` (`ASR_YANDEX_KEY`) —
+- сеть и ключ Yandex SpeechKit в `/home/.env` (`YANDEX_API`) —
   для движка `yandexv1`;
 - `MICROPYPATH` с `/home/microp` и `.frozen`:
 
@@ -112,7 +112,7 @@ text = asr.recognize_file("/home/microp/voice.mp3")
 
 - `fake` — детерминированный текст, работает без сети;
 - `yandexv1` — Yandex SpeechKit, синхронный REST: ключ в
-  `/home/.env` (`ASR_YANDEX_KEY`), лимиты 30 с и 1 МБ, без
+  `/home/.env` (`YANDEX_API`), лимиты 30 с и 1 МБ, без
   частичных результатов.
 
 ```python

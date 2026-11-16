@@ -14,6 +14,10 @@ from micro_tts.net.base import Transport
 
 GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
+# Разумные пределы: Edge присылает небольшие кадры.
+MAX_FRAME = 1 << 20
+MAX_MESSAGE = 4 << 20
+
 
 def parse_url(url):
     """`ws/wss://host[:port]/path` → `(secure, host, port, path)`."""
@@ -63,6 +67,8 @@ def parse_url(url):
         port = default_port
     if not host:
         raise TtsError("пустой хост в URL")
+    if port < 1 or port > 65535:
+        raise TtsError("неверный порт в URL")
     return secure, host, port, path
 
 
@@ -88,29 +94,55 @@ def _b64(data):
     return value
 
 
+def _accept(key):
+    """`Sec-WebSocket-Accept` для отправленного ключа."""
+    try:
+        import hashlib
+    except ImportError:
+        raise TtsError("WebSocket: нет hashlib для проверки handshake")
+    digest = hashlib.sha1((key + GUID).encode("ascii")).digest()
+    return _b64(digest)
+
+
 class WebSocketTransport(Transport):
     def __init__(self, connector=None):
         self._connector = connector
         self._sock = None
+        self._buffer = b""
         self.url = None
 
     def connect(self, url, headers=None, timeout=10.0):
-        secure, host, port, path = parse_url(url)
-        if self._connector is not None:
-            sock = self._connector(host, port, timeout)
-        else:
+        if self._sock is not None:
             try:
-                sock = socket.create_connection((host, port), timeout)
-            except AttributeError:
-                infos = socket.getaddrinfo(host, port)
-                chosen = infos[0]
-                for info in infos:
-                    if info[0] == socket.AF_INET:
-                        chosen = info
-                        break
-                sock = socket.socket(chosen[0], chosen[1], chosen[2])
-                sock.settimeout(timeout)
-                sock.connect(chosen[4])
+                self._sock.close()
+            except Exception:
+                pass
+            self._sock = None
+        self._buffer = b""
+        secure, host, port, path = parse_url(url)
+        try:
+            if self._connector is not None:
+                sock = self._connector(host, port, timeout)
+            else:
+                try:
+                    sock = socket.create_connection((host, port), timeout)
+                except AttributeError:
+                    infos = socket.getaddrinfo(host, port)
+                    if not infos:
+                        raise TtsError(
+                            "WebSocket: не разрешить {}".format(host))
+                    chosen = infos[0]
+                    for info in infos:
+                        if info[0] == socket.AF_INET:
+                            chosen = info
+                            break
+                    sock = socket.socket(chosen[0], chosen[1], chosen[2])
+                    sock.settimeout(timeout)
+                    sock.connect(chosen[4])
+        except TtsError:
+            raise
+        except Exception as exc:
+            raise TtsError("WebSocket: {}".format(exc))
         try:
             if secure:
                 try:
@@ -121,9 +153,15 @@ class WebSocketTransport(Transport):
                     sock = ssl.wrap_socket(
                         sock, server_hostname=host)
             key = _b64(_random_bytes(16))
+            host_header = host
+            if ":" in host:
+                host_header = "[{}]".format(host)
+            default_port = 443 if secure else 80
+            if port != default_port:
+                host_header += ":{}".format(port)
             lines = [
                 "GET {} HTTP/1.1".format(path),
-                "Host: {}".format(host),
+                "Host: {}".format(host_header),
                 "Upgrade: websocket",
                 "Connection: Upgrade",
                 "Sec-WebSocket-Key: {}".format(key),
@@ -144,17 +182,41 @@ class WebSocketTransport(Transport):
                 response += chunk
                 if len(response) > 16384:
                     raise TtsError("WebSocket: слишком большой ответ")
-            head = response.split(b"\r\n\r\n", 1)[0].decode(
-                "ascii", "replace")
-            status = head.split("\r\n", 1)[0]
+            head, tail = response.split(b"\r\n\r\n", 1)
+            self._buffer = tail
+            head_lines = head.split(b"\r\n")
+            status = head_lines[0].decode("ascii", "replace")
             if " 101 " not in status:
                 raise TtsError("WebSocket: {}".format(status))
-        except Exception:
+            received_headers = {}
+            for line in head_lines[1:]:
+                if b":" in line:
+                    name, value = line.split(b":", 1)
+                    received_headers[name.strip().lower()] = value.strip()
+            upgrade = received_headers.get(b"upgrade", b"").lower()
+            if upgrade != b"websocket":
+                raise TtsError("WebSocket: нет Upgrade: websocket")
+            connection = received_headers.get(b"connection", b"").lower()
+            if b"upgrade" not in connection:
+                raise TtsError("WebSocket: нет Connection: Upgrade")
+            received = received_headers.get(b"sec-websocket-accept")
+            if received is None:
+                raise TtsError("WebSocket: нет Sec-WebSocket-Accept")
+            try:
+                received = received.decode("ascii")
+            except Exception:
+                raise TtsError("WebSocket: неверный Sec-WebSocket-Accept")
+            if received != _accept(key):
+                raise TtsError("WebSocket: неверный Sec-WebSocket-Accept")
+        except Exception as exc:
+            self._buffer = b""
             try:
                 sock.close()
             except Exception:
                 pass
-            raise
+            if isinstance(exc, TtsError):
+                raise
+            raise TtsError("WebSocket: {}".format(exc))
         self._sock = sock
         self.url = url
         return self
@@ -182,7 +244,11 @@ class WebSocketTransport(Transport):
         self._sock.sendall(bytes(header) + masked)
 
     def _recv_exact(self, size):
-        data = b""
+        data = self._buffer[:size]
+        if len(data) == size:
+            self._buffer = self._buffer[size:]
+            return data
+        self._buffer = b""
         while len(data) < size:
             chunk = self._sock.recv(size - len(data))
             if not chunk:
@@ -194,14 +260,25 @@ class WebSocketTransport(Transport):
         if self._sock is None:
             raise TtsError("WebSocket не подключён")
         first, second = self._recv_exact(2)
+        if first & 0x70:
+            raise TtsError("WebSocket: RSV без расширения")
         fin = bool(first & 0x80)
         opcode = first & 0x0F
+        if opcode in (3, 4, 5, 6, 7, 11, 12, 13, 14, 15):
+            raise TtsError("WebSocket: неизвестный opcode {}".format(opcode))
         masked = bool(second & 0x80)
         length = second & 0x7F
-        if length == 126:
+        if opcode >= 8:
+            if not fin:
+                raise TtsError("WebSocket: control-кадр без FIN")
+            if length > 125:
+                raise TtsError("WebSocket: control-кадр слишком длинный")
+        elif length == 126:
             length = struct.unpack("!H", self._recv_exact(2))[0]
         elif length == 127:
             length = struct.unpack("!Q", self._recv_exact(8))[0]
+        if opcode < 8 and length > MAX_FRAME:
+            raise TtsError("WebSocket: кадр больше {}".format(MAX_FRAME))
         mask = self._recv_exact(4) if masked else None
         payload = self._recv_exact(length) if length else b""
         if masked:
@@ -212,6 +289,7 @@ class WebSocketTransport(Transport):
     def _recv_message(self):
         fragments = []
         message_opcode = None
+        total = 0
         while True:
             fin, opcode, payload = self._recv_frame()
             if opcode == 9:
@@ -222,13 +300,23 @@ class WebSocketTransport(Transport):
             if opcode == 8:
                 return 8, payload
             if opcode in (1, 2):
+                if message_opcode is not None:
+                    raise TtsError(
+                        "WebSocket: новый кадр во время фрагментации")
                 message_opcode = opcode
                 fragments = [payload]
+                total = len(payload)
                 if fin:
                     return message_opcode, b"".join(fragments)
                 continue
             if opcode == 0:
+                if message_opcode is None:
+                    raise TtsError("WebSocket: continuation без начала")
                 fragments.append(payload)
+                total += len(payload)
+                if total > MAX_MESSAGE:
+                    raise TtsError(
+                        "WebSocket: сообщение больше {}".format(MAX_MESSAGE))
                 if fin:
                     return message_opcode, b"".join(fragments)
                 continue
@@ -262,6 +350,7 @@ class WebSocketTransport(Transport):
 
     def close(self):
         if self._sock is None:
+            self._buffer = b""
             return
         try:
             self._send_frame(8, b"")
@@ -269,5 +358,8 @@ class WebSocketTransport(Transport):
             pass
         try:
             self._sock.close()
+        except Exception:
+            pass
         finally:
             self._sock = None
+            self._buffer = b""

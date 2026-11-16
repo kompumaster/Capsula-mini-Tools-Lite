@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Запись с микрофона и распознавание через Yandex SpeechKit (yandexv1).
 
-Ключ: `/home/.env`, переменная `ASR_YANDEX_KEY`.
+Ключ: `/home/.env`, переменная `YANDEX_API`.
 Говорите после запуска; конец фразы — пауза около секунды.
 
 Запуск: `micropython /home/microp/micro_asr/examples/listen_cloud.py`

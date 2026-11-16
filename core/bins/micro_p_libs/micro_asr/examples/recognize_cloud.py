@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Распознавание файла через Yandex SpeechKit (движок yandexv1).
 
-Ключ: `/home/.env`, переменная `ASR_YANDEX_KEY`.
+Ключ: `/home/.env`, переменная `YANDEX_API`.
 Запуск:
 `micropython /home/microp/micro_asr/examples/recognize_cloud.py FILE`
 """

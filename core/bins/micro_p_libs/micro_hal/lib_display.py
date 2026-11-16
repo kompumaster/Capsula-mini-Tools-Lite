@@ -13,7 +13,8 @@ __all__ = [
     "FONT", "SEGMENTS", "STOCK_MAP", "LAYOUT", "COLON",
     "COLON_TOP", "COLON_BOTTOM", "STOCK_MAX",
     "brightness", "get_brightness", "get_gamma", "level",
-    "digits", "dots", "frame", "text", "clock", "transition", "pulse",
+    "digits", "dots", "frame", "frame_masks", "text", "masks",
+    "show_frame", "clock", "transition", "pulse",
     "colon", "colon_fade", "map_logical", "raw_logical", "demo_stock",
 ]
 
@@ -134,11 +135,63 @@ def frame(string, value=None, colon=True):
     return values
 
 
+def _masks(masks):
+    """Проверить четыре 7-сегментные маски."""
+    masks = list(masks)
+    if len(masks) != 4:
+        raise HalError("нужно 4 маски, получено {}".format(len(masks)))
+    result = []
+    for mask in masks:
+        if isinstance(mask, bool) or not isinstance(mask, int):
+            raise HalError("маска должна быть целым числом")
+        if mask < 0 or mask > 0x7f:
+            raise HalError("маска вне 0…127")
+        result.append(mask)
+    return result
+
+
+def frame_masks(masks, value=None, colon=True):
+    """30 физических значений для четырёх произвольных масок.
+
+    Бит 0 — сегмент `a`, бит 1 — `b`, …, бит 6 — `g`.
+    """
+    value = _resolve(value)
+    values = [0] * hal_display.COUNT
+    for position, mask in enumerate(_masks(masks)):
+        layout = LAYOUT[DIGITS[position]]
+        for bit, segment in enumerate(SEGMENTS):
+            if mask & (1 << bit):
+                values[layout[segment]] = value
+    top, bottom = dots(colon)
+    if top:
+        values[COLON_TOP] = value
+    if bottom:
+        values[COLON_BOTTOM] = value
+    return values
+
+
+def masks(masks, value=None, colon=True):
+    """Показать четыре произвольные 7-сегментные маски."""
+    values = frame_masks(masks, value=value, colon=colon)
+    hal_display.raw(values)
+    return values
+
+
 def text(string, value=None, colon=True):
     """Показать 4 цифры; возвращает записанный кадр."""
     values = frame(string, value=value, colon=colon)
     hal_display.raw(values)
     return values
+
+
+def show_frame(values):
+    """Записать готовый кадр из 30 физических значений."""
+    values = list(values)
+    if len(values) != hal_display.COUNT:
+        raise HalError(
+            "кадр: {} значений, ожидается {}".format(
+                len(values), hal_display.COUNT))
+    return hal_display.raw(values)
 
 
 def clock(value=None, colon=True, blink=False, off_ms=250):

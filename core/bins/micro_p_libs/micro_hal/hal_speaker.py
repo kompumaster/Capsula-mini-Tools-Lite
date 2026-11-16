@@ -15,9 +15,9 @@ from micro_hal import hal_common, hal_pulse, hal_volume
 from micro_hal.hal_common import HalError
 
 __all__ = [
-    "PACAT", "PAPLAY", "PID_FILE", "ERR", "RAW", "FIFO", "SINK",
+    "PACAT", "PAPLAY", "PID_FILE", "ERR", "STATUS", "RAW", "FIFO", "SINK",
     "available", "sinks", "default_sink", "running", "play", "stop",
-    "wait", "pause", "resume", "paused", "Stream",
+    "wait", "result", "pause", "resume", "paused", "Stream",
 ]
 
 PACAT = "/usr/bin/pacat"
@@ -27,6 +27,7 @@ PCTL = "/usr/bin/pactl"
 _PID = hal_common.self_pid()
 PID_FILE = "/tmp/micro_hal_spk.{}.pid".format(_PID)
 ERR = "/tmp/micro_hal_spk.{}.err".format(_PID)
+STATUS = "/tmp/micro_hal_spk.{}.status".format(_PID)
 RAW = "/tmp/micro_hal_spk.{}.raw".format(_PID)
 FIFO = "/tmp/micro_hal_spk.{}.fifo".format(_PID)
 SINK = "master"
@@ -38,6 +39,12 @@ CLIENT = "micro_hal-spk"
 # (в pactl 16.1 нет `suspend-sink-input`).
 _ACTIVE_SINK = SINK
 _PAUSED = False
+
+# Последний запущенный файловый/raw-плеер и процесс, который
+# остановили мы сами. Нужны, чтобы отличить нормальный конец от
+# падения: код выхода пишет фоновая подоболочка.
+_LAST_PID = None
+_STOPPED_PID = None
 
 
 def _quote(path):
@@ -167,10 +174,17 @@ def _options(sink, raw=False, rate=16000, channels=1, latency_msec=100):
 
 
 def _command(player, options, source):
-    """Команда фонового процесса с источником (`файл` или FIFO)."""
-    return hal_pulse.prefix() + "{} {} < {} 2>{} & echo $! > {}".format(
-        player, " ".join(options), _quote(source), _quote(ERR),
-        _quote(PID_FILE))
+    """Команда фонового процесса с источником (`файл` или FIFO).
+
+    Внешняя подоболочка дожидается плеера и пишет код выхода в
+    `STATUS`: без него `stop()` и падение неотличимы от нормального
+    конца. `hal_pulse.prefix()` должен стоять внутри подоболочки —
+    `PULSE_SERVER=... ( ... )` оболочка не принимает.
+    """
+    return ("( {}{} {} < {} 2>{} & pid=$!; echo $pid > {}; "
+            "wait $pid; echo $pid $? > {} ) &").format(
+        hal_pulse.prefix(), player, " ".join(options), _quote(source),
+        _quote(ERR), _quote(PID_FILE), _quote(STATUS))
 
 
 def _error_text():
@@ -178,6 +192,40 @@ def _error_text():
         return hal_common.read_text(ERR).strip()
     except OSError:
         return ""
+
+
+def _remove_status():
+    try:
+        os.remove(STATUS)
+    except OSError:
+        pass
+
+
+def _read_status():
+    """`(pid, code)` последнего завершённого плеера или None."""
+    try:
+        text = hal_common.read_text(STATUS).strip()
+    except OSError:
+        return None
+    parts = text.split()
+    if len(parts) != 2:
+        return None
+    try:
+        return int(parts[0]), int(parts[1])
+    except ValueError:
+        return None
+
+
+def _await_status(pid, timeout=0.2):
+    """Дождаться статуса для `pid`; None, если не появился."""
+    deadline = time.time() + float(timeout)
+    while True:
+        value = _read_status()
+        if value is not None and value[0] == pid:
+            return value
+        if time.time() >= deadline:
+            return None
+        time.sleep(0.01)
 
 
 def play(path, sink=SINK, raw=False, rate=16000, channels=1,
@@ -195,38 +243,60 @@ def play(path, sink=SINK, raw=False, rate=16000, channels=1,
         raise HalError("нет файла {}".format(text))
     if running() is not None:
         raise HalError("уже играет")
-    global _ACTIVE_SINK, _PAUSED
-    _ACTIVE_SINK = sink
-    _PAUSED = False
 
     player = PACAT if raw else PAPLAY
     if not hal_common.exists(player):
         raise HalError("нет {}".format(player))
     options = _options(sink, raw, rate, channels, latency_msec)
 
+    global _ACTIVE_SINK, _PAUSED, _LAST_PID, _STOPPED_PID
+    _ACTIVE_SINK = sink
+    _PAUSED = False
+    _LAST_PID = None
+    _STOPPED_PID = None
+    _remove_status()
+
     hal_common.run(_command(player, options, text))
     time.sleep(0.05)
 
-    pid = running()
+    # PID пишет подоболочка после fork; на слабой плате он может
+    # появиться чуть позже. Ждём ограниченно, чтобы не принять
+    # запущенный плеер за «не запустился».
+    saved = _read_pid()
+    deadline = time.time() + 0.2
+    while saved is None and time.time() < deadline:
+        time.sleep(0.01)
+        saved = _read_pid()
+
+    # PID читаем до running(): running() удаляет pid-файл, если
+    # короткий клип уже успел закончиться.
+    pid = running() if saved is not None else None
+    if pid is None and saved is None:
+        # Последний шанс: pid-файла нет, но процесс мог успеть
+        # появиться (например, файл потерялся).
+        pid = running()
     if pid is None:
         message = _error_text()
         if message:
             raise HalError("pacat: {}".format(message))
         # Короткий клип мог закончиться до проверки — это не ошибка.
-        pid = _read_pid()
+        pid = saved
         if pid is None:
             raise HalError("pacat не запустился")
+    _LAST_PID = pid
     return pid
 
 
 def _halt():
     """Оборвать текущий процесс; True, если он был."""
-    global _PAUSED
+    global _PAUSED, _STOPPED_PID
     _PAUSED = False
     pid = running()
     if pid is None:
         _forget_pid()
         return False
+    # Запоминаем, что остановили сами: код 143/137 — не ошибка.
+    _STOPPED_PID = pid
     hal_common.run("kill {}".format(pid))
     for _ in range(10):
         if not _alive(pid):
@@ -236,6 +306,7 @@ def _halt():
         hal_common.run("kill -9 {}".format(pid))
         time.sleep(0.05)
     _forget_pid()
+    _remove_status()
     return True
 
 
@@ -248,7 +319,8 @@ def wait(timeout=10.0):
     """Ждать конца воспроизведения; True, если процесс ушёл.
 
     `timeout=None` — ждать без ограничения (для `wait=True`
-    в `lib_speaker.play_wav`).
+    в `lib_speaker.play_wav`). Код выхода здесь не читается:
+    для этого есть `result()`.
     """
     deadline = None if timeout is None else time.time() + float(timeout)
     while running() is not None:
@@ -257,6 +329,29 @@ def wait(timeout=10.0):
         time.sleep(0.02)
     _forget_pid()
     return True
+
+
+def result():
+    """Статус последнего файлового/raw-воспроизведения или None.
+
+    None — процесс ещё идёт, остановлен через `stop()` или статус
+    неизвестен. Поток (`Stream`) сюда не входит.
+    Иначе `{"pid": int, "code": int, "error": str}`.
+
+    Небольшое ожидание нужно из-за гонки: плеер уже завершился, а
+    подоболочка ещё не успела записать код выхода.
+    """
+    pid = _LAST_PID
+    if pid is None or pid == _STOPPED_PID:
+        return None
+    if running() is not None:
+        return None
+    value = _read_status()
+    if value is None or value[0] != pid:
+        value = _await_status(pid)
+    if value is None or value[0] != pid:
+        return None
+    return {"pid": pid, "code": value[1], "error": _error_text()}
 
 
 # --- пауза ----------------------------------------------------------

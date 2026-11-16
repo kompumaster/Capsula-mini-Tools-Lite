@@ -24,6 +24,6 @@ CPython — для тестов чистой логики.
 
 from micro_hal.hal_common import HalError, check, format_check
 
-__version__ = "0.2.0"
+__version__ = "0.2.6"
 
 __all__ = ["HalError", "check", "format_check", "__version__"]

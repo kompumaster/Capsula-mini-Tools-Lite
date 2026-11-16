@@ -7,6 +7,9 @@ from micro_tts.errors import TtsError
 
 DEFAULT_CACHE_DIR = "/home/microp/tts_cache"
 DEFAULT_CHUNK_CHARS = 200
+# По умолчанию текст не делим: один запрос, пока влезает в лимит
+# движка. Деление — только аварийное, для текста больше лимита.
+DEFAULT_SPLIT = False
 DEFAULT_CACHE_MAX_BYTES = 16 * 1024 * 1024
 DEFAULT_CACHE_MAX_ENTRIES = 256
 DEFAULT_CACHE_MAX_CHARS = 300
@@ -106,6 +109,7 @@ class Config:
 
     def __init__(self, engine=None, voice=None, rate=1.0, pitch=1.0,
                  volume=None, sink="master", chunk_chars=DEFAULT_CHUNK_CHARS,
+                 split=DEFAULT_SPLIT,
                  player=None, normalizer=None, cache=False,
                  cache_dir=DEFAULT_CACHE_DIR,
                  cache_max_bytes=DEFAULT_CACHE_MAX_BYTES,
@@ -119,6 +123,7 @@ class Config:
         self.sink = _sink(sink)
         self.chunk_chars = _integer(
             chunk_chars, "chunk_chars", MIN_CHUNK_CHARS, MAX_CHUNK_CHARS)
+        self.split = _bool(split, "split")
         self.player = player
         self.normalizer = normalizer
         self.cache = _bool(cache, "cache")
@@ -141,6 +146,7 @@ class Config:
             "volume": self.volume,
             "sink": self.sink,
             "chunk_chars": self.chunk_chars,
+            "split": self.split,
             "player": self.player,
             "normalizer": self.normalizer,
             "cache": self.cache,

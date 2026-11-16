@@ -15,7 +15,7 @@ from micro_tts.cache.mp3 import Mp3Codec
 from micro_tts.config import (
     Config, DEFAULT_CACHE_DIR, DEFAULT_CACHE_MAX_BYTES,
     DEFAULT_CACHE_MAX_ENTRIES, DEFAULT_CACHE_MAX_CHARS,
-    DEFAULT_CHUNK_CHARS)
+    DEFAULT_CHUNK_CHARS, DEFAULT_SPLIT)
 from micro_tts.engine.base import check_format
 from micro_tts.engine.registry import get_engine
 from micro_tts.errors import TtsError
@@ -38,6 +38,9 @@ TEMP_LIMIT = 256 * 1024
 # Запас под лимит запроса движка: склеиваем чуть меньше.
 STREAM_MARGIN = 128
 
+# Запас для режима «один кусок»: SSML и экранирование & < >.
+REQUEST_MARGIN = 256
+
 
 class TTS:
     """Связывает задачу, движок и плеер.
@@ -48,6 +51,7 @@ class TTS:
 
     def __init__(self, engine=None, voice=None, rate=1.0, pitch=1.0,
                  volume=None, sink="master", chunk_chars=DEFAULT_CHUNK_CHARS,
+                 split=DEFAULT_SPLIT,
                  player=None, normalizer=None, cache=False,
                  cache_dir=DEFAULT_CACHE_DIR,
                  cache_max_bytes=DEFAULT_CACHE_MAX_BYTES,
@@ -56,7 +60,7 @@ class TTS:
         self.config = Config(
             engine=engine, voice=voice, rate=rate, pitch=pitch,
             volume=volume, sink=sink, chunk_chars=chunk_chars,
-            player=player, normalizer=normalizer, cache=cache,
+            split=split, player=player, normalizer=normalizer, cache=cache,
             cache_dir=cache_dir, cache_max_bytes=cache_max_bytes,
             cache_max_entries=cache_max_entries,
             cache_max_chars=cache_max_chars, options=options)
@@ -77,6 +81,7 @@ class TTS:
         self._closed = False
         self._stream_stop = False
         self._encoded = {}
+        self._failure = None
 
     # --- служебное -------------------------------------------------
 
@@ -144,6 +149,12 @@ class TTS:
             return False
         return True
 
+    def _cache_mode(self):
+        """Режим синтеза для ключа кеша."""
+        if self.config.split:
+            return "split:{}".format(self.config.chunk_chars)
+        return "one"
+
     def _make_cache_key(self, job):
         self._ensure_engine()
         try:
@@ -152,7 +163,8 @@ class TTS:
             raise TtsError("движок не даёт cache_tag: {}".format(exc))
         return cache_key(job.text, tag, self.config.voice,
                          self.config.rate, self.config.pitch,
-                         self._normalizer, self._format)
+                         self._normalizer, self._format,
+                         mode=self._cache_mode())
 
     def _cache_info(self):
         if self._cache is None:
@@ -227,7 +239,26 @@ class TTS:
         job.audio_path = None
         self._remove_file(path)
 
+    def _normalize_one(self, text):
+        """Нормализовать текст без деления; None — метод не поддержан."""
+        method = getattr(self._normalizer, "normalize", None)
+        if not callable(method):
+            return None
+        try:
+            value = method(text)
+        except TtsError:
+            raise
+        except Exception as exc:
+            raise TtsError("нормализатор: {}".format(exc))
+        if not isinstance(value, str) or not value.strip():
+            raise TtsError("нормализатор вернул пустой текст")
+        return value
+
     def _chunks(self, text):
+        if not self.config.split:
+            one = self._normalize_one(text)
+            if one is not None:
+                return [one]
         limit = self.config.chunk_chars
         try:
             chunks = self._normalizer.prepare(text, limit=limit)
@@ -251,28 +282,68 @@ class TTS:
         except AttributeError:
             return len(text)
 
+    def _request_limit(self):
+        """Сколько байт текста можно отправить одним запросом."""
+        if self._engine is None:
+            return 0
+        try:
+            value = int(self._engine.request_bytes())
+        except Exception:
+            return 0
+        if value <= 0:
+            return 0
+        safe = value - REQUEST_MARGIN
+        if safe < 1:
+            safe = value
+        return safe
+
     @classmethod
     def _split_bytes(cls, text, limit):
-        """Разбить строку на части не длиннее `limit` байт UTF-8."""
+        """Разбить строку на части не длиннее `limit` байт UTF-8.
+
+        Предпочитает конец предложения, затем `,;:`, затем пробел;
+        в крайнем случае режет по символам.
+        """
         parts = []
-        current = ""
-        for char in text:
-            candidate = current + char
-            if current and cls._bytes(candidate) > limit:
-                parts.append(current.strip())
-                current = "" if char == " " else char
-            else:
-                current = candidate
-        if current.strip():
-            parts.append(current.strip())
+        rest = text.strip()
+        while rest and cls._bytes(rest) > limit:
+            size = 0
+            cut = 0
+            boundary = -1
+            for index, char in enumerate(rest):
+                char_size = len(char.encode("utf-8"))
+                if size + char_size > limit:
+                    break
+                size += char_size
+                cut = index + 1
+                if char in ".!?…,;:":
+                    boundary = index + 1
+                elif char == " ":
+                    boundary = index
+            if cut <= 0:
+                cut = 1
+            point = boundary if boundary > 0 else cut
+            part = rest[:point].strip()
+            if not part:
+                point = cut
+                part = rest[:point].strip()
+            if not part:
+                break
+            parts.append(part)
+            rest = rest[point:].strip()
+        if rest:
+            parts.append(rest)
         return parts
 
     def _stream_segments(self, text):
         """Склеить предложения в сегменты под лимит одного запроса."""
         chunks = self._chunks(text)
-        limit = self._engine.request_bytes() or 0
-        if limit > 0:
-            limit = max(256, limit - STREAM_MARGIN)
+        raw = self._engine.request_bytes() or 0
+        limit = raw
+        if raw > 0:
+            limit = raw - STREAM_MARGIN
+            if limit < 1:
+                limit = raw
         segments = []
         current = ""
         for chunk in chunks:
@@ -311,6 +382,21 @@ class TTS:
         if self._active_job is job:
             self._active_job = None
 
+    def _player_failure(self):
+        """Ошибка плеера или None; диагностика не ломает опрос."""
+        if self._player is None:
+            return None
+        method = getattr(self._player, "failure", None)
+        if not callable(method):
+            return None
+        try:
+            message = method()
+        except Exception:
+            return None
+        if isinstance(message, str) and message.strip():
+            return message
+        return None
+
     def _sync_playback(self):
         job = self._active_job
         if job is None or self._player is None:
@@ -326,14 +412,24 @@ class TTS:
                 return
         if job.playback == PLAYBACK_PLAYING:
             if not self._player.playing():
-                job.mark_finished()
-                self._active_job = None
+                failure = self._player_failure()
+                if failure:
+                    self._fail_playback(job, failure)
+                    self._failure = failure
+                else:
+                    job.mark_finished()
+                    self._active_job = None
             elif self._player.paused():
                 job.mark_paused()
         elif job.playback == PLAYBACK_PAUSED:
             if not self._player.playing():
-                job.mark_playback_stopped()
-                self._active_job = None
+                failure = self._player_failure()
+                if failure:
+                    self._fail_playback(job, failure)
+                    self._failure = failure
+                else:
+                    job.mark_playback_stopped()
+                    self._active_job = None
             elif not self._player.paused():
                 job.mark_resumed()
 
@@ -374,6 +470,8 @@ class TTS:
         self._check()
         if self._pending is not None:
             raise TtsError("уже идёт обработка")
+        # Ошибка относится к прошлой фразе; новая её не наследует.
+        self._failure = None
         use_cache = self._cache_flag(cache)
         job = SpeechJob(text, self._next_id, use_cache=use_cache)
         self._next_id += 1
@@ -439,6 +537,15 @@ class TTS:
         except TtsError as exc:
             self._fail(job, str(exc))
             raise
+
+        if (not self.config.split and job.chunks_done == 0
+                and len(job.chunks) == 1):
+            limit = self._request_limit()
+            if limit and self._bytes(job.chunks[0]) > limit:
+                pieces = self._split_bytes(job.chunks[0], limit)
+                if pieces:
+                    job.chunks = pieces
+                    job.set_chunks(len(pieces))
 
         index = job.chunks_done
         if index >= len(job.chunks):
@@ -696,6 +803,11 @@ class TTS:
             raise
         self._active_job = job
         if wait:
+            failure = self._player_failure()
+            if failure:
+                self._fail_playback(job, failure)
+                self._failure = failure
+                raise TtsError("воспроизведение: {}".format(failure))
             job.mark_finished()
             self._active_job = None
         return True
@@ -764,8 +876,17 @@ class TTS:
         cache_info = self._cache_info()
         job = job or self._active_job or self._last_job
         if job is None:
-            return self._idle_status(cache_info)
-        return job.status(cache_info)
+            result = self._idle_status(cache_info)
+        else:
+            result = job.status(cache_info)
+        result["failure"] = self._failure
+        return result
+
+    def take_error(self):
+        """Забрать ошибку воспроизведения один раз."""
+        message = self._failure
+        self._failure = None
+        return message
 
     def cache_info(self):
         """Сводка кеша; без кеша — нули."""

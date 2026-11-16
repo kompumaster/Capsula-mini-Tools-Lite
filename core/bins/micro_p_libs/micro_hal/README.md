@@ -23,7 +23,7 @@ Wi-Fi и ODAS.
 
 ## Быстрый старт
 
-На плате нет `scp`; файлы передаются через `ssh ... 'cat > ...'`:
+Файлы передаются через `ssh ... 'cat > ...'`:
 
 ```sh
 # IP — адрес колонки в локальной сети
@@ -89,6 +89,7 @@ MICROPYPATH=/home/microp:/usr/lib/micropython \
 from micro_hal import lib_display
 
 lib_display.text("12:34")          # цифры и обе точки
+lib_display.masks((0x3f, 0, 0x40, 0))  # произвольные 7-сегментные маски
 lib_display.clock()                # текущее время, 24 ч, ведущий ноль
 lib_display.clock(blink=True, off_ms=250)  # точки: 250 мс off, 750 мс on
 lib_display.transition("1234", "1235")     # старые цифры гаснут, новые загораются
@@ -223,12 +224,12 @@ while True:
 События: `press`, `release`, `click`, `single`, `double`, `triple`,
 `hold`, `step`, `combo`, `combo_hold`, `combo_release`.
 
-Сочетания: `vol-+vol+` (114+115), `play+vol+` (164+115),
-`play+vol-` (164+114). Пока сочетание активно, одиночные события
+Сочетания: `vol-+vol+` (114+115), `circle+vol+` (164+115),
+`circle+vol-` (164+114). Пока сочетание активно, одиночные события
 его клавиш не выдаются. `count` — число кликов, номер шага или 0.
 
 Тайминги по умолчанию: debounce 40 мс, hold 600 мс, click 350 мс,
-combo 100 мс, step 150 мс.
+combo 100 мс, step 150 мс; `combo_hold` по умолчанию равен `hold`.
 
 `wait()` не теряет события: если один `poll()` дал `click` и `single`,
 первый `wait()` вернёт `click`, следующий — `single`.
@@ -354,6 +355,7 @@ lib_speaker.mute(True) / lib_speaker.toggle_mute()
 lib_speaker.pause() / lib_speaker.resume() / lib_speaker.paused()
 lib_speaker.stop()                             # оборвать
 lib_speaker.playing()                          # PID или None
+lib_speaker.result()                           # код выхода или None
 ```
 
 `lib_speaker` — фасад для проекта: подтягивает `hal_pulse`,
@@ -673,7 +675,7 @@ from micro_hal import lib_display
 
 ## Тесты
 
-Тесты идут на CPython, без платы и без настоящего Pulse — 677 штук.
+Тесты идут на CPython, без платы и без настоящего Pulse — 697 штук.
 На колонке пакет разворачивается в `/home/microp/micro_hal`.
 
 ## Благодарности

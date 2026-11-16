@@ -33,11 +33,13 @@ def _format_field(fmt, name):
     return getattr(fmt, name, 0)
 
 
-def cache_key(text, engine_tag, voice, rate, pitch, normalizer, fmt):
+def cache_key(text, engine_tag, voice, rate, pitch, normalizer, fmt,
+              mode=None):
     """Стабильный ключ кеша.
 
     В ключ входят текст, версия движка, голос, темп, высота, язык и
-    версия нормализатора, формат PCM.
+    версия нормализатора, формат PCM и режим синтеза (`mode`):
+    один кусок или деление по предложениям.
     """
     if not isinstance(text, str) or not text:
         raise TtsError("ключ кеша: пустой текст")
@@ -55,7 +57,7 @@ def cache_key(text, engine_tag, voice, rate, pitch, normalizer, fmt):
             or rate_hz <= 0):
         raise TtsError("ключ кеша: неверная частота")
     payload = "|".join((
-        "v1",
+        "v2",
         str(len(text)),
         text,
         engine_tag,
@@ -67,6 +69,7 @@ def cache_key(text, engine_tag, voice, rate, pitch, normalizer, fmt):
         str(rate_hz),
         str(channels),
         str(width),
+        "" if mode is None else str(mode),
     ))
     try:
         data = payload.encode("utf-8")

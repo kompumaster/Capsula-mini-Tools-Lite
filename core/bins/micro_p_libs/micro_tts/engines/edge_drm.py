@@ -5,8 +5,9 @@
 теперь форматирование в C ручное, без `printf`.
 
 Если `ffi` или библиотека недоступны, используется C-бинарник
-`bins/edge_token` (запасной путь). Результат кэшируется на
-5-минутное окно.
+`bins/edge_token` (запасной путь). По умолчанию результат кешируется
+на 5-минутное окно; `EdgeEngine` запрашивает `fresh=True`, чтобы
+токен считался заново на каждый запрос.
 """
 
 import os
@@ -67,12 +68,12 @@ class EdgeDrm:
                 raise TtsError(
                     "нет C-токена Edge: {}".format(self.path))
 
-    def token(self, timestamp=None):
+    def token(self, timestamp=None, fresh=False):
         if timestamp is None:
             timestamp = time.time()
         timestamp = float(timestamp)
         bucket = int(timestamp) // 300
-        if self._bucket == bucket and self._value is not None:
+        if not fresh and self._bucket == bucket and self._value is not None:
             return self._value
 
         if self._ffi is not None:

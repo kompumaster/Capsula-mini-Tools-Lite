@@ -175,6 +175,15 @@ class RussianNormalizer(Normalizer):
     language = "ru"
     version = "1"
 
+    def normalize(self, text):
+        """Нормализовать текст, не деля его на предложения."""
+        if not isinstance(text, str):
+            raise TtsError("текст должен быть строкой")
+        text = _normalize(text)
+        if not text:
+            raise TtsError("текст пустой")
+        return text
+
     def prepare(self, text, limit=200):
         if not isinstance(text, str):
             raise TtsError("текст должен быть строкой")

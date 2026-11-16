@@ -336,7 +336,11 @@ class EdgeEngine(Engine):
         decoder = self._new_decoder()
         drm = self._new_drm()
         timestamp = self._clock()
-        token = drm.token(timestamp)
+        try:
+            token = drm.token(timestamp, fresh=True)
+        except TypeError:
+            # Совместимость со старыми/внешними DRM без fresh.
+            token = drm.token(timestamp)
         connection_id = _hex(16)
         request_id = _hex(16)
         muid = _hex(16).upper()
@@ -360,8 +364,21 @@ class EdgeEngine(Engine):
             while True:
                 kind, payload = transport.recv(self.timeout)
                 if kind == "close":
+                    detail = ""
+                    if payload and len(payload) >= 2:
+                        code = payload[0] * 256 + payload[1]
+                        reason = payload[2:]
+                        try:
+                            reason = reason.decode("utf-8")
+                        except Exception:
+                            reason = ""
+                        detail = " (код {}".format(code)
+                        if reason:
+                            detail += ": " + reason
+                        detail += ")"
                     raise TtsError(
-                        "Edge: соединение закрыто без turn.end")
+                        "Edge: соединение закрыто без turn.end{}".format(
+                            detail))
                 if kind == "text":
                     if b"\r\n\r\n" not in payload:
                         continue

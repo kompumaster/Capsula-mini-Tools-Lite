@@ -16,6 +16,7 @@ __all__ = [
     "PAREC", "PACTL", "PID_FILE", "RAW",
     "LIB", "WINDOW_MS", "SETTLE_MS", "Stream", "library",
     "sources", "available", "running", "start", "stop", "capture",
+    "set_mute", "muted",
 ]
 
 SOURCE = "mics"
@@ -110,6 +111,27 @@ def available(source=SOURCE):
         return source in sources()
     except HalError:
         return False
+
+
+def set_mute(on=True, source=SOURCE):
+    """Заглушить источник (`pactl set-source-mute`)."""
+    _check_source(source)
+    code, text = hal_common.capture(
+        hal_pulse.prefix() + PACTL + " set-source-mute {} {}".format(
+            source, "1" if on else "0"))
+    if code != 0:
+        raise HalError("pactl set-source-mute: код {}".format(code))
+    return bool(on)
+
+
+def muted(source=SOURCE):
+    """Заглушен ли источник; `None` — не удалось прочитать."""
+    _check_source(source)
+    code, text = hal_common.capture(
+        hal_pulse.prefix() + PACTL + " get-source-mute {}".format(source))
+    if code != 0:
+        raise HalError("pactl get-source-mute: код {}".format(code))
+    return "yes" in text.lower()
 
 
 def _scan():

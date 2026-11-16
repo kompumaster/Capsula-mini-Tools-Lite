@@ -93,6 +93,31 @@ class MicroHalPlayer(Player):
         except Exception as exc:
             raise TtsError("micro_hal: {}".format(exc))
 
+    def failure(self):
+        """Ошибка последнего файлового/raw-воспроизведения или None."""
+        if self._stream is not None:
+            return None
+        speaker = self._speaker()
+        getter = getattr(speaker, "result", None)
+        if not callable(getter):
+            return None
+        try:
+            result = getter()
+        except TtsError:
+            raise
+        except Exception as exc:
+            raise TtsError("micro_hal: {}".format(exc))
+        if not result or not isinstance(result, dict):
+            return None
+        code = result.get("code")
+        if code in (None, 0):
+            return None
+        text = result.get("error") or ""
+        message = "код {}".format(code)
+        if text:
+            message += ": " + text
+        return message
+
     # --- поток -----------------------------------------------------
 
     def start_stream(self, rate, sink=None, owner=None):

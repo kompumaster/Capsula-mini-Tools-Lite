@@ -14,15 +14,15 @@ __all__ = ["NAMES", "COMBOS", "Keys"]
 NAMES = {
     114: "vol-",
     115: "vol+",
-    164: "play",
+    164: "circle",
     248: "mic",
-    704: "fun",
+    704: "play",
 }
 
 COMBOS = (
     ((114, 115), "vol-+vol+"),
-    ((164, 115), "play+vol+"),
-    ((164, 114), "play+vol-"),
+    ((164, 115), "circle+vol+"),
+    ((164, 114), "circle+vol-"),
 )
 
 
@@ -60,12 +60,14 @@ class Keys:
     """Состояние клавиш и события `(name, action, count)`."""
 
     def __init__(self, device=None, debounce=40, hold=600, click=350,
-                 combo=100, step=150, now=None):
+                 combo=100, combo_hold=None, step=150, now=None):
         for label, value in (
                 ("debounce", debounce), ("hold", hold),
                 ("click", click), ("combo", combo), ("step", step)):
             if value < 0:
                 raise HalError("{} не может быть отрицательным".format(label))
+        if combo_hold is not None and combo_hold < 0:
+            raise HalError("combo_hold не может быть отрицательным")
         if step <= 0:
             raise HalError("step должен быть больше нуля")
         self.device = device
@@ -73,6 +75,8 @@ class Keys:
         self.hold = int(hold)
         self.click = int(click)
         self.combo = int(combo)
+        self.combo_hold = (self.hold if combo_hold is None
+                           else int(combo_hold))
         self.step = int(step)
         self._now = now if now is not None else _default_now
         self._states = {}
@@ -219,7 +223,7 @@ class Keys:
                        or self._states[key]["debouncing"]
                        for key in keys):
                 continue
-            if _elapsed(now, combo["since"]) >= self.hold:
+            if _elapsed(now, combo["since"]) >= self.combo_hold:
                 combo["hold_sent"] = True
                 events.append((name, "combo_hold", 0))
 

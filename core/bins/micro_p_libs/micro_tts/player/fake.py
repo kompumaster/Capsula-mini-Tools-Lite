@@ -35,6 +35,8 @@ class FakePlayer(Player):
         self.stream_bytes = 0
         self.stream_finishes = 0
         self.last_stream_rate = 0
+        # Тестовый хук: текст ошибки последнего воспроизведения.
+        self.failure_text = None
         self._owner = None
 
     def _start(self, wait):
@@ -47,6 +49,7 @@ class FakePlayer(Player):
     def play_pcm(self, pcm, rate, sink=None, wait=False, owner=None):
         if self.state in (PLAYING, PAUSED):
             raise TtsError("плеер уже играет")
+        self.failure_text = None
         rate = self._check_pcm(pcm, rate)
         if sink is not None and (not isinstance(sink, str) or not sink):
             raise TtsError("неверный sink")
@@ -62,6 +65,7 @@ class FakePlayer(Player):
     def play_wav(self, path, sink=None, wait=False, owner=None):
         if self.state in (PLAYING, PAUSED):
             raise TtsError("плеер уже играет")
+        self.failure_text = None
         path = self._check_path(path)
         if sink is not None and (not isinstance(sink, str) or not sink):
             raise TtsError("неверный sink")
@@ -80,6 +84,7 @@ class FakePlayer(Player):
             raise TtsError("частота должна быть положительным целым")
         if sink is not None and (not isinstance(sink, str) or not sink):
             raise TtsError("неверный sink")
+        self.failure_text = None
         self.streams += 1
         self.stream_chunks = []
         self.stream_bytes = 0
@@ -142,6 +147,10 @@ class FakePlayer(Player):
 
     def playing(self):
         return self.state in (PLAYING, PAUSED)
+
+    def failure(self):
+        """Тестовый хук: ошибка последнего сеанса или None."""
+        return self.failure_text
 
     def finish(self):
         """Тестовый хук: воспроизведение дошло до конца."""

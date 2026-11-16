@@ -1,0 +1,18 @@
+{
+  "type": "micro",
+  "wake_word": "\u0430\u043b\u0438\u0441\u0430",
+  "author": "microwakeword.com",
+  "website": "https://microwakeword.com",
+  "model": "./\u0430\u043b\u0438\u0441\u0430.tflite",
+  "trained_languages": [
+    "ru"
+  ],
+  "version": 2,
+  "micro": {
+    "probability_cutoff": 0.5,
+    "sliding_window_size": 5,
+    "feature_step_size": 10,
+    "tensor_arena_size": 32000,
+    "minimum_esphome_version": "2024.7.0"
+  }
+}

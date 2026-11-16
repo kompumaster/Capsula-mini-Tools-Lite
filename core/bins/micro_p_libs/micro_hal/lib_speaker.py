@@ -266,6 +266,16 @@ def wait(timeout=10.0):
     return hal_speaker.wait(timeout)
 
 
+def result():
+    """Статус последнего файлового/raw-воспроизведения или None.
+
+    `None` — ещё играет, остановлено через `stop()` или статус
+    неизвестен. Иначе `{"pid", "code", "error"}`. Поток сюда не
+    входит.
+    """
+    return hal_speaker.result()
+
+
 # --- PCM из памяти, файлы и поток -----------------------------------
 
 def _sink_value(sink):
