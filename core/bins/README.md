@@ -13,6 +13,9 @@
 | `config/example.env` | шаблон ключей для `/home/.env`: переименовать в `.env` и прописать ключи | 351 | см. `config/` |
 | `config/system.txt` | системный промпт для `/home/system.txt` | 781 | см. `config/` |
 | `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
+| `yse/yse` | клиент пакетного менеджера Entware и .yap | 19 278 | `7bb5cba8…` |
+| `yse/curl` | статический musl curl (mbedTLS) для HTTPS-загрузок `.yap` | 1 626 008 | `4f7ce832…` |
+| `yse/yse_profile.sh` | профиль PATH для `/opt/bin` и `/data/opt/bin` | 276 | `2afb266d…` |
 | `micro_p_libs/micro_hal/` | HAL: py + examples + `bins/` с `.so` | 644K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_tts/` | TTS: пакет, `bins/edge_token`, `bins/libc_*.so` | 464K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_asr/` | ASR: пакет и `bins/libc_mp3.so` | 220K | см. `SHA256SUMS` |

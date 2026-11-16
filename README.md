@@ -74,6 +74,7 @@ IP по умолчанию ищется через `core/common/find_ip.py`. С�
 | Старт MP агента (`agentboot`) | init-скрипты агента | `etc/init.d/S98micro_ui.sh`, `S99micro_agent.sh` |
 | Hostapd (`hostapd`) | кладёт `hostapd` в overlay `data` | `data/overlay/upper/usr/bin/hostapd` |
 | Dnsmasq (`dnsmasq`) | кладёт `dnsmasq` с DHCP в overlay `data` | `data/overlay/upper/usr/bin/dnsmasq` |
+| YSE пакеты (`yse`) | пакетный менеджер Entware и .yap | `yse` + статический `curl` в `/data/opt`, профиль, симлинк `/opt` |
 | Телеметрияd | отключает телеметрию | `telemetryd` → `noop` |
 | Обновление FW | отключает обновление прошивки | `fwupdater` → `noop1` |
 | Обновление SW | отключает обновление ПО | `swupdate` → `noop` |
@@ -85,6 +86,10 @@ Enter; пункт `10` доступен. В строке каждого патч
 
 Патчи применяются к образам из `backup/parts`, результат — в
 `patched/parts`; оригиналы не меняются.
+
+Патч `yse` ставит пакетный менеджер Entware и .yap: клиент, статический
+curl (mbedTLS) и профиль PATH. После прошивки — `yse bootstrap`, затем
+`yse install …`. Подробности — [README](core/bins/yse/README.md).
 
 ## MicroPython: библиотеки
 

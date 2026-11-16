@@ -111,7 +111,7 @@ class DetectData(Base):
         states, hashes = detect(self.tar([]), "data")
         self.assertEqual(states, {"lapi": "off", "mpython": "off", "mplibs": "off",
                                 "hostapd": "off", "dnsmasq": "off",
-                                "agentcfg": "off"})
+                                "agentcfg": "off", "yse": "off"})
         self.assertEqual(hashes, {})
 
     def test_on(self):
@@ -119,7 +119,7 @@ class DetectData(Base):
         states, hashes = detect(tree, "data")
         self.assertEqual(states, {"lapi": "on", "mpython": "off", "mplibs": "off",
                                 "hostapd": "off", "dnsmasq": "off",
-                                "agentcfg": "off"})
+                                "agentcfg": "off", "yse": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_other(self):
@@ -127,7 +127,7 @@ class DetectData(Base):
         states, hashes = detect(tree, "data")
         self.assertEqual(states, {"lapi": "off", "mpython": "off", "mplibs": "off",
                                 "hostapd": "off", "dnsmasq": "off",
-                                "agentcfg": "off"})
+                                "agentcfg": "off", "yse": "off"})
         self.assertIn(patch_lapi.PATH, hashes["lapi"])
 
     def test_unknown_part(self):

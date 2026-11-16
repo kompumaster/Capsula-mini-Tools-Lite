@@ -26,6 +26,7 @@ from fwpatch.patches import patch_telemetryd  # noqa: E402
 from fwpatch.patches import patch_vkcall  # noqa: E402
 from fwpatch.patches import patch_vkkill  # noqa: E402
 from fwpatch.patches import patch_vkvoice  # noqa: E402
+from fwpatch.patches import patch_yse  # noqa: E402
 from fwpatch.patches.common import asset_bytes, sha  # noqa: E402
 from fwpatch.status import detect  # noqa: E402
 from fwpatch.tar_tree import TarTree  # noqa: E402
@@ -342,6 +343,36 @@ class MPLibs(Base):
         patch_mp_libs.apply(tree)
         tree.remove(patch_mp_libs.TARGET + "/micro_hal/__init__.py")
         self.assertEqual(patch_mp_libs.detect(tree)[0], "off")
+
+
+class Yse(Base):
+    def test_on_off(self):
+        tree = self.tree()
+        self.assertEqual(patch_yse.detect(tree)[0], "off")
+        patch_yse.apply(tree)
+        for path, asset, _mode in patch_yse.FILES:
+            self.assertEqual(tree.sha256(path), sha(asset_bytes(asset)))
+        self.assertEqual(tree.kind(patch_yse.OPT_LINK), "link")
+        self.assertEqual(tree.link_target(patch_yse.OPT_LINK),
+                         patch_yse.OPT_TARGET)
+        self.assertEqual(patch_yse.detect(tree)[0], "on")
+        patch_yse.remove(tree)
+        for path, _asset, _mode in patch_yse.FILES:
+            self.assertFalse(tree.exists(path))
+        self.assertFalse(tree.exists(patch_yse.OPT_LINK))
+        self.assertEqual(patch_yse.detect(tree)[0], "off")
+
+    def test_on_twice(self):
+        tree = self.tree()
+        patch_yse.apply(tree)
+        before = tree.snapshot()
+        patch_yse.apply(tree)
+        self.assertEqual(tree.snapshot(), before)
+
+    def test_off_absent(self):
+        tree = self.tree()
+        patch_yse.remove(tree)
+        self.assertFalse(tree.exists(patch_yse.OPT_LINK))
 
 
 class _BinaryInData:
