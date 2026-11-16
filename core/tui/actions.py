@@ -220,6 +220,16 @@ def toggle_patch(overrides: dict[str, str], data: dict[str, str],
         overrides[key] = new
 
 
+def enable_all(overrides: dict[str, str],
+               include_kills: bool = False) -> None:
+    """Включить все патчи: toggle -> on; при include_kills ещё kill -> kill."""
+    for key in PATCHES:
+        overrides[key] = "on"
+    if include_kills:
+        for key in KILLS:
+            overrides[key] = "kill"
+
+
 IMAGE_PARTS = PART_ORDER
 
 

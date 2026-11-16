@@ -154,6 +154,8 @@ def patch_menu(screen: Screen) -> None:
             module = PATCHES.get(key) or KILLS.get(key)
             screen.message(patch_line(mark, title, label, module.SUMMARY))
         screen.message()
+        screen.message("A) Все обратимые")
+        screen.message("AA) Вообще все")
         screen.message(paint("P) Применить", GREEN))
         screen.message("R) Сбросить")
         screen.message("B) Назад")
@@ -165,6 +167,12 @@ def patch_menu(screen: Screen) -> None:
             return
         if key in ("r", "R", "к", "К"):
             overrides.clear()
+            continue
+        if key in ("a", "A", "ф", "Ф"):
+            actions.enable_all(overrides)
+            continue
+        if key in ("aa", "AA", "фф", "ФФ"):
+            actions.enable_all(overrides, include_kills=True)
             continue
         if key in ("p", "P", "з", "З"):
             if not overrides:

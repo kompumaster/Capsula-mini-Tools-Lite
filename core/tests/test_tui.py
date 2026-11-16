@@ -227,6 +227,22 @@ class PatchActions(unittest.TestCase):
         actions.toggle_patch(overrides, DATA, "swu")
         self.assertEqual(overrides, {})
 
+    def test_enable_all_features(self):
+        overrides = {}
+        actions.enable_all(overrides)
+        for key in actions.PATCHES:
+            self.assertEqual(overrides[key], "on")
+        for key in actions.KILLS:
+            self.assertNotIn(key, overrides)
+
+    def test_enable_all_with_kills(self):
+        overrides = {}
+        actions.enable_all(overrides, include_kills=True)
+        for key in actions.PATCHES:
+            self.assertEqual(overrides[key], "on")
+        for key in actions.KILLS:
+            self.assertEqual(overrides[key], "kill")
+
     def test_run_patch(self):
         with mock.patch.object(actions.fw_patch_lite, "main",
                                return_value=0) as main:
