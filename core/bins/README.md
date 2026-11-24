@@ -10,7 +10,7 @@
 | `S05home.sh` | подключить `/data/permanent/home` как `/home` | 979 | `aac7e2b1…` |
 | `S98micro_ui.sh` | запуск `micro_ui` (дисплей и кольцо) | 2 966 | `224c2bc8…` |
 | `S99micro_agent.sh` | запуск `micro_agent` | 3 056 | `8d4e3a15…` |
-| `config/example.env` | шаблон ключей для `/home/.env`: вписать ключи | 352 | см. `config/` |
+| `config/example.env` | шаблон ключей для `/home/.env`: вписать ключи | 214 | см. `config/` |
 | `config/system.txt` | системный промпт для `/home/system.txt` | 777 | см. `config/` |
 | `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
 | `yse/yse` | клиент пакетного менеджера Entware и .yap | 19 248 | `5ddffe9e…` |

@@ -5,8 +5,9 @@
 отдаёт текст ответа. Библиотека не знает про ASR, TTS и железо - это
 задача вызывающего кода.
 
-Версия 0.1.2. Движки: `deepseek` (REST `api.deepseek.com`),
-`openai` (любой OpenAI-совместимый сервис) и `fake` (эхо, без сети).
+Версия 0.1.2. Движки: `openai` (любой OpenAI-совместимый сервис, в
+агенте по умолчанию), `deepseek` (REST `api.deepseek.com`) и `fake`
+(эхо, без сети).
 
 ## Что умеет
 
@@ -29,10 +30,6 @@
 - сеть и ключи в `/home/.env`:
 
   ```sh
-  # deepseek
-  DEEPSEEK=...
-  DS_MODEL=deepseek-flash
-  # openai-совместимый сервис
   OAI_LLM_API=...
   OAI_LLM_URL=https://api.openai.com/v1
   OAI_LLM_MODEL=...
@@ -44,7 +41,7 @@
 
 ```text
 /home/microp/micro_llm/     пакет
-/home/.env                  ключи (DEEPSEEK/DS_MODEL или OAI_LLM_*)
+/home/.env                  ключи (OAI_LLM_*)
 /home/system.txt            системный промпт (по умолчанию)
 ```
 
@@ -55,10 +52,10 @@
 ```python
 from micro_llm import LlmClient
 
-llm = LlmClient(engine="deepseek",
+llm = LlmClient(engine="openai",
                 system_file="/home/system.txt",
                 ttl_ms=600000)
-llm.open(max_tokens=650, thinking=False)
+llm.open(max_tokens=650)
 try:
     print(llm.ask("Как дела?"))
 finally:
@@ -113,8 +110,9 @@ for piece in llm.stream("Расскажи коротко про Луну"):
 
 ## Движки
 
-### `deepseek`
+### `deepseek` (старый)
 
+Остался для совместимости; по умолчанию используйте `openai`.
 `POST https://api.deepseek.com/chat/completions`, заголовок
 `Authorization: Bearer <ключ>`.
 
@@ -205,7 +203,7 @@ _venv/bin/python -m unittest discover \
     -s micro_p_libs/micro_llm/tests -p 'test_*.py'
 ```
 
-Проверяются транспорт и SSE, движки `deepseek`/`fake`, сессия
+Проверяются транспорт и SSE, движки `openai`/`deepseek`/`fake`, сессия
 (TTL, обрезка, сброс) и клиент.
 
 Текущий результат: **138 OK**.
@@ -219,7 +217,7 @@ micro_llm/
   session.py       история, TTL, обрезка
   errors.py        LlmError
   engine/          интерфейс движка и реестр
-  engines/         deepseek, fake
+  engines/         openai, deepseek, fake
   net/             http (TLS) и sse-разбор
   text/system.py   чтение системного промпта
   tests/           тесты

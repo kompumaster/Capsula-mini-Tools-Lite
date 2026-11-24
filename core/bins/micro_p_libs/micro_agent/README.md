@@ -39,10 +39,9 @@
 - пакеты `micro_hal`, `micro_ww`, `micro_asr`, `micro_tts`,
   `micro_llm` и процесс `micro_ui` (дисплей и кольцо);
 - ключи в `/home/.env`: `YANDEX_API` (ASR и TTS) и
-  `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL` для `engine=openai`
-  (по умолчанию) либо `DEEPSEEK` и `DS_MODEL` для `engine=deepseek`;
-  без ключей агент работает, но без LLM (эхо-ответ) и без облачных
-  TTS/ASR;
+  `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL` (движок `openai` по
+  умолчанию); без ключей нет распознавания, озвучки и умных ответов -
+  агент отвечает только эхом;
 - системный промпт `/home/system.txt` - туда же пишется имя
   помощника текстом;
 - свободный микрофон: `voice-agent` и ASR-клиенты его не должны

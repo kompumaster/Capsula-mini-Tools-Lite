@@ -124,8 +124,9 @@ micro_llm/engines/          deepseek, fake, openai
 micro_llm/net/              http, sse
 ```
 
-Ключ `DEEPSEEK`, модель `DS_MODEL` - в `/home/.env`. Нужен агенту для
-ответов; без него `main()` остаётся на `EchoAssistant`.
+Ключи `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL` - в `/home/.env`
+(движок `openai` по умолчанию). Без них LLM не отвечает - агент
+остаётся на эхо (`EchoAssistant`).
 
 Подробнее - `micro_llm/README.md`.
 
@@ -164,13 +165,14 @@ micro_llm/net/              http, sse
 
 Шаблоны лежат в `core/bins/config/`: `example.env` (ключи, без значений)
 и `system.txt` (промпт). Патч `agentcfg` кладёт их в `/home` как `.env`
-и `system.txt`, только если файлов нет. После установки впишите ключи в
-`/home/.env`.
+и `system.txt`, только если файлов нет. Ключи впишите в `example.env` до
+применения патча - они попадут в прошивку; можно и после, в `/home/.env`
+по SSH.
 
 ## Что задаётся отдельно
 
-- `/home/.env` - ключи `YANDEX_API`, `DEEPSEEK`, `DS_MODEL`,
-  `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL`;
+- `/home/.env` - ключи `YANDEX_API`, `OAI_LLM_API`, `OAI_LLM_URL`,
+  `OAI_LLM_MODEL`;
 - `/home/a_settings.ini` - настройки агента (создаётся при первом
   старте из умолчаний: `[ww]` 0.85/4, `[asr]` −48/0.13/1.5, `[tts]`
   yandexv1/filipp, авто-яркость включена);
