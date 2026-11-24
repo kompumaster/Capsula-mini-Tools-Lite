@@ -5,7 +5,7 @@
 (`micro_asr`), ассистента (`micro_llm`) и синтез (`micro_tts`) в
 сценарий «часы → ключевая фраза → вопрос → ответ».
 
-Версия 0.1.23. Тесты - 255 на CPython, без платы.
+Версия 0.1.25. Тесты - 256 на CPython, без платы.
 
 ## Что умеет
 
@@ -38,9 +38,11 @@
   падает по памяти;
 - пакеты `micro_hal`, `micro_ww`, `micro_asr`, `micro_tts`,
   `micro_llm` и процесс `micro_ui` (дисплей и кольцо);
-- ключи в `/home/.env`: `YANDEX_API` (ASR и TTS), `DEEPSEEK` и
-  `DS_MODEL` (LLM); без ключей агент работает, но без LLM (эхо-ответ)
-  и без облачных TTS/ASR;
+- ключи в `/home/.env`: `YANDEX_API` (ASR и TTS) и
+  `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL` для `engine=openai`
+  (по умолчанию) либо `DEEPSEEK` и `DS_MODEL` для `engine=deepseek`;
+  без ключей агент работает, но без LLM (эхо-ответ) и без облачных
+  TTS/ASR;
 - системный промпт `/home/system.txt` - туда же пишется имя
   помощника текстом;
 - свободный микрофон: `voice-agent` и ASR-клиенты его не должны
@@ -133,7 +135,7 @@ LLM агент сразу слушает следующий вопрос; вых
 | `agent` | `tick_ms=10`, `max_utterance=25.0`, `mic_source=mics`, `dialog=true`, `age_limit=120` |
 | `ww` | `model=.../hey_jarvis.json`, `threshold=0.85`, `window=4`, `cooldown_ms=1000` |
 | `asr` | `engine=yandexv1`, `threshold_db=-48`, `min_speech=0.13`, `silence=1.5` |
-| `llm` | `engine=deepseek`, `system_file=/home/system.txt`, `session_ttl_seconds=600`, `max_turns=6`, `max_chars=4000`, `max_tokens=650`, `temperature=0.7`, `thinking=false` |
+| `llm` | `engine=openai` (по умолчанию) или `deepseek`, `system_file=/home/system.txt`, `session_ttl_seconds=600`, `max_turns=6`, `max_chars=4000`, `max_tokens=650`, `temperature=0.7`, `thinking=false` |
 | `tts` | `engine=yandexv1`, `voice=filipp`, `emotion=neutral`, `sample_rate=16000`, `cache=false` |
 | `ui` | `host=127.0.0.1`, `port=8766`, яркости 80/24, `global_brightness=100`, `auto_brightness=true` |
 | `keys` | `enabled=true`, `debounce_ms=40`, `hold_ms=600`, `click_ms=350`, `combo_hold_ms=2000`, `volume_step=5` |
@@ -190,7 +192,7 @@ _venv/bin/python -m unittest discover \
 Проверяются машина состояний, цикл и таймеры, команды, кнопки, настройки,
 модули с подменённым `micro_hal`, сквозной сценарий и диалог.
 
-Текущий результат: **255 OK**.
+Текущий результат: **256 OK**.
 
 ## Состав пакета
 

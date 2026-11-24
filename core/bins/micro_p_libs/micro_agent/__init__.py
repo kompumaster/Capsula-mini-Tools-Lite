@@ -7,7 +7,7 @@ from micro_agent.core.loop import Loop, Scheduler
 from micro_agent.core.state import StateMachine
 from micro_agent.settings import Settings
 
-__version__ = "0.1.23"
+__version__ = "0.1.25"
 
 __all__ = [
     "Agent",

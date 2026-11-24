@@ -40,6 +40,8 @@ class Engine:
 
     def __init__(self):
         self._opened = False
+        # Текст ошибки, если движок вернул её как ответ.
+        self.last_error = None
 
     def open(self, model=None, **options):
         """Подготовить движок; ошибка - `LlmError`."""

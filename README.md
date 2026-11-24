@@ -145,9 +145,10 @@ microWakeWord (TFLite Micro, без сети): пакет, `bins/libc_ww.so`,
 `/home/a_settings.ini`. Описание -
 [README](core/bins/micro_p_libs/micro_agent/README.md).
 
-[micro_llm](core/bins/micro_p_libs/micro_llm/) - клиент LLM
-(DeepSeek, OpenAI-совместимый REST): движки `deepseek`/`fake`,
-сессия с контекстом, SSE. Описание -
+[micro_llm](core/bins/micro_p_libs/micro_llm/) - клиент LLM:
+движки `deepseek` (REST DeepSeek), `openai` (любой
+OpenAI-совместимый сервис по `OAI_LLM_URL`) и `fake`; сессия с
+контекстом, SSE. Описание -
 [README](core/bins/micro_p_libs/micro_llm/README.md).
 
 Патч `mplibs` кладёт все восемь пакетов в `/home/microp`; профиль

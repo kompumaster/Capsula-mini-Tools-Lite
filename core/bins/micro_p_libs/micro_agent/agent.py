@@ -181,7 +181,7 @@ class Agent:
         if audio is not None:
             self.services["audio"] = audio
             self.on("ack", lambda data: audio.ack())
-            self.on("bt_audio", lambda data: self._bt_audio(audio, data))
+            self.on("bt_audio", lambda data: self._bt_audio_state(audio, data))
             if callable(getattr(audio, "poll", None)):
                 self.add(audio)
         if speech is not None:
@@ -254,7 +254,7 @@ class Agent:
             self.post(Event(ev.ERROR, message=str(exc),
                             recover_ms=ERROR_RECOVER_MS))
 
-    def _bt_audio(self, audio, data):
+    def _bt_audio_state(self, audio, data):
         try:
             if data.get("state") == "suspend":
                 audio.bt_suspend()
@@ -603,7 +603,7 @@ def build_llm(settings):
     if prefix and system:
         system = prefix + "\n\n" + system
     return LlmClient(
-        engine=settings.get("llm", "engine") or "deepseek",
+        engine=settings.get("llm", "engine") or "openai",
         system=system, system_file=None,
         ttl_ms=settings.get_int(
             "llm", "session_ttl_seconds", 1, 86400) * 1000,

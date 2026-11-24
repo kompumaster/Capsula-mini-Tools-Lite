@@ -66,6 +66,9 @@ class LlmClient:
         self._require()
         messages = self._session.prepare(text, now_ms)
         answer = self._engine.complete(messages)
+        if getattr(self._engine, "last_error", None):
+            # Ошибка озвучивается, но в историю не попадает.
+            return answer
         self._session.commit(text, answer, now_ms)
         return answer
 
@@ -80,7 +83,7 @@ class LlmClient:
             parts.append(piece)
             yield piece
         answer = "".join(parts).strip()
-        if answer:
+        if answer and not getattr(self._engine, "last_error", None):
             self._session.commit(text, answer, now_ms)
 
     def reset(self):

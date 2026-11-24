@@ -11,10 +11,10 @@
 | `micro_server` | 0.1.0 | 20 | 100 КБ | пакет, `web/`, `pages/`, `api/`, `examples/` |
 | `micro_ww` | 0.1.0 | 35 | 1068 КБ | пакет, `bins/libc_ww.so`, `models/` (9 моделей) |
 | `micro_ui` | 0.2.30 | 12 | 92 КБ | пакет, README |
-| `micro_agent` | 0.1.23 | 32 | 208 КБ | пакет, `modules/`, `commands/`, `core/`, README |
-| `micro_llm` | 0.1.1 | 16 | 96 КБ | пакет, `engine/`, `engines/` (deepseek, fake), `net/` (http, sse), README |
+| `micro_agent` | 0.1.25 | 32 | 208 КБ | пакет, `modules/`, `commands/`, `core/`, README |
+| `micro_llm` | 0.1.2 | 17 | 116 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
 
-Всего 222 файла, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
+Всего 223 файла, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
 в комплект не входят.
 
 ## micro_hal - HAL колонки
@@ -120,7 +120,7 @@ mute, автогромкость. Зависит от `micro_hal`, `micro_asr`, 
 ```text
 micro_llm/                  пакет MicroPython
 micro_llm/engine/           интерфейс и реестр
-micro_llm/engines/          deepseek, fake
+micro_llm/engines/          deepseek, fake, openai
 micro_llm/net/              http, sse
 ```
 
@@ -164,12 +164,13 @@ micro_llm/net/              http, sse
 
 Шаблоны лежат в `core/bins/config/`: `example.env` (ключи, без значений)
 и `system.txt` (промпт). Патч `agentcfg` кладёт их в `/home` как `.env`
-и `system.txt`, только если файлов нет. Для LLM и облачных TTS/ASR
-переименуйте `example.env` в `.env` и пропишите ключи.
+и `system.txt`, только если файлов нет. После установки впишите ключи в
+`/home/.env`.
 
 ## Что задаётся отдельно
 
-- `/home/.env` - ключи `YANDEX_API`, `DEEPSEEK`, `DS_MODEL`;
+- `/home/.env` - ключи `YANDEX_API`, `DEEPSEEK`, `DS_MODEL`,
+  `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL`;
 - `/home/a_settings.ini` - настройки агента (создаётся при первом
   старте из умолчаний: `[ww]` 0.85/4, `[asr]` −48/0.13/1.5, `[tts]`
   yandexv1/filipp, авто-яркость включена);

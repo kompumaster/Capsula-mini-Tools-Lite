@@ -53,7 +53,7 @@ DEFAULTS = {
         "silence": "1.5",
     },
     "llm": {
-        "engine": "deepseek",
+        "engine": "openai",
         "system_file": "/home/system.txt",
         "session_ttl_seconds": "600",
         "max_turns": "6",
