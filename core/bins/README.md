@@ -11,7 +11,7 @@
 | `S98micro_ui.sh` | запуск `micro_ui` (дисплей и кольцо) | 2 966 | `224c2bc8…` |
 | `S99micro_agent.sh` | запуск `micro_agent` | 3 056 | `8d4e3a15…` |
 | `config/example.env` | шаблон ключей для `/home/.env`: вписать ключи | 214 | см. `config/` |
-| `config/system.txt` | системный промпт для `/home/system.txt` | 777 | см. `config/` |
+| `config/system.txt` | системный промпт для `/home/system.txt` | 656 | см. `config/` |
 | `micropython_env.sh` | `/etc/profile.d/10-micropython.sh`: `MICROPYPATH` с `.frozen`, `TMPDIR` | 793 | `951c6ee9…` |
 | `yse/yse` | клиент пакетного менеджера Entware и .yap | 19 248 | `5ddffe9e…` |
 | `yse/curl` | статический musl curl (mbedTLS) для HTTPS-загрузок `.yap` | 1 626 008 | `4f7ce832…` |
@@ -20,10 +20,10 @@
 | `micro_p_libs/micro_tts/` | TTS: пакет, `bins/edge_token`, `bins/libc_*.so` | 464K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_asr/` | ASR: пакет и `bins/libc_mp3.so` | 220K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_server/` | веб-портал: страница `:8080`, `/api/status` | 100K | см. `SHA256SUMS` |
-| `micro_p_libs/micro_ww/` | ключевое слово: пакет, `bins/`, `models/` (9 моделей) | 1068K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_ww/` | ключевое слово: пакет, `bins/`, `models/` (9 моделей) | 1072K | см. `SHA256SUMS` |
 | `micro_p_libs/micro_ui/` | дисплей и кольцо: пакет | 92K | см. `SHA256SUMS` |
-| `micro_p_libs/micro_agent/` | оркестратор: пакет, `modules/` | 196K | см. `SHA256SUMS` |
-| `micro_p_libs/micro_llm/` | LLM-клиент: пакет, движки, `net/` | 88K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_agent/` | оркестратор: пакет, `modules/` | 212K | см. `SHA256SUMS` |
+| `micro_p_libs/micro_llm/` | LLM-клиент: пакет, движки, `net/` | 120K | см. `SHA256SUMS` |
 
 Дефолтная куча GC у `micropython` - 8 МБ: в исходнике правится
 `ports/unix/main.c` (`long heap_size = 8 * 1024 * 1024;`), запуск с
