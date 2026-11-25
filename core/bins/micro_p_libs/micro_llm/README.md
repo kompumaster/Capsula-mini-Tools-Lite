@@ -30,6 +30,10 @@
 - сеть и ключи в `/home/.env`:
 
   ```sh
+  # deepseek
+  DEEPSEEK=...
+  DS_MODEL=deepseek-flash
+  # openai-совместимый сервис
   OAI_LLM_API=...
   OAI_LLM_URL=https://api.openai.com/v1
   OAI_LLM_MODEL=...
@@ -41,7 +45,7 @@
 
 ```text
 /home/microp/micro_llm/     пакет
-/home/.env                  ключи (OAI_LLM_*)
+/home/.env                  ключи (OAI_LLM_* или DEEPSEEK/DS_MODEL)
 /home/system.txt            системный промпт (по умолчанию)
 ```
 
@@ -110,9 +114,9 @@ for piece in llm.stream("Расскажи коротко про Луну"):
 
 ## Движки
 
-### `deepseek` (старый)
+### `deepseek` (альтернатива)
 
-Остался для совместимости; по умолчанию используйте `openai`.
+Доступен как альтернатива; по умолчанию в агенте используется `openai`.
 `POST https://api.deepseek.com/chat/completions`, заголовок
 `Authorization: Bearer <ключ>`.
 

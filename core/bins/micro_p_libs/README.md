@@ -11,7 +11,7 @@
 | `micro_server` | 0.1.0 | 20 | 100 КБ | пакет, `web/`, `pages/`, `api/`, `examples/` |
 | `micro_ww` | 0.1.0 | 35 | 1068 КБ | пакет, `bins/libc_ww.so`, `models/` (9 моделей) |
 | `micro_ui` | 0.2.30 | 12 | 92 КБ | пакет, README |
-| `micro_agent` | 0.1.25 | 32 | 208 КБ | пакет, `modules/`, `commands/`, `core/`, README |
+| `micro_agent` | 0.1.26 | 32 | 208 КБ | пакет, `modules/`, `commands/`, `core/`, README |
 | `micro_llm` | 0.1.2 | 17 | 116 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
 
 Всего 223 файла, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
@@ -174,8 +174,9 @@ micro_llm/net/              http, sse
 - `/home/.env` - ключи `YANDEX_API`, `OAI_LLM_API`, `OAI_LLM_URL`,
   `OAI_LLM_MODEL`;
 - `/home/a_settings.ini` - настройки агента (создаётся при первом
-  старте из умолчаний: `[ww]` 0.85/4, `[asr]` −48/0.13/1.5, `[tts]`
-  yandexv1/filipp, авто-яркость включена);
+  старте из умолчаний: `[ww]` алиса 0.7/5, `[asr]` -55/0.13/1.5,
+  `[tts]` yandexv1/jane, `last_volume=35`, авто-яркость включена,
+  `age_limit=120`);
 - `/home/system.txt` - системный промпт LLM (шаблон - в
   `core/bins/config/system.txt`, ставит патч `agentcfg`);
 - `micro_tts` кеш - `/home/microp/tts_cache`, логи - `/home/microp/logs`.

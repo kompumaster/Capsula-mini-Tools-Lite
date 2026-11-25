@@ -5,7 +5,7 @@
 (`micro_asr`), ассистента (`micro_llm`) и синтез (`micro_tts`) в
 сценарий «часы → ключевая фраза → вопрос → ответ».
 
-Версия 0.1.25. Тесты - 256 на CPython, без платы.
+Версия 0.1.26. Тесты - 256 на CPython, без платы.
 
 ## Что умеет
 
@@ -40,8 +40,9 @@
   `micro_llm` и процесс `micro_ui` (дисплей и кольцо);
 - ключи в `/home/.env`: `YANDEX_API` (ASR и TTS) и
   `OAI_LLM_API`, `OAI_LLM_URL`, `OAI_LLM_MODEL` (движок `openai` по
-  умолчанию); без ключей нет распознавания, озвучки и умных ответов -
-  агент отвечает только эхом;
+  умолчанию); для `engine=deepseek` - `DEEPSEEK` и `DS_MODEL`. Без
+  ключей агент работает, но без LLM (эхо-ответ) и без облачных
+  TTS/ASR;
 - системный промпт `/home/system.txt` - туда же пишется имя
   помощника текстом;
 - свободный микрофон: `voice-agent` и ASR-клиенты его не должны
@@ -132,13 +133,13 @@ LLM агент сразу слушает следующий вопрос; вых
 | Секция | Ключи (по умолчанию) |
 |---|---|
 | `agent` | `tick_ms=10`, `max_utterance=25.0`, `mic_source=mics`, `dialog=true`, `age_limit=120` |
-| `ww` | `model=.../hey_jarvis.json`, `threshold=0.85`, `window=4`, `cooldown_ms=1000` |
-| `asr` | `engine=yandexv1`, `threshold_db=-48`, `min_speech=0.13`, `silence=1.5` |
+| `ww` | `model=.../алиса.json`, `threshold=0.7`, `window=5`, `cooldown_ms=1000` |
+| `asr` | `engine=yandexv1`, `threshold_db=-55`, `min_speech=0.13`, `silence=1.5` |
 | `llm` | `engine=openai` (по умолчанию) или `deepseek`, `system_file=/home/system.txt`, `session_ttl_seconds=600`, `max_turns=6`, `max_chars=4000`, `max_tokens=650`, `temperature=0.7`, `thinking=false` |
-| `tts` | `engine=yandexv1`, `voice=filipp`, `emotion=neutral`, `sample_rate=16000`, `cache=false` |
+| `tts` | `engine=yandexv1`, `voice=jane`, `emotion=neutral`, `sample_rate=16000`, `cache=false` |
 | `ui` | `host=127.0.0.1`, `port=8766`, яркости 80/24, `global_brightness=100`, `auto_brightness=true` |
 | `keys` | `enabled=true`, `debounce_ms=40`, `hold_ms=600`, `click_ms=350`, `combo_hold_ms=2000`, `volume_step=5` |
-| `audio` | `bt_alias=Capsula Mini`, `save_ms=5000`, `last_volume` (пишет агент) |
+| `audio` | `bt_alias=Capsula Mini`, `save_ms=5000`, `last_volume=35` (дальше пишет агент) |
 | `network` | `watchdog_ms=30000`, `ap_after_ms=180000` |
 | `server` | `port=8080` (задел: `micro_server` в `main()` не подключён) |
 
@@ -203,7 +204,6 @@ micro_agent/
   settings.py      чтение/запись /home/a_settings.ini
   intent.py        нормализация текста
   log.py           ротатор логов
-  system.txt       системный промпт по умолчанию
   core/            события, цикл, машина состояний, роутер кнопок
   modules/         звук, речь, TTS, UI-клиент, сеть, AP, веб, кнопки
   commands/        bluetooth, volume, date, face, auto

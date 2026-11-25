@@ -41,14 +41,14 @@ DEFAULTS = {
         "date_seconds": "20",
     },
     "ww": {
-        "model": "/home/microp/micro_ww/models/hey_jarvis.json",
-        "threshold": "0.85",
-        "window": "4",
+        "model": "/home/microp/micro_ww/models/алиса.json",
+        "threshold": "0.7",
+        "window": "5",
         "cooldown_ms": "1000",
     },
     "asr": {
         "engine": "yandexv1",
-        "threshold_db": "-48.0",
+        "threshold_db": "-55.0",
         "min_speech": "0.13",
         "silence": "1.5",
     },
@@ -65,7 +65,7 @@ DEFAULTS = {
     },
     "tts": {
         "engine": "yandexv1",
-        "voice": "filipp",
+        "voice": "jane",
         "cache": "false",
         "emotion": "neutral",
         "speed": "1.0",
@@ -74,6 +74,7 @@ DEFAULTS = {
     },
     "audio": {
         "bt_alias": "Capsula Mini",
+        "last_volume": "35",
         "save_ms": "5000",
     },
     "keys": {

@@ -222,7 +222,7 @@ print(available_engines())   # ['fake', 'microwakeword', 'myservice']
    после фразы - `WAKE`, в событии `word` - подпись из манифеста.
 
 Важно: агент **всегда** передаёт `threshold` и `window` из ini, и
-умолчания в коде - `0.85` и `4`. У новых моделей в манифесте `0.5` и
+умолчания в коде - `0.7` и `5`. У новых моделей в манифесте `0.5` и
 `5`, поэтому при смене модели обязательно поправьте эти два ключа,
 иначе она почти не будет срабатывать. Дальше подбирайте: `0.5` - как
 в манифесте, `0.6-0.7` - строже (меньше ложных), `window` 5-6 -
@@ -279,9 +279,9 @@ print(event and event["word"])
 
 ```ini
 [ww]
-model=/home/microp/micro_ww/models/hey_jarvis.json
-threshold=0.85
-window=3
+model=/home/microp/micro_ww/models/алиса.json
+threshold=0.7
+window=5
 cooldown_ms=1000
 ```
 
