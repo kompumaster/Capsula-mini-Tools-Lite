@@ -10,7 +10,7 @@ from micro_llm.errors import LlmError
 from micro_llm.session import (
     DEFAULT_MAX_CHARS, DEFAULT_MAX_TURNS, DEFAULT_TTL_MS, ChatSession,
     clock_ms)
-from micro_llm.text.plain import one_line
+from micro_llm.text.plain import AnswerCleaner, clean_answer
 from micro_llm.text.system import DEFAULT_SYSTEM_FILE, load_system
 
 _UNSET = object()
@@ -66,7 +66,7 @@ class LlmClient:
         """Вопрос → ответ; история пополняется."""
         self._require()
         messages = self._session.prepare(text, now_ms)
-        answer = one_line(self._engine.complete(messages))
+        answer = clean_answer(self._engine.complete(messages))
         if getattr(self._engine, "last_error", None):
             # Ошибка озвучивается, но в историю не попадает.
             return answer
@@ -78,15 +78,18 @@ class LlmClient:
         self._require()
         messages = self._session.prepare(text, now_ms)
         parts = []
+        cleaner = AnswerCleaner()
         for piece in self._engine.stream(messages):
             if not piece:
                 continue
             parts.append(piece)
-            flat = piece.replace("\r\n", " ").replace("\r", " ")
-            flat = flat.replace("\n", " ").replace("\t", " ")
+            flat = cleaner.feed(piece)
             if flat:
                 yield flat
-        answer = one_line("".join(parts))
+        tail = cleaner.finish()
+        if tail:
+            yield tail
+        answer = clean_answer("".join(parts))
         if answer and not getattr(self._engine, "last_error", None):
             self._session.commit(text, answer, now_ms)
 

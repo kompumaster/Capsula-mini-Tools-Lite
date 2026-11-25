@@ -1,5 +1,5 @@
-"""Текст для LLM: системный промпт и плоский текст."""
+"""Текст для LLM: промпт, плоский текст и чистка ответа."""
 
-from micro_llm.text.plain import one_line
+from micro_llm.text.plain import AnswerCleaner, clean_answer, one_line
 
-__all__ = ["one_line"]
+__all__ = ["AnswerCleaner", "clean_answer", "one_line"]

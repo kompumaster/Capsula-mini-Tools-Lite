@@ -9,7 +9,7 @@
 """
 
 from micro_llm.errors import LlmError
-from micro_llm.text.plain import one_line
+from micro_llm.text.plain import clean_answer, one_line
 from micro_llm.text.system import limit_text
 
 DEFAULT_TTL_MS = 10 * 60 * 1000
@@ -143,7 +143,7 @@ class ChatSession:
     def commit(self, question, answer, now_ms=None):
         """Запомнить пару «вопрос - ответ» и обрезать историю."""
         question = one_line(_text(question, "question"))
-        answer = one_line(_text(answer, "answer"))
+        answer = clean_answer(_text(answer, "answer"))
         if not question or not answer:
             raise LlmError("пустые вопрос или ответ")
         now_ms = clock_ms() if now_ms is None else _int(

@@ -12,7 +12,7 @@
 | `micro_ww` | 0.1.1 | 36 | 1072 КБ | пакет, `bins/libc_ww.so`, `models/` (9 моделей) |
 | `micro_ui` | 0.2.30 | 12 | 92 КБ | пакет, README |
 | `micro_agent` | 0.1.27 | 32 | 212 КБ | пакет, `modules/`, `commands/`, `core/`, README |
-| `micro_llm` | 0.1.3 | 18 | 120 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
+| `micro_llm` | 0.1.4 | 18 | 120 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
 
 Всего 225 файлов, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
 в комплект не входят.

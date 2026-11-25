@@ -11,7 +11,7 @@ from micro_llm.errors import LlmError
 from micro_llm.session import ChatSession
 from micro_llm.client import LlmClient
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 __all__ = [
     "LlmError", "Engine", "check_messages", "ChatSession", "LlmClient",
