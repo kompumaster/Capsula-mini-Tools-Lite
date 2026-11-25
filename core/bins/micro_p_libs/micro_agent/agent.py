@@ -579,6 +579,30 @@ AGE_LIMIT_TEMPLATE = (
     "на другое или коротко скажи, что это не для детей."
 )
 SYSTEM_LIMIT = 2000
+NAME_HEADS = ("Твоё имя", "твоё имя", "Твое имя", "твое имя")
+
+
+def has_name_line(system):
+    """Есть ли в промпте строка с именем помощника."""
+    for line in system.splitlines():
+        text = line.strip()
+        for head in NAME_HEADS:
+            if text.startswith(head):
+                return True
+    return False
+
+
+def display_name(settings):
+    """Имя из `[ww] model`; пусто, если не разобрать."""
+    try:
+        from micro_ww.names import model_name
+    except Exception:
+        return ""
+    try:
+        return model_name(settings.get("ww", "model") or "")
+    except Exception as exc:
+        print("NAME", type(exc).__name__, str(exc))
+        return ""
 
 
 def age_limit_prefix(age):
@@ -596,12 +620,18 @@ def build_llm(settings):
     path = settings.get("llm", "system_file") or "/home/system.txt"
     age = settings.get_int("agent", "age_limit", 1, 120)
     prefix = age_limit_prefix(age)
+    name = display_name(settings)
+    tail = "\nТвоё имя - {}.".format(name) if name else ""
     limit = SYSTEM_LIMIT
     if prefix:
-        limit = max(1, SYSTEM_LIMIT - len(prefix) - 2)
+        limit = max(1, limit - len(prefix) - 2)
+    if tail:
+        limit = max(1, limit - len(tail))
     system = load_system(path, limit)
     if prefix and system:
         system = prefix + "\n\n" + system
+    if system and tail and not has_name_line(system):
+        system = system + tail
     return LlmClient(
         engine=settings.get("llm", "engine") or "openai",
         system=system, system_file=None,

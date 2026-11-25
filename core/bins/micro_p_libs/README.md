@@ -9,12 +9,12 @@
 | `micro_tts` | 0.4.0 | 38 | 464 КБ | пакет, `bins/` (edge_token, `libc_edge.so`, `libc_mp3.so`), `examples/` |
 | `micro_asr` | 0.2.1 | 28 | 220 КБ | пакет, `bins/libc_mp3.so`, `examples/` |
 | `micro_server` | 0.1.0 | 20 | 100 КБ | пакет, `web/`, `pages/`, `api/`, `examples/` |
-| `micro_ww` | 0.1.0 | 35 | 1068 КБ | пакет, `bins/libc_ww.so`, `models/` (9 моделей) |
+| `micro_ww` | 0.1.1 | 36 | 1072 КБ | пакет, `bins/libc_ww.so`, `models/` (9 моделей) |
 | `micro_ui` | 0.2.30 | 12 | 92 КБ | пакет, README |
-| `micro_agent` | 0.1.26 | 32 | 208 КБ | пакет, `modules/`, `commands/`, `core/`, README |
-| `micro_llm` | 0.1.2 | 17 | 116 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
+| `micro_agent` | 0.1.27 | 32 | 212 КБ | пакет, `modules/`, `commands/`, `core/`, README |
+| `micro_llm` | 0.1.3 | 18 | 120 КБ | пакет, `engine/`, `engines/` (deepseek, fake, openai), `net/` (http, sse), README |
 
-Всего 223 файла, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
+Всего 225 файлов, 2,9 МБ. Тесты, `docs/`, `csrc/`, `repo/` и `_tmp/`
 в комплект не входят.
 
 ## micro_hal - HAL колонки
